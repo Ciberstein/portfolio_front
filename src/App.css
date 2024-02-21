@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&family=Righteous&family=Victor+Mono:wght@100&display=swap');
+
+.clip-angle {
+    clip-path: polygon(25px 0%, 100% 0, 100% 100%, 0 100%, 0% 25px)
+}
+
+.clip-btn {
+    clip-path: polygon(15px 0%, 100% 0, 100% 100%, 0 100%, 0% 15px)
+}
+
+.clip-header {
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 75% 85%, 65% 100%, 35% 100%, 25% 85%, 0% 85%);
+}
+
+.clip-footer {
+    clip-path: polygon(0 0, 100% 0, 80% 100%, 20% 100%);
+}
+
+@keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+}
+
+@keyframes levitate {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+.levitating-element {
+    animation: levitate 5s ease-in-out infinite;
+}
+
+.rotate-3s {
+    animation: spin 2s linear 1;
+}
