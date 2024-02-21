@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import { PrimaryButton } from '../../elements/PrimaryButton'
 import { Link } from 'react-router-dom'
 import { LoginForm } from './partials/LoginForm'
-import { RegisterForm } from './partials/RegisterForm'
+import { Register } from './partials/Register'
 
 export const JoinPage = () => {
 
@@ -24,7 +24,7 @@ export const JoinPage = () => {
             <span className="font-righteous text-2xl text-light-primary-500 dark:text-dark-primary-500">Cyberstein</span>
           </div>
           <WindowCard full={false}>
-            { option ? <LoginForm darkMode={darkMode} /> : <RegisterForm darkMode={darkMode} /> }
+            { option ? <LoginForm darkMode={darkMode} /> : <Register darkMode={darkMode} setOption={setOption} /> }
           </WindowCard>
           <div className="text-center">
             {

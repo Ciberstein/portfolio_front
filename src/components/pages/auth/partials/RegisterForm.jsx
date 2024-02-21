@@ -4,8 +4,17 @@ import { AtIcon, Eye, EyeSlash, HelpIcon, KeyIcon, LockIcon, UserIcon } from '..
 import { useForm } from 'react-hook-form';
 import isEmailValid from '../../../../utils/isEmailValid';
 import { PrimaryButton } from '../../../elements/PrimaryButton';
+import apiConfig from '../../../../utils/apiConfig';
+import { useDispatch } from 'react-redux';
+import { setLoad } from '../../../../store/slices/loader.slice';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
-export const RegisterForm = ({ darkMode }) => {
+export const RegisterForm = ({ setAccount, darkMode }) => {
+
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
 
     const { register, handleSubmit, watch, reset, formState: { errors }} = useForm();
 
@@ -17,7 +26,38 @@ export const RegisterForm = ({ darkMode }) => {
     };
 
     const submit = async (data) => {
-        console.log(data)
+
+        dispatch(setLoad(false))
+
+        const url = `${apiConfig().endpoint}/auth/register`
+
+        await axios.post(url, data)
+            .then(res => {
+                if(res.status === 200) setAccount(res.data.account)
+                if(res.status === 201)
+                    Swal.fire({
+                        toast: true,
+                        position: 'bottom-right',
+                        icon: 'success',
+                        text: res.data.message,
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true,
+                    }).then(() => navigate('/'))
+            })
+            .catch(err => {
+                Swal.fire({
+                    toast: true,
+                    position: 'bottom-right',
+                    icon: 'error',
+                    text: err.response.data.message,
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                })
+            })
+            .finally(() => dispatch(setLoad(true)))
+
     }
 
     return (
@@ -97,70 +137,70 @@ export const RegisterForm = ({ darkMode }) => {
                     },
                 }}
             />
-            <Input
-                icon={<LockIcon color={darkMode ? "#00ffff" : "#292929"} />}
-                id="password"
-                name="password"
-                type={hide ? 'password' : 'text'}
-                placeholder="Password"
-                autoComplete="off"
-                register={{
-                    function: register,
-                    errors: {
-                        function: errors,
-                        rules: {
-                            required: 'Password is required',
-                            minLength: {
-                                value: 8,
-                                message: 'Must be at least 8 characters',
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <Input
+                    icon={<LockIcon color={darkMode ? "#00ffff" : "#292929"} />}
+                    id="password"
+                    name="password"
+                    type={hide ? 'password' : 'text'}
+                    placeholder="Password"
+                    autoComplete="off"
+                    register={{
+                        function: register,
+                        errors: {
+                            function: errors,
+                            rules: {
+                                required: 'Password is required',
+                                minLength: {
+                                    value: 8,
+                                    message: 'Must be at least 8 characters',
+                                },
                             },
                         },
-                    },
-                }}
-                element={
-                    <button
-                        type="button"
-                        onClick={() => setHide(!hide)}
-                    >
-                        { hide ? <Eye color={darkMode ? "#00ffff" : "#292929"} /> : <EyeSlash color={darkMode ? "#00ffff" : "#292929"} /> }
-                    </button>
-                }
-            />
-
-            <Input
-                icon={<LockIcon color={darkMode ? "#00ffff" : "#292929"} />}
-                id="passwordRepeat"
-                name="passwordRepeat"
-                type={hide ? 'password' : 'text'}
-                placeholder="Repeat password"
-                autoComplete="off"
-                register={{
-                    function: register,
-                    errors: {
-                        function: errors,
-                        rules: {
-                            required: 'Password is required',
-                            minLength: {
-                                value: 8,
-                                message: 'Must be at least 8 characters',
-                            },
-                        },
-                    },
-                }}
-                element={
-                    <button
-                        type="button"
-                        onClick={() => setHide(!hide)}
+                    }}
+                    element={
+                        <button
+                            type="button"
+                            onClick={() => setHide(!hide)}
                         >
-                        {hide ? <Eye color={darkMode ? "#00ffff" : "#292929"} /> : <EyeSlash color={darkMode ? "#00ffff" : "#292929"} /> }
-                    </button>
-                }
-            />
-
+                            { hide ? <Eye color={darkMode ? "#00ffff" : "#292929"} /> : <EyeSlash color={darkMode ? "#00ffff" : "#292929"} /> }
+                        </button>
+                    }
+                />
+                <Input
+                    icon={<LockIcon color={darkMode ? "#00ffff" : "#292929"} />}
+                    id="password_repeat"
+                    name="password_repeat"
+                    type={hide ? 'password' : 'text'}
+                    placeholder="Repeat password"
+                    autoComplete="off"
+                    register={{
+                        function: register,
+                        errors: {
+                            function: errors,
+                            rules: {
+                                required: 'Password is required',
+                                minLength: {
+                                    value: 8,
+                                    message: 'Must be at least 8 characters',
+                                },
+                            },
+                        },
+                    }}
+                    element={
+                        <button
+                            type="button"
+                            onClick={() => setHide(!hide)}
+                            >
+                            {hide ? <Eye color={darkMode ? "#00ffff" : "#292929"} /> : <EyeSlash color={darkMode ? "#00ffff" : "#292929"} /> }
+                        </button>
+                    }
+                />
+            </div>
             <Input
                 icon={<KeyIcon color={darkMode ? "#00ffff" : "#292929"} />}
-                id="custCode"
-                name="custCode"
+                id="customer_code"
+                name="customer_code"
                 type="number"
                 placeholder="Customer code"
                 autoComplete="off"
@@ -179,7 +219,6 @@ export const RegisterForm = ({ darkMode }) => {
                     },
                 }}
             />
-
             <PrimaryButton type="submit">
                 Register
             </PrimaryButton> 
