@@ -7,7 +7,7 @@ import './App.css'
 import { Loader } from './components/shared/Loader';
 
 {/* Auth Imports */}
-import { LoginPage } from './components/pages/auth/LoginPage';
+import { JoinPage } from './components/pages/auth/JoinPage';
 import { ContactPage } from './components/pages/ContactPage';
 {/* End Auth Imports */}
 
@@ -29,7 +29,7 @@ function App() {
       <Loader />
       <Routes>
         <Route path="*" element={<Navigate to="/" />}/>
-        <Route path="/login" element={<LoginPage />}/>
+        <Route path="/join" element={<JoinPage />}/>
         <Route path="/contact" element={<ContactPage />}/>
         <Route path="/" element={<UserProtectedRoutes />}>
         </Route>

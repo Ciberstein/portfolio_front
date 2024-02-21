@@ -1,3 +1,4 @@
+/*
 import React, { useEffect, useRef, useState } from 'react'
 import Globe from 'react-globe.gl';
 import { useSelector } from 'react-redux';
@@ -43,4 +44,13 @@ export const Earth = () => {
             height={750}
         />
     )
+}
+*/
+
+import React from 'react'
+
+export const Earth = () => {
+  return (
+    <div>Earth</div>
+  )
 }

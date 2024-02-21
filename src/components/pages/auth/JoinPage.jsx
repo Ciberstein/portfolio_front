@@ -5,12 +5,15 @@ import { WindowCard } from '../../elements/WindowCard'
 import { Eye, EyeSlash, KeyIcon, UserIcon } from '../../../../public/icons/Svg'
 import { useSelector } from 'react-redux'
 import { PrimaryButton } from '../../elements/PrimaryButton'
+import { Link } from 'react-router-dom'
+import { LoginForm } from './partials/LoginForm'
+import { RegisterForm } from './partials/RegisterForm'
 
-export const LoginPage = () => {
+export const JoinPage = () => {
 
   const darkMode = useSelector((state) => state.darkMode);
 
-  const [hide, setHide] = useState(true)
+  const [option, setOption] = useState(true)
 
   return (
     <PreAuthLayout className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -21,22 +24,20 @@ export const LoginPage = () => {
             <span className="font-righteous text-2xl text-light-primary-500 dark:text-dark-primary-500">Cyberstein</span>
           </div>
           <WindowCard full={false}>
-            <form className="flex flex-col gap-4">
-              <Input icon={<UserIcon color={darkMode ? "#00ffff" : "#292929"} />} placeholder="Username" autoComplete="off"/>
-              <Input icon={<KeyIcon  color={darkMode ? "#00ffff" : "#292929"} />} placeholder="Password" autoComplete="off"
-                type={hide ? 'password' : 'text'}
-                element={<button onClick={() => setHide(!hide)}>{ 
-                  hide ? 
-                    <Eye      color={darkMode ? "#00ffff" : "#292929"}/> 
-                  : 
-                    <EyeSlash color={darkMode ? "#00ffff" : "#292929"}/> 
-                }</button>}
-              />
-              <PrimaryButton type="submit">
-                Login
-              </PrimaryButton> 
-            </form>  
-          </WindowCard>          
+            { option ? <LoginForm darkMode={darkMode} /> : <RegisterForm darkMode={darkMode} /> }
+          </WindowCard>
+          <div className="text-center">
+            {
+              option ? 
+                <Link as="button" onClick={() => setOption(false)} className="text-sm hover:underline">
+                  Don't have an account?
+                </Link>
+                :
+                <Link as="button" onClick={() => setOption(true)} className="text-sm hover:underline">
+                  Already registered? Log In
+                </Link>
+            }
+          </div>
         </div>
         <div className="p-4 flex flex-col gap-2 text-center items-center font-mono bg-light-primary-500/10 dark:bg-dark-primary-500/10 clip-angle">
           <h1 className="text-xl">Customers area</h1>
