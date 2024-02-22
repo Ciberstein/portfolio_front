@@ -8,6 +8,6 @@ export const Register = ({ darkMode, setOption }) => {
 
   return account ? 
       <RegisterValidation account={account} darkMode={darkMode} setOption={setOption} /> 
-    : 
+    :
       <RegisterForm setAccount={setAccount} darkMode={darkMode} />
 }

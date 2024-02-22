@@ -8,11 +8,11 @@ import { Loader } from './components/shared/Loader';
 
 {/* Auth Imports */}
 import { JoinPage } from './components/pages/auth/JoinPage';
-import { ContactPage } from './components/pages/ContactPage';
 {/* End Auth Imports */}
 
 {/* User Imports */}
 import { ProtectedRoutes as UserProtectedRoutes } from "./components/pages/session/user/ProtectedRoutes";
+import { ContactPage } from './components/pages/ContactPage';
 {/* End User Imports */}
 
 function App() {

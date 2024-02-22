@@ -39,7 +39,7 @@ export const Input = ({
             helperLink.url || helperLink.text ?
             <Link
               to={helperLink.url || null}
-              className="text-sm text-blue-400 hover:underline"
+              className="text-sm text-blue-400 ml-auto hover:underline"
             >
               {helperLink.text || null}
             </Link>      

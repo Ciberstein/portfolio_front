@@ -197,28 +197,6 @@ export const RegisterForm = ({ setAccount, darkMode }) => {
                     }
                 />
             </div>
-            <Input
-                icon={<KeyIcon color={darkMode ? "#00ffff" : "#292929"} />}
-                id="customer_code"
-                name="customer_code"
-                type="number"
-                placeholder="Customer code"
-                autoComplete="off"
-                element={
-                    <button type="button">
-                        <HelpIcon color={darkMode ? "#00ffff" : "#292929"} />
-                    </button>
-                }
-                register={{
-                    function: register,
-                    errors: {
-                        function: errors,
-                        rules: {
-                            required: 'Email is required',
-                        },
-                    },
-                }}
-            />
             <PrimaryButton type="submit">
                 Register
             </PrimaryButton> 

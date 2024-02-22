@@ -1,13 +1,10 @@
 import React, { useState } from 'react'
 import { PreAuthLayout } from '../../layouts/PreAuthLayout'
-import { Input } from '../../elements/Input'
 import { WindowCard } from '../../elements/WindowCard'
-import { Eye, EyeSlash, KeyIcon, UserIcon } from '../../../../public/icons/Svg'
 import { useSelector } from 'react-redux'
-import { PrimaryButton } from '../../elements/PrimaryButton'
 import { Link } from 'react-router-dom'
-import { LoginForm } from './partials/LoginForm'
 import { Register } from './partials/Register'
+import { Login } from './partials/Login'
 
 export const JoinPage = () => {
 
@@ -24,7 +21,7 @@ export const JoinPage = () => {
             <span className="font-righteous text-2xl text-light-primary-500 dark:text-dark-primary-500">Cyberstein</span>
           </div>
           <WindowCard full={false}>
-            { option ? <LoginForm darkMode={darkMode} /> : <Register darkMode={darkMode} setOption={setOption} /> }
+            { option ? <Login darkMode={darkMode} /> : <Register darkMode={darkMode} setOption={setOption} /> }
           </WindowCard>
           <div className="text-center">
             {
@@ -45,8 +42,7 @@ export const JoinPage = () => {
         </div>
       </div>
       <div className="col-span-3 hidden md:block md:p-20">
-          <div style={{ backgroundImage: "url(/img/computer.svg),url(/img/side-dots.png)" }} 
-            className="h-full w-full bg-no-repeat bg-center levitating-element" />
+          <div style={{ backgroundImage: "url(/img/computer.svg),url(/img/side-dots.png)" }} className="h-full w-full bg-no-repeat bg-center levitating-element" />
       </div>
     </PreAuthLayout>
   )
