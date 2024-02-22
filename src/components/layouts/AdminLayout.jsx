@@ -4,10 +4,10 @@ import { Footer } from '../shared/user/Footer'
 import { useDispatch, useSelector } from 'react-redux'
 import { accountThunk } from '../../store/slices/account.slice'
 
-export const PosAuthLayout = ({
-  children,
-  className = '',
-  ...props
+export const AdminLayout = ({
+    children,
+    className = '',
+    ...props
 }) => {
 
   const dispatch = useDispatch()

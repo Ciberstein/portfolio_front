@@ -1,7 +1,17 @@
-import React from 'react'
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import { AdminLayout } from '../../../layouts/AdminLayout';
+import { Landing } from '../../Landing';
 
 export const ProtectedRoutes = () => {
-  return (
-    <div>ProtectedRoutes</div>
-  )
-}
+  const sessionAuth = sessionStorage.getItem('authToken');
+
+  if (sessionAuth)
+    return (
+      <AdminLayout>
+        <Outlet />
+      </AdminLayout>
+    );
+
+  return <Landing />;
+};

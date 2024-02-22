@@ -19,8 +19,8 @@ export const Landing = () => {
     }, [])
 
     return (
-        <PreAuthLayout className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-9 md:overflow-hidden">
-            <section className="col-span-1 md:col-span-2 p-4 flex flex-col items-center gap-4 overflow-auto">
+        <PreAuthLayout className="grid grid-cols-1 md:grid-cols-5 lg:grid-cols-9 gap-4 md:overflow-hidden">
+            <section className="col-span-1 md:col-span-2 flex flex-col items-center gap-4 overflow-auto">
                 <div className="flex flex-col gap-4 w-full items-center">
                     <div className="aspect-square h-32 w-min rounded-full bg-[url(/img/avatar.jpg)] dark:bg-[url(/img/avatar.png)] bg-center bg-cover border border-light-primary-500 dark:border-dark-primary-500" />
                     <div className="flex flex-col items-center">
@@ -83,7 +83,7 @@ export const Landing = () => {
                     }
                 </WindowCard>
             </section>
-            <section className="col-span-1 md:col-span-3 lg:col-span-7 p-4 flex flex-col gap-4 overflow-auto">
+            <section className="col-span-1 md:col-span-3 lg:col-span-7 flex flex-col gap-4 overflow-auto">
                 <header className="clip-header bg-gradient-to-b from-transparent via-transparent to-light-primary-500 dark:to-dark-primary-500 p-[2px]">
                     <div className="flex flex-col flex-grow h-full clip-header gap-4 justify-between p-4 items-center text-center bg-light-secondary-700 dark:bg-dark-primary-700 dark:bg-[url(/img/overlay-pattern.png)]">
                         <h1 className="text-4xl font-victor-mono">Discover my Amazing Work!</h1>

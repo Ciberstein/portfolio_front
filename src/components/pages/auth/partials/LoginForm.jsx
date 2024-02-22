@@ -41,6 +41,7 @@ export const LoginForm = ({ account, setAccount, darkMode, setRecovery }) => {
     }
 
     const submit = async (data) => {
+        
         dispatch(setLoad(false));
 
         const url = `${apiConfig().endpoint}/auth/login`;
@@ -100,7 +101,7 @@ export const LoginForm = ({ account, setAccount, darkMode, setRecovery }) => {
                 autoComplete="off"
                 type={hide ? 'password' : 'text'}
                 element={
-                    <button onClick={() => setHide(!hide)}>
+                    <button type="button" onClick={() => setHide(!hide)}>
                         { hide ? 
                             <Eye color={darkMode ? "#00ffff" : "#292929"}/> 
                         : 
