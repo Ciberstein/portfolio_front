@@ -3,25 +3,25 @@ import apiConfig from "../../utils/apiConfig";
 import { setLoad } from "./loader.slice";
 import axios from "axios";
 
-const accountSlice = createSlice({
-  name: "account",
-  initialState: {},
+const accountsSlice = createSlice({
+  name: "accounts",
+  initialState: [],
   reducers: {
-    setAccount: (state, action) => action.payload,
+    setAccounts: (state, action) => action.payload,
   },
 });
 
-export const { setAccount } = accountSlice.actions;
+export const { setAccounts } = accountsSlice.actions;
 
-export default accountSlice.reducer;
+export default accountsSlice.reducer;
 
-export const accountThunk = () => async (dispatch) => {
+export const accountsThunk = () => async (dispatch) => {
   dispatch(setLoad(false));
-  const url = `${apiConfig().endpoint}/auth/`;
+  const url = `${apiConfig().endpoint}/admin/accounts`;
   await axios
     .get(url, apiConfig().axios)
     .then((res) => {
-      dispatch(setAccount(res.data));
+      dispatch(setAccounts(res.data));
     })
     .catch((err) => console.error(err))
     .finally(() => dispatch(setLoad(true)));

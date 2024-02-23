@@ -179,7 +179,7 @@ export const Table = ({
     return (
         <Card className="!p-0 overflow-auto">
             <table className={`w-full overflow-hidden ${className}`}>
-                <thead className="bg-admin-light-600/50 dark:bg-admin-dark-600/50">
+                <thead className="bg-admin-light-600/50 dark:bg-admin-dark-600/50 dark:text-dark-primary-500">
                     { element && 
                         <tr>
                             <th colSpan={cols}>
@@ -198,7 +198,7 @@ export const Table = ({
                                     id="searchInput"
                                     name="searchInput"
                                     placeholder="Search"
-                                    className="!rounded-full border-gray-200 dark:border-admin-dark-700 px-3"
+                                    className="px-3"
                                     size={size}
                                     value={searchText}
                                     onChange={handleSearchChange}

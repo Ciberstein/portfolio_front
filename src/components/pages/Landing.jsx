@@ -7,6 +7,7 @@ import { habilitiesThunk } from '../../store/slices/habilities.slice'
 import Typewriter from "typewriter-effect";
 import { BrushIcon, BtcIcon, DatabaseIcon, DeployedHistoryIcon, EthIcon, HappyIcon, LaptopCodeIcon, TaskAltIcon, WebIcon } from '../../../public/icons/Svg'
 import { Title } from '../elements/Title'
+import { GlitchCard } from '../elements/GlitchCard'
 
 export const Landing = () => {
 
@@ -131,41 +132,41 @@ export const Landing = () => {
                 <div className="flex flex-col gap-4">
                     <Title text={'my services'} />
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div className="p-4 flex flex-col gap-2 text-center items-center font-mono bg-light-primary-500/10 dark:bg-dark-primary-500/10 clip-angle">
+                        <GlitchCard className="flex flex-col gap-2 text-center items-center">
                             <BtcIcon size={40} color={darkMode ? "#00ffff" : "gray"} />
                             <h1 className="text-xl">DApps</h1>
                             <p className="text-xs dark:text-white/50">Projects under the web3 system and implementation of transactions with cryptocurrencies.</p>
-                        </div>
+                        </GlitchCard>
 
-                        <div className="p-4 flex flex-col gap-2 text-center items-center font-mono bg-light-primary-500/10 dark:bg-dark-primary-500/10 clip-angle">
+                        <GlitchCard className="flex flex-col gap-2 text-center items-center">
                             <EthIcon size={40} color={darkMode ? "#00ffff" : "gray"} />
                             <h1 className="text-xl">Smart Contracts</h1>
                             <p className="text-xs dark:text-white/50">Creation and deployment of smart contracts in solidity, ERC20 and ERC721 Tokens.</p>
-                        </div>
+                        </GlitchCard>
 
-                        <div className="p-4 flex flex-col gap-2 text-center items-center font-mono bg-light-primary-500/10 dark:bg-dark-primary-500/10 clip-angle">
+                        <GlitchCard className="flex flex-col gap-2 text-center items-center">
                             <WebIcon size={40} color={darkMode ? "#00ffff" : "gray"} />
                             <h1 className="text-xl">Web development</h1>
                             <p className="text-xs dark:text-white/50">Front-end and back-end web development, login system and data management and more...</p>
-                        </div>
+                        </GlitchCard>
 
-                        <div className="p-4 flex flex-col gap-2 text-center items-center font-mono bg-light-primary-500/10 dark:bg-dark-primary-500/10 clip-angle">
+                        <GlitchCard className="flex flex-col gap-2 text-center items-center">
                             <BrushIcon size={40} color={darkMode ? "#00ffff" : "gray"} />
                             <h1 className="text-xl">Web design</h1>
                             <p className="text-xs dark:text-white/50">Web user interface customized to suit the client under CSS3, Tailwind and Bootstrap.</p>
-                        </div>
+                        </GlitchCard>
 
-                        <div className="p-4 flex flex-col gap-2 text-center items-center font-mono bg-light-primary-500/10 dark:bg-dark-primary-500/10 clip-angle">
+                        <GlitchCard className="flex flex-col gap-2 text-center items-center">
                             <DatabaseIcon size={40} color={darkMode ? "#00ffff" : "gray"} />
                             <h1 className="text-xl">DB Management</h1>
                             <p className="text-xs dark:text-white/50">Architecture design and management of MongoDB, PostgresSQL, MySQL and SQLServer databases.</p>
-                        </div>
+                        </GlitchCard>
 
-                        <div className="p-4 flex flex-col gap-2 text-center items-center font-mono bg-light-primary-500/10 dark:bg-dark-primary-500/10 clip-angle">
+                        <GlitchCard className="flex flex-col gap-2 text-center items-center">
                             <LaptopCodeIcon size={40} color={darkMode ? "#00ffff" : "gray"} />
                             <h1 className="text-xl">Software development</h1>
                             <p className="text-xs dark:text-white/50">Design and development of cross-platform desktop applications.</p>
-                        </div>
+                        </GlitchCard>
                     </div>
                 </div>
 
