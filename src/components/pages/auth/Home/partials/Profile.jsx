@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { Link } from 'react-router-dom'
-import { GitHub, LinkedIn } from '@mui/icons-material'
+import { FileDownloadOutlined, GitHub, LinkedIn } from '@mui/icons-material'
 
 export const Profile = () => {
   return (
@@ -32,6 +32,14 @@ export const Profile = () => {
           <GitHub sx={{ fontSize: 25 }} />
         </Link>
       </div>
+      <Link to="/CV_ES.pdf" target="_blank"
+        className={clsx(
+          "flex items-center gap-2",
+          "hover:text-cyan-500 hover:dark:text-dark-primary-500 hover:underline",
+      )}>
+        <span className="uppercase font-medium">Dowload CV</span>
+        <FileDownloadOutlined />
+      </Link>
     </div>
   )
 }
