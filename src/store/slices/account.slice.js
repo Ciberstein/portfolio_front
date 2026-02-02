@@ -1,11 +1,11 @@
-import { createSlice } from "@reduxjs/toolkit";
-import apiConfig from "../../utils/apiConfig";
-import { setLoad } from "./loader.slice";
-import axios from "axios";
+import { createSlice } from '@reduxjs/toolkit';
+import appError from '../../utils/appError';
+import api from '../../api/axios';
+import { API_ROUTES } from '../../api/routes';
 
 const accountSlice = createSlice({
-  name: "account",
-  initialState: {},
+  name: 'account',
+  initialState: [],
   reducers: {
     setAccount: (state, action) => action.payload,
   },
@@ -15,14 +15,11 @@ export const { setAccount } = accountSlice.actions;
 
 export default accountSlice.reducer;
 
-export const accountThunk = () => async (dispatch) => {
-  dispatch(setLoad(false));
-  const url = `${apiConfig().endpoint}/auth/`;
-  await axios
-    .get(url, apiConfig().axios)
-    .then((res) => {
-      dispatch(setAccount(res.data));
-    })
-    .catch((err) => console.error(err))
-    .finally(() => dispatch(setLoad(true)));
-};
+export const accountThunk =
+  (env = 'USER') => async (dispatch) => {
+    const url = `${API_ROUTES[env]}/account`;
+    await api
+      .get(url)
+      .then((res) => dispatch(setAccount(res.data)))
+      .catch((err) => appError(err))
+  };
