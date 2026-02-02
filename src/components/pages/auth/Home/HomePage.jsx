@@ -29,7 +29,8 @@ export const HomePage = () => {
     { name: 'PHP', level: 60 },
     { name: 'Solidity', level: 90 },
     { name: 'Python', level: 75 },
-    { name: 'C++ / C#', level: 60 },
+    { name: 'C++', level: 60 },
+    { name: 'C#', level: 60 },
   ];
 
   const services = [

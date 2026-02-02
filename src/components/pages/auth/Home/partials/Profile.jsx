@@ -12,7 +12,7 @@ export const Profile = () => {
       <div className={clsx(
         "aspect-square h-32 w-min rounded-full",
         "border border-light-primary-500 dark:border-dark-primary-500",
-        "bg-center bg-cover bg-[url(images/avatar.jpg)] dark:bg-[url(images/avatar.png)]"
+        "bg-center bg-cover bg-[url(/images/avatar.jpg)] dark:bg-[url(/images/avatar.png)]"
       )}>
       </div>
       <h1 className="text-xl font-medium">Luis Daniel Rojas</h1>

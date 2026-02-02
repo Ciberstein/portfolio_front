@@ -7,12 +7,7 @@ const Bar = ({ data }) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center text-sm">
-        <span className="font-medium">{data.name}</span>
-        <span className="text-gray-400">{data.level}%</span>
-      </div>
-      <div className="w-full h-1.5 bg-light-primary-500/20 dark:bg-dark-primary-500/10">
-        <div className="h-full bg-light-primary-500 dark:bg-dark-primary-500"
-          style={{ width: `${data.level}%` }} />
+        <span className="font-medium">· {data.name}</span>
       </div>
     </div>
   );
@@ -25,7 +20,7 @@ export const Habilities = ({ data = [] }) => {
       className="w-full"
       icon={<Code sx={{ fontSize: 20 }} />}
     >
-      <div className="grid grid-cols-2 gap-3 text-sm">
+      <div className="grid grid-cols-2 gap-2 text-sm">
         {data.map((hability) => (
           <Bar key={hability.name} data={hability} />
         ))}
