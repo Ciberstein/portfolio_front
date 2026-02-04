@@ -20,11 +20,11 @@ export const LandingHeader = () => {
         "flex gap-4 justify-center w-full",
         "bg-linear-to-t from-light-primary-500 via-light-primary-500/50 to-transparent",
         "dark:from-dark-primary-500 dark:via-dark-primary-500/50 dark:to-transparent",
-        "grow px-px overflow-hidden p-px pt-0 rounded-b-xl",
+        "grow px-px overflow-hidden p-px pt-0",
       )}>
         <div className={clsx(
           "flex flex-col gap-4 items-center p-4",
-          "bg-light-secondary-500 dark:bg-dark-secondary-500 size-full rounded-b-xl",
+          "bg-light-secondary-500 dark:bg-dark-secondary-500 size-full",
         )}>
           <h1 className="text-3xl lg:text-5xl font-bold">
             Cyberstein Labs

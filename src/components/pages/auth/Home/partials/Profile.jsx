@@ -20,26 +20,6 @@ export const Profile = () => {
         <span className="text-sm">Fullstack Developer</span>
         <span className="text-sm">UI/UX Designer</span>
       </div>
-      <div className="flex gap-2 items-center">
-        <Link target="_blank" className={clsx(
-          "hover:text-light-primary-500/50 hover:dark:text-dark-primary-500"
-        )} to={"https://www.linkedin.com/in/cyberstein"}>
-          <LinkedIn sx={{ fontSize: 30 }} />
-        </Link>
-        <Link target="_blank" className={clsx(
-          "hover:text-light-primary-500/50 hover:dark:text-dark-primary-500"
-        )} to={"https://github.com/Ciberstein"}>
-          <GitHub sx={{ fontSize: 25 }} />
-        </Link>
-      </div>
-      <Link to="/CV_ES.pdf" target="_blank"
-        className={clsx(
-          "flex items-center gap-2",
-          "hover:text-cyan-500 hover:dark:text-dark-primary-500 hover:underline",
-      )}>
-        <span className="uppercase font-medium">Dowload CV</span>
-        <FileDownloadOutlined />
-      </Link>
     </div>
   )
 }

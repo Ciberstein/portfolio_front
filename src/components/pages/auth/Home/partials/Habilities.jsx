@@ -7,7 +7,7 @@ const Bar = ({ data }) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center text-sm">
-        <span className="font-medium">· {data.name}</span>
+        <span className="font-medium text-nowrap">· {data.name}</span>
       </div>
     </div>
   );

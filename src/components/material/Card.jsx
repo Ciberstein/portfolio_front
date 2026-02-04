@@ -14,7 +14,7 @@ export const Card = ({
       "border border-light-primary-500 dark:border-dark-primary-500",
       "dark:bg-[url(/images/overlay-pattern.png)]",
       "dark:bg-dark-primary-500/10",
-      "flex flex-col rounded-xl",
+      "flex flex-col",
       className
     )}>
       <div className={clsx(
