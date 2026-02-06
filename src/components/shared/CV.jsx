@@ -18,11 +18,11 @@ const Document = ({ contentRef, data }) => {
     <div className="hidden">
       <div ref={contentRef} className="px-6 py-4 flex flex-col gap-4">
         <h1 className="text-2xl text-center font-medium">Luis Daniel Rojas Urdaneta</h1>
-        <div className="grid grid-cols-3 gap-2 w-full">
+        <div className="grid grid-cols-3 gap-2 w-full text-sm">
 
           <div className="flex flex-col items-start">
             <span className="text-zinc-600">dev.luis.rojas@gmail.com</span>
-            <span className="text-zinc-600">Idiomas: Español / Inglés</span>
+            <span className="text-zinc-600">Español / Inglés</span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-zinc-600">+57 300 335 5560</span>
@@ -45,42 +45,40 @@ const Document = ({ contentRef, data }) => {
           <div className="grid grid-cols-2 gap-4">
 
 
-
-
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col">
               <span className="font-medium">Tecnologías:</span>
-              <div className="grid grid-cols-3 w-full text-sm">
-                <span>• CSS</span>
-                <span>• React</span>
-                <span>• Next.js</span>
-                <span>• Docker</span>
-                <span>• TypeScript</span>
-                <span>• Tailwind</span>
-                <span>• Remix</span>
-                <span>• Bootstrap</span>
-                <span>• Vite</span>
-                <span>• jQuery</span>
-                <span>• Node.js</span>
-                <span>• Git</span>
-                <span>• Express</span>
-                <span>• Postgres</span>
-                <span>• MySQL</span>
-                <span>• MongoDB</span>
-                <span>• Virtualbox</span>
-              </div>
+              <ul className="grid! grid-cols-3! w-full! text-sm! raw-html">
+                <li>CSS</li>
+                <li>React</li>
+                <li>Next.js</li>
+                <li>Docker</li>
+                <li>TypeScript</li>
+                <li>Tailwind</li>
+                <li>Remix</li>
+                <li>Bootstrap</li>
+                <li>Vite</li>
+                <li>jQuery</li>
+                <li>Node.js</li>
+                <li>Git</li>
+                <li>Express</li>
+                <li>Postgres</li>
+                <li>MySQL</li>
+                <li>MongoDB</li>
+                <li>Virtualbox</li>
+              </ul>
             </div>
 
 
-            <div className="flex flex-col items-start gap-2">
+            <div className="flex flex-col">
               <span className="font-medium">Lenguajes de programación:</span>
-              <div className="grid grid-cols-3 w-full text-sm">
-                <span>• Javascript</span>
-                <span>• PHP</span>
-                <span>• Python</span>
-                <span>• C++</span>
-                <span>• C#</span>
-                <span>• Solidity</span>
-              </div>
+              <ul className="grid! grid-cols-3! w-full! text-sm! raw-html">
+                <li>Javascript</li>
+                <li>PHP</li>
+                <li>Python</li>
+                <li>C++</li>
+                <li>C#</li>
+                <li>Solidity</li>
+              </ul>
             </div>
 
           </div>
