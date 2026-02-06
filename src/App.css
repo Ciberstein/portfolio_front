@@ -1,3 +1,50 @@
 .clip-angle {
   clip-path: polygon(40px 0, 100% 0, 100% 100%, 0 100%, 0 40px);
 }
+
+/* glitch.css */
+.glitch {
+  position: relative;
+}
+
+.glitch::before,
+.glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.glitch::before {
+  left: 1px;
+  text-shadow: -1px 0 red;
+  clip-path: inset(0 0 0 0);
+  animation: glitch-1 5s infinite linear alternate-reverse;
+}
+
+.glitch::after {
+  left: -1px;
+  text-shadow: -1px 0 cyan;
+  clip-path: inset(0 0 0 0);
+  animation: glitch-2 6s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-1 {
+  0% { clip-path: inset(80% 0 0 0); }
+  20% { clip-path: inset(10% 0 85% 0); }
+  40% { clip-path: inset(50% 0 30% 0); }
+  60% { clip-path: inset(0 0 90% 0); }
+  80% { clip-path: inset(40% 0 43% 0); }
+  100% { clip-path: inset(80% 0 5% 0); }
+}
+
+@keyframes glitch-2 {
+  0% { clip-path: inset(0 0 80% 0); }
+  20% { clip-path: inset(85% 0 5% 0); }
+  40% { clip-path: inset(30% 0 50% 0); }
+  60% { clip-path: inset(90% 0 0 0); }
+  80% { clip-path: inset(43% 0 40% 0); }
+  100% { clip-path: inset(5% 0 80% 0); }
+}

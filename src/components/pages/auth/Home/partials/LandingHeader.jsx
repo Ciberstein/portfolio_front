@@ -26,7 +26,9 @@ export const LandingHeader = () => {
           "flex flex-col gap-4 items-center p-4",
           "bg-light-secondary-500 dark:bg-dark-secondary-500 size-full",
         )}>
-          <h1 className="text-3xl lg:text-5xl font-bold">
+          <h1 className={clsx("text-3xl lg:text-5xl text-center font-glitch",
+            "text-light-primary-500 dark:text-white glitch"
+          )} data-text={"Cyberstein Labs"}>
             Cyberstein Labs
           </h1>
           <h3 className="text-green-400">
@@ -43,7 +45,7 @@ export const LandingHeader = () => {
         </div>
       </div>
 
-      <div className="flex flex-wrap justify-center lg:justify-between gap-4 w-full">
+      <div className="flex flex-wrap lg:justify-between gap-4 w-full">
         <div className="flex gap-2 font-medium text-xl">
           <span className="text-cyan-500 dark:text-dark-primary-500">9+</span>
           <span className="uppercase text-nowrap">Years of Experience</span>

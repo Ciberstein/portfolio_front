@@ -12,7 +12,7 @@ export const DetailsNavbar = ({ option, setOption }) => {
     <nav className="grid grid-cols-1 sm:grid-cols-3 uppercase">
       {options.map((item) => (
         <button className={clsx(
-          "px-4 border-b-2 cursor-pointer", option === item.id
+          "px-4 py-2 border-b-2 cursor-pointer", option === item.id
           ? clsx(
             "border-cyan-500 text-cyan-500",
             "dark:border-dark-primary-500 dark:text-dark-primary-500") 
