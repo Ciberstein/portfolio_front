@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setDark } from '../../store/slices/dark.slice';
 import { Link } from 'react-router-dom';
 import { Tooltip } from '@mui/material';
+import { CV } from './CV';
 
 const Landing = () => {
 
@@ -21,14 +22,7 @@ const Landing = () => {
     <footer className="flex justify-center items-center">
       <div className={clsx("flex justify-center items-center gap-2",
       )}>
-        <Tooltip title={"Download CV"} placement="top">
-          <Link target="_blank" className={clsx(
-            "hover:text-light-primary-500/50 hover:dark:text-dark-primary-500 p-1", 
-            "flex items-center justify-center aspect-square",
-          )} to="/CV_ES.pdf">
-            <CloudDownload />
-          </Link>          
-        </Tooltip>
+        <CV />
         <Tooltip title={"WhatsApp"} placement="top">
           <Link target="_blank" className={clsx(
             "hover:text-light-primary-500/50 hover:dark:text-dark-primary-500 p-1", 

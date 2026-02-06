@@ -1,3 +1,11 @@
+.raw-html,
+.raw-html *,
+.raw-html *::before,
+.raw-html *::after {
+    all: revert;
+}
+
+
 .clip-angle {
   clip-path: polygon(40px 0, 100% 0, 100% 100%, 0 100%, 0 40px);
 }
