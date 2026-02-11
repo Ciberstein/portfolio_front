@@ -33,6 +33,7 @@ function App() {
           {/* Auth routes */}
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/contact" element={<Auth.Pages.Contact />} />
+          <Route path="/customers" element={<Auth.Pages.Customers />} />
 
 
           <Route path="/" element={<Protected.User />} >

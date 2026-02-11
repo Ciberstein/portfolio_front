@@ -22,7 +22,7 @@ export const Card = ({
         "text-light-primary-500 dark:text-dark-primary-500",
         "border-b border-light-primary-500 dark:border-dark-primary-500"
       )}>
-        <div className="flex gap-2 items-center">
+        <div className="flex gap-2 items-center truncate">
           {icon && icon}
           <h2 className="font-medium uppercase">
             {title}

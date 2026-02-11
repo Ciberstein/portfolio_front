@@ -10,14 +10,15 @@ const Landing = ({ className }) => {
     const allPaths = [path, ...paths];
 
     if (allPaths.includes(location)) {
-      return "border border-b-0 rounded-t-lg";
+      return "border border-b-0";
     }
 
     return "border-b";
   };
 
   const menu = [
-   // { name: 'Home', link: '/' },
+   { name: 'Home', link: '/' },
+   { name: 'Customers', link: '/customers' },
    // { name: 'Contact', link: '/contact' },
   ];
 
