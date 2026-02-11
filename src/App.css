@@ -56,3 +56,37 @@
   80% { clip-path: inset(43% 0 40% 0); }
   100% { clip-path: inset(5% 0 80% 0); }
 }
+
+/* barra */
+.progress-container {
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  animation: load 3s linear forwards;
+}
+
+/* mensaje */
+.access-granted {
+  opacity: 0;
+  animation: showMessage 0s forwards;
+  animation-delay: 3s;
+}
+
+/* animaciones */
+@keyframes load {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes showMessage {
+  to {
+    opacity: 1;
+  }
+}

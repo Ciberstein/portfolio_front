@@ -12,7 +12,7 @@ export const Card = ({
   return (
     <As className={clsx(
       "border border-light-primary-500 dark:border-dark-primary-500",
-      "dark:bg-[url(/images/overlay-pattern.png)]",
+      "dark:bg-[url(/images/overlay-pattern.png)] backdrop-blur-xs",
       "dark:bg-dark-primary-500/10",
       "flex flex-col",
       className

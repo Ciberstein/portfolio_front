@@ -15,7 +15,7 @@ export const Steper = () => {
 
   return (
     <Card icon={<TerminalOutlined />} title="C:/Cyberstein/customers/Login" className="w-full max-w-md">
-      <div className="flex flex-col h-80 overflow-auto">
+      <div className="flex flex-col h-80 overflow-auto relative">
         <span className="uppercase">Cyberstein@Login ~</span>
         {dialog.map((item, index) => (
           <span key={index} className={clsx("text-sm", 
