@@ -24,10 +24,18 @@ export const Steper = () => {
 
   const [step, setStep] = React.useState('EMAIL')
   const [pendingAccount, setPendingAccount] = React.useState(null)
-  const { lines, addLine } = useTerminal()
+  const { lines, addLine, clearLines } = useTerminal()
 
   const mainForm = useForm({ mode: 'onSubmit' })
   const codeForm = useForm({ mode: 'onSubmit' })
+
+  const handleClose = () => {
+    mainForm.reset()
+    codeForm.reset()
+    clearLines()
+    setPendingAccount(null)
+    setStep('EMAIL')
+  }
 
   const handleNext = async () => {
     const field = fieldName[step]
@@ -101,7 +109,7 @@ export const Steper = () => {
   const currentError = mainForm.formState.errors[fieldName[step]]
 
   return (
-    <TerminalCard title="C:/Cyberstein/customers/Login" prompt="Cyberstein@Login ~">
+    <TerminalCard title="C:/Cyberstein/customers/Login" prompt="Cyberstein@Login ~" onClose={handleClose}>
 
       <TerminalLines lines={lines} />
 

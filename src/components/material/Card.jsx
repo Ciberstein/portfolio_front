@@ -1,4 +1,5 @@
 import { CloseOutlined } from '@mui/icons-material'
+import { Tooltip } from '@mui/material'
 import React from 'react'
 import clsx from 'clsx'
 
@@ -7,6 +8,7 @@ export const Card = ({
     className,
     icon = null,
     title = '',
+    onClose,
     children,
 }) => {
   return (
@@ -26,9 +28,11 @@ export const Card = ({
             {title}
           </h2>
         </div>
-        <button className="cursor-pointer">
-          <CloseOutlined />
-        </button>
+        <Tooltip title="Clear form" placement="left">
+          <button className="cursor-pointer" onClick={onClose}>
+            <CloseOutlined />
+          </button>
+        </Tooltip>
       </div>
       <div className="p-3">
         {children}

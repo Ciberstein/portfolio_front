@@ -4,5 +4,6 @@ export const useTerminal = () => {
   const [lines, setLines] = useState([])
   const addLine = (text, type = 'default') =>
     setLines(prev => [...prev, { text, type }])
-  return { lines, addLine }
+  const clearLines = () => setLines([])
+  return { lines, addLine, clearLines }
 }

@@ -13,10 +13,18 @@ import { Brush, CurrencyBitcoin, Laptop, Storage, Terminal, Web } from '@mui/ico
 import { DetailsNavbar } from './partials/DetailsNavbar'
 import { Experience } from './partials/Experience'
 import { Certificates } from './partials/Certificates'
+import { useDispatch, useSelector } from 'react-redux'
+import { certificatesThunk } from '../../../../store/slices/certificates.slice'
 
 export const HomePage = () => {
 
   const [option, setOption] = React.useState(1);
+  const dispatch = useDispatch();
+  const certificates = useSelector(state => state.certificates);
+
+  React.useEffect(() => {
+    dispatch(certificatesThunk());
+  }, []);
 
   const languages = [
     { name: 'Spanish', level: 100 },
@@ -159,50 +167,6 @@ export const HomePage = () => {
 
   ];
 
-  const certificates = [
-    { 
-      id: 1,
-      title: "Fullstack Developer Intership",
-      image: "images/certificates/1.png"
-    },
-
-    { 
-      id: 2,
-      title: "Ethical Hacking Professional",
-      image: "images/certificates/2.jpg"
-    },
-
-    { 
-      id: 3,
-      title: "Front-End Developer",
-      image: "images/certificates/3.png"
-    },
-
-    { 
-      id: 4,
-      title: "Back-End Developer",
-      image: "images/certificates/4.png"
-    },
-
-    { 
-      id: 5,
-      title: "Ethical Hacking",
-      image: "images/certificates/5.png"
-    },
-
-    { 
-      id: 6,
-      title: "Fundations in HTML, CSS and Javascript",
-      image: "images/certificates/6.png"
-    },
-
-    { 
-      id: 7,
-      title: "Fullstack Web Developer",
-      image: "images/certificates/7.png"
-    },
-
-  ];
 
 
   return (

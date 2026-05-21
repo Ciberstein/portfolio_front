@@ -13,8 +13,8 @@ export const TerminalLines = ({ lines }) =>
     )}>{line.text}</span>
   ))
 
-export const TerminalCard = ({ title, prompt, children }) => (
-  <Card icon={<TerminalOutlined />} title={title} className="w-full">
+export const TerminalCard = ({ title, prompt, onClose, children }) => (
+  <Card icon={<TerminalOutlined />} title={title} onClose={onClose} className="w-full">
     <div className="flex flex-col h-80 overflow-auto relative">
       <span className="uppercase">{prompt}</span>
       {children}
