@@ -19,9 +19,8 @@ const Landing = () => {
 
 
   return (
-    <footer className="flex justify-center items-center">
-      <div className={clsx("flex justify-center items-center gap-2",
-      )}>
+    <footer className="flex justify-center items-center pt-2">
+      <div className="flex justify-center items-center gap-2">
         <CV />
         <Tooltip title={"WhatsApp"} placement="top">
           <Link target="_blank" className={clsx(

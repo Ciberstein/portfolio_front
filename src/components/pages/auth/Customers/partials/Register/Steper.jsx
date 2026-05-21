@@ -1,28 +1,22 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
-import { Context } from '../../../../../../context'
-import { accountThunk } from '../../../../../../store/slices/account.slice'
 import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
 
-const STEPS = ['EMAIL', 'PASSWORD']
+const STEPS = ['USERNAME', 'EMAIL', 'PASSWORD', 'PASSWORD_REPEAT']
 
 const fieldName = {
+  USERNAME: 'username',
   EMAIL: 'email',
   PASSWORD: 'password',
+  PASSWORD_REPEAT: 'password_repeat',
 }
 
-export const Steper = () => {
+export const Steper = ({ onSuccess }) => {
 
-  const { setAuth } = React.useContext(Context.Auth)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-
-  const [step, setStep] = React.useState('EMAIL')
+  const [step, setStep] = React.useState('USERNAME')
   const [pendingAccount, setPendingAccount] = React.useState(null)
   const { lines, addLine } = useTerminal()
 
@@ -47,30 +41,23 @@ export const Steper = () => {
   }
 
   const onSubmit = async (data) => {
+    addLine(`> username: ${data.username}`, 'info')
     addLine(`> email: ${data.email}`, 'info')
     addLine('> password: ********', 'info')
     setStep('SUBMITTING')
 
     try {
-      const res = await api.post(`${API_ROUTES.AUTH}/login`, data)
-
-      if (res.status === 200) {
-        addLine('[ ✓ ] Access granted', 'success')
-        dispatch(accountThunk())
-        setAuth(true)
-        navigate('/')
-      } else if (res.status === 202) {
-        setPendingAccount(res.data.account)
-        addLine('[ ! ] Verification code sent to your email', 'warning')
-        setStep('CODE')
-        setTimeout(() => codeForm.setFocus('code'), 0)
-      }
+      const res = await api.post(`${API_ROUTES.AUTH}/register`, data)
+      setPendingAccount(res.data.account)
+      addLine('[ ! ] Verification code sent to your email', 'warning')
+      setStep('CODE')
+      setTimeout(() => codeForm.setFocus('code'), 0)
     } catch (err) {
-      const message = err.response?.data?.message || 'Authentication error'
+      const message = err.response?.data?.message || 'Registration error'
       addLine(`[ ✗ ] ${message}`, 'error')
-      mainForm.resetField('password')
-      setStep('PASSWORD')
-      setTimeout(() => mainForm.setFocus('password'), 0)
+      mainForm.reset()
+      setStep('USERNAME')
+      setTimeout(() => mainForm.setFocus('username'), 0)
     }
   }
 
@@ -81,16 +68,8 @@ export const Steper = () => {
         accountId: pendingAccount.id,
         code: data.code,
       })
-      addLine('[ ✓ ] Account verified', 'success')
-      addLine('[ ~ ] Logging in...', 'info')
-
-      const res = await api.post(`${API_ROUTES.AUTH}/login`, mainForm.getValues())
-      if (res.status === 200) {
-        addLine('[ ✓ ] Access granted', 'success')
-        dispatch(accountThunk())
-        setAuth(true)
-        navigate('/')
-      }
+      addLine('[ ✓ ] Account verified. You can now log in.', 'success')
+      setTimeout(() => onSuccess?.(), 1500)
     } catch (err) {
       const message = err.response?.data?.message || 'Invalid code'
       addLine(`[ ✗ ] ${message}`, 'error')
@@ -101,7 +80,7 @@ export const Steper = () => {
   const currentError = mainForm.formState.errors[fieldName[step]]
 
   return (
-    <TerminalCard title="C:/Cyberstein/customers/Login" prompt="Cyberstein@Login ~">
+    <TerminalCard title="C:/Cyberstein/customers/Register" prompt="Cyberstein@Register ~">
 
       <TerminalLines lines={lines} />
 
@@ -112,26 +91,59 @@ export const Steper = () => {
           className="flex flex-col"
         >
           <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-            <span className="text-green-600">&gt; email:</span>
+            <span className="text-green-600">&gt; username:</span>
             <input
               className="focus-visible:outline-none grow"
-              disabled={step !== 'EMAIL'}
+              disabled={step !== 'USERNAME'}
               autoComplete="off"
-              {...mainForm.register('email', { required: 'Email is required' })}
+              {...mainForm.register('username', { required: 'Username is required' })}
               autoFocus
-              id="login-email"
-              type="email"
+              id="reg-username"
+              type="text"
             />
           </div>
 
-          {step === 'PASSWORD' && (
+          {['EMAIL', 'PASSWORD', 'PASSWORD_REPEAT'].includes(step) && (
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+              <span className="text-green-600">&gt; email:</span>
+              <input
+                className="focus-visible:outline-none grow"
+                disabled={step !== 'EMAIL'}
+                autoComplete="off"
+                {...mainForm.register('email', { required: 'Email is required' })}
+                id="reg-email"
+                type="email"
+              />
+            </div>
+          )}
+
+          {['PASSWORD', 'PASSWORD_REPEAT'].includes(step) && (
             <div className="flex flex-col sm:flex-row sm:items-center gap-1">
               <span className="text-green-600">&gt; password:</span>
               <input
                 className="focus-visible:outline-none grow"
                 disabled={step !== 'PASSWORD'}
-                {...mainForm.register('password', { required: 'Password is required' })}
-                id="login-password"
+                {...mainForm.register('password', {
+                  required: 'Password is required',
+                  minLength: { value: 8, message: 'Minimum 8 characters' },
+                })}
+                id="reg-password"
+                type="password"
+              />
+            </div>
+          )}
+
+          {step === 'PASSWORD_REPEAT' && (
+            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+              <span className="text-green-600">&gt; repeat:</span>
+              <input
+                className="focus-visible:outline-none grow"
+                {...mainForm.register('password_repeat', {
+                  required: 'Please repeat your password',
+                  validate: v =>
+                    v === mainForm.getValues('password') || 'Passwords do not match',
+                })}
+                id="reg-password-repeat"
                 type="password"
               />
             </div>
@@ -142,7 +154,7 @@ export const Steper = () => {
       )}
 
       {step === 'SUBMITTING' && (
-        <span className="text-gray-400">[ ~ ] Authenticating...</span>
+        <span className="text-gray-400">[ ~ ] Creating account...</span>
       )}
 
       {step === 'CODE' && (
@@ -152,7 +164,7 @@ export const Steper = () => {
             <input
               className="focus-visible:outline-none grow"
               {...codeForm.register('code', { required: 'Code is required' })}
-              id="login-code"
+              id="reg-code"
               type="text"
               autoFocus
             />

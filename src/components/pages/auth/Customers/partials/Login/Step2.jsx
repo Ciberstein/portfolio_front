@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import api from '../../../../../../api/axios';
 import { API_ROUTES } from '../../../../../../api/routes';
 
-export const Step2 = ({ setDialog, setStep, watch }) => {
+export const Step2 = ({ setDialog, setStep, setData, watch }) => {
 
   const { register, handleSubmit, reset } = useForm();
 
@@ -15,7 +15,10 @@ export const Step2 = ({ setDialog, setStep, watch }) => {
     const url = `${API_ROUTES.AUTH}/login`;
 
     await api.post(url, { email, password })
-      .then(res => console.log(res.data))
+      .then(res => { 
+        setData(res.data);
+        setStep(3);
+      })
       .catch(err => {
         setStep(1);
         setDialog(prev => [...prev, {

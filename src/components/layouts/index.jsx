@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import auth_service from '../../services/auth.services';
 import React from "react";
 import Loader from '../shared/Loader';
 import { Context } from '../../context';
@@ -73,6 +74,35 @@ const Landing = ({ children }) => {
   )
 }
 
-const Layouts = { Landing }
+const User = ({ children }) => {
+
+  const { setAuth } = React.useContext(Context.Auth);
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    await auth_service.disconnect();
+    setAuth(false);
+    navigate('/customers');
+  };
+
+  return (
+    <div className={clsx(
+      "font-mono relative min-h-screen",
+      "bg-light-secondary-500 dark:bg-dark-secondary-500 dark:text-white"
+    )}>
+      <div className="flex justify-end p-4">
+        <button
+          onClick={logout}
+          className="border border-red-500 text-red-500 px-3 py-1 text-sm hover:bg-red-500 hover:text-white transition-colors"
+        >
+          [ logout ]
+        </button>
+      </div>
+      {children}
+    </div>
+  )
+}
+
+const Layouts = { Landing, User }
 
 export default Layouts

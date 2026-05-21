@@ -2,7 +2,7 @@ import appError from "../utils/appError";
 import api from "../api/axios";
 
 const disconnect = async () => {
-  const url = '/api/v1/auth/disconnect';
+  const url = '/api/v1/auth/logout';
   await api
     .post(url)
     .then(() => location.reload())
