@@ -1,10 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-export const Certificates = ({ data }) => {
+export const Certificates = ({ data = [] }) => {
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 h-full">
-      {data.map(certificate => (
+      { data?.length > 0 ? data?.map(certificate => (
         <Link to={certificate.image} target="_blank"
           className="flex flex-col gap-2 cursor-pointer hover:brightness-75">
           <div key={certificate.id}
@@ -21,7 +21,7 @@ export const Certificates = ({ data }) => {
             </h3>
           </div>    
         </Link>
-      ))}
+      )) : 'No Data' }
     </div>
   )
 }
