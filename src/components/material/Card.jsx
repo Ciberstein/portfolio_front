@@ -13,9 +13,7 @@ export const Card = ({
     <As className={clsx(
       "border border-light-primary-500 dark:border-dark-primary-500",
       "dark:bg-[url(/images/overlay-pattern.png)] backdrop-blur-xs",
-      "dark:bg-dark-primary-500/10 rounded-lg overflow-hidden",
-      "flex flex-col",
-      className
+      "flex flex-col dark:bg-dark-primary-500/10", className
     )}>
       <div className={clsx(
         "p-1 flex justify-between items-center",

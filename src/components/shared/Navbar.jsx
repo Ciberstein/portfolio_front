@@ -27,7 +27,7 @@ const Landing = ({ className }) => {
       {menu.map((item) => (
         <Link key={item.name} to={item.link}
           className={clsx(
-            "px-4 py-1 rounded-t-lg",
+            "px-4 py-1",
             "border-light-primary-500 dark:border-dark-primary-500",
             "text-light-primary-500 dark:text-dark-primary-500",
             active(item.link),
