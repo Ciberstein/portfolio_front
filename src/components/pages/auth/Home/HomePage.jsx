@@ -15,30 +15,27 @@ import { Experience } from './partials/Experience'
 import { Certificates } from './partials/Certificates'
 import { useDispatch, useSelector } from 'react-redux'
 import { certificatesThunk } from '../../../../store/slices/certificates.slice'
+import { skillsThunk } from '../../../../store/slices/skills.slice'
+import { experienceThunk } from '../../../../store/slices/experience.slice'
 
 export const HomePage = () => {
 
   const [option, setOption] = React.useState(1);
   const dispatch = useDispatch();
   const certificates = useSelector(state => state.certificates);
+  const habilities = useSelector(state => state.skills);
+  const experience = useSelector(state => state.experience);
 
   React.useEffect(() => {
     dispatch(certificatesThunk());
+    dispatch(skillsThunk());
+    dispatch(experienceThunk());
   }, []);
 
   const languages = [
     { name: 'Spanish', level: 100 },
     { name: 'English', level: 50 },
     { name: 'Russian', level: 20 },
-  ];
-
-  const habilities = [
-    { name: 'Javascript', level: 85 },
-    { name: 'PHP', level: 60 },
-    { name: 'Solidity', level: 90 },
-    { name: 'Python', level: 75 },
-    { name: 'C++', level: 60 },
-    { name: 'C#', level: 60 },
   ];
 
   const services = [
@@ -80,92 +77,6 @@ export const HomePage = () => {
 
   ];
 
-  const experience = [
-    {
-      website: "https://www.mercadolibre.com.co/",
-      role: "System Developer",
-      company: "Mercado Libre Colombia",
-      icon: 'images/meli.jpg',
-      type: {
-        id: 1,
-        title: "Full-time",
-      },
-      startAt: "2024-03-12",
-      endsAt: "2025-03-06",
-      location: "Bogotá, Colombia",
-    },
-  
-    {
-      website: "https://memboinventos.pro/",
-      role: "Fullstack Developer",
-      company: "Membo Inventos S.A.S",
-      icon: 'images/membo.jpg',
-      type: {
-        id: 1,
-        title: "Full-remote",
-      },
-      startAt: "2023-05-12",
-      endsAt: "2024-03-06",
-      location: "Bogotá, Colombia",
-    },
-
-    {
-      website: "https://academlo.com/",
-      role: "Fullstack Developer",
-      company: "Academlo",
-      icon: 'images/academlo.jpg',
-      type: {
-        id: 1,
-        title: "Internships",
-      },
-      startAt: "2022-12-01",
-      endsAt: "2022-12-30",
-      location: "Bogotá, Colombia",
-    },
-
-    {
-      website: null,
-      role: "Systems Supervisor",
-      company: "Cybertay",
-      icon: null,
-      type: {
-        id: 1,
-        title: "Full-time",
-      },
-      startAt: "2020-01-01",
-      endsAt: "2022-10-30",
-      location: "Atlántico, Colombia",
-    },
-
-    {
-      website: 'https://fluidattacks.com/',
-      role: "Ethical Hacker",
-      company: "Fluid Attacks",
-      icon: 'images/fluidattacks.jpg',
-      type: {
-        id: 1,
-        title: "Full-time",
-      },
-      startAt: "2018-11-01",
-      endsAt: "2019-01-15",
-      location: "Medellín, Colombia",
-    },
-
-    {
-      website: 'http://www.calzadosjunior.com/',
-      role: "Administrative Assistant",
-      company: "Calzados Junior",
-      icon: 'images/calzados_junior.jpg',
-      type: {
-        id: 1,
-        title: "Full-time",
-      },
-      startAt: "2016-06-01",
-      endsAt: "2017-11-15",
-      location: "Caracas, Venezuela",
-    },
-
-  ];
 
 
 

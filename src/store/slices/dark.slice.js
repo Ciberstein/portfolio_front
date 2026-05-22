@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const darkSlice = createSlice({
   name: 'dark',
-  initialState: null,
+  initialState: true,
   reducers: {
     setDark: (state, action) =>
       action.payload,
@@ -26,5 +26,7 @@ export const darkThunk = () => dispatch => {
     handleDark(value)
   } else {
     localStorage.setItem('dark', true);
+    dispatch(setDark(true));
+    handleDark(true);
   }
 };

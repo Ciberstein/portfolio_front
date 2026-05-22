@@ -19,7 +19,7 @@ const Landing = ({ className }) => {
   const menu = [
    { name: 'Home', link: '/' },
    { name: 'Customers', link: '/customers' },
-   // { name: 'Contact', link: '/contact' },
+   { name: 'Contact', link: '/contact' },
   ];
 
   return (

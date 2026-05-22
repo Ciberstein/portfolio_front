@@ -7,7 +7,7 @@ export const ContactPage = () => {
   return (
     <Layouts.Landing>
       <div className="grid xl:grid-cols-2 gap-4">
-        <div className="hidden xl:block">
+        <div className="hidden xl:flex justify-center items-center">
           <Earth />
         </div>
         <EmailForm />

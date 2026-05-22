@@ -39,7 +39,7 @@ export const CustomersPage = () => {
                 'transition-all duration-200',
                 active === 'register'
                   ? 'z-20 translate-x-0 translate-y-0'
-                  : 'z-10 -translate-x-6 -translate-y-8'
+                  : 'z-10 sm:-translate-x-6 -translate-y-8'
               )}
             >
               {active !== 'register' && (
@@ -58,7 +58,7 @@ export const CustomersPage = () => {
                 'transition-all duration-200',
                 active === 'login'
                   ? 'z-20 translate-x-0 translate-y-0'
-                  : 'z-10 -translate-x-6 -translate-y-8'
+                  : 'z-10 sm:-translate-x-6 -translate-y-8'
               )}
             >
               {active !== 'login' && (
