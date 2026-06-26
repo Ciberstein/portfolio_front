@@ -1,5 +1,5 @@
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
-import { Card } from '../../../../material/Card';
+import { Card } from '../../../../ui';
 import { Translate } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import React, { use } from 'react'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
 import { TerminalOutlined } from '@mui/icons-material'
-import { Card } from '../../../../material/Card'
+import { Card } from '../../../../ui'
 import { TerminalLines } from '../../Customers/partials/TerminalCard'
 import { useTerminal } from '../../Customers/partials/useTerminal'
 import api from '../../../../../api/axios'

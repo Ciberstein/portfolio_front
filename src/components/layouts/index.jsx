@@ -1,16 +1,16 @@
-import { useLocation, useNavigate } from 'react-router-dom';
-import auth_service from '../../services/auth.services';
 import React from "react";
-import Loader from '../shared/Loader';
-import { Context } from '../../context';
 import clsx from 'clsx';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../shared/Navbar';
 import Footer from '../shared/Footer';
+import Loader from '../shared/Loader';
+import { Context } from '../../context';
 import CRTEffect from 'vault66-crt-effect';
 import "vault66-crt-effect/dist/vault66-crt-effect.css";
 import Modal from '../material/Modal';
-import { Card } from '../material/Card';
-import { BugReportOutlined } from '@mui/icons-material';
+import { Card } from '../ui';
+import { BugReportOutlined, MenuOutlined } from '@mui/icons-material';
+import Sidebar from "../shared/Sidebar";
 
 const Landing = ({ children }) => {
 
@@ -75,34 +75,61 @@ const Landing = ({ children }) => {
 }
 
 const User = ({ children }) => {
-
-  const { setAuth } = React.useContext(Context.Auth);
-  const navigate = useNavigate();
-
-  const logout = async () => {
-    await auth_service.disconnect();
-    setAuth(false);
-    navigate('/customers');
-  };
-
   return (
     <div className={clsx(
-      "font-mono relative min-h-screen",
-      "bg-light-secondary-500 dark:bg-dark-secondary-500 dark:text-white"
+      "h-screen font-mono lg:p-6",
+      "bg-portal-bg dark:bg-neutral-950",
     )}>
-      <div className="flex justify-end p-4">
-        <button
-          onClick={logout}
-          className="border border-red-500 text-red-500 px-3 py-1 text-sm hover:bg-red-500 hover:text-white transition-colors"
-        >
-          [ logout ]
-        </button>
+      <div className={clsx(
+        "h-full mx-auto flex lg:rounded-3xl overflow-hidden",
+        "lg:w-3/4 xl:w-4/5",
+        "bg-portal-surface dark:bg-dark-portal-surface",
+      )}>
+        <Sidebar.User.Desktop />
+        <div className={clsx(
+          "flex flex-col grow overflow-hidden",
+          "text-neutral-800 dark:text-neutral-100",
+        )}>
+          <div className="flex flex-col gap-2">
+            <Sidebar.User.Mobile />
+            <div className="p-2 lg:p-4 h-full overflow-auto">
+              {children}
+            </div>
+          </div>
+        </div>
       </div>
-      {children}
     </div>
   )
 }
 
-const Layouts = { Landing, User }
+const Admin = ({ children }) => {
+  return (
+    <div className={clsx(
+      "h-screen font-mono lg:p-6",
+      "bg-portal-bg dark:bg-neutral-950",
+    )}>
+      <div className={clsx(
+        "h-full mx-auto flex lg:rounded-3xl overflow-hidden",
+        "lg:w-3/4 xl:w-4/5",
+        "bg-portal-surface dark:bg-dark-portal-surface",
+      )}>
+        <Sidebar.Admin.Desktop />
+        <div className={clsx(
+          "flex flex-col grow overflow-hidden",
+          "text-neutral-800 dark:text-neutral-100",
+        )}>
+          <div className="flex flex-col gap-2">
+            <Sidebar.Admin.Mobile />
+            <div className="p-2 lg:p-4 h-full overflow-auto">
+              {children}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const Layouts = { Landing, User, Admin }
 
 export default Layouts

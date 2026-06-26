@@ -13,11 +13,22 @@
 @theme {
   --font-glitch: "Glitch", system-ui, sans-serif;
 
+  /* Landing palette */
   --color-dark-primary-500: rgb(0 255 255);
   --color-light-primary-500: rgb(41 41 41);
-
   --color-dark-secondary-500: rgb(19 22 22);
   --color-light-secondary-500: rgb(250 250 250);
+
+  /* Portal palette */
+  --color-portal-bg: rgb(243 244 246);
+  --color-portal-surface: rgb(255 255 255);
+  --color-portal-panel: rgb(235 235 235);
+  --color-portal-border: rgb(209 213 219);
+  --color-dark-portal-bg: rgb(19 22 22);
+  --color-dark-portal-surface: rgb(38 38 38);
+  --color-dark-portal-panel: rgb(23 23 23);
+  --color-dark-portal-border: rgb(64 64 64);
+
 }
 
 

@@ -1,7 +1,7 @@
 import React from 'react'
 import Layouts from '../../../layouts'
 import clsx from 'clsx'
-import { Card } from '../../../material/Card'
+import { Card } from '../../../ui'
 import { Languages } from './partials/Languages'
 import { Profile } from './partials/Profile'
 import { Location } from './partials/Location'

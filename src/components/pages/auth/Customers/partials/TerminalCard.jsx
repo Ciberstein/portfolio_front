@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { TerminalOutlined } from '@mui/icons-material'
-import { Card } from '../../../../material/Card'
+import { Card } from '../../../../ui'
 
 export const TerminalLines = ({ lines }) =>
   lines.map((line, i) => (

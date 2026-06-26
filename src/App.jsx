@@ -3,7 +3,7 @@ import { BrowserRouter as Router } from 'react-router-dom'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { darkThunk } from './store/slices/dark.slice'
-import { Auth } from './components/pages'
+import { Auth, User, Admin } from './components/pages'
 import Protected from './routes'
 import React from 'react'
 import './App.css'
@@ -36,8 +36,15 @@ function App() {
           <Route path="/customers" element={<Auth.Pages.Customers />} />
 
 
-          <Route path="/" element={<Protected.User />} >
-          
+          <Route path="/" element={<Protected.User />}>
+            <Route index element={<></>} />
+            <Route path="settings" element={<User.Pages.Settings />} />
+          </Route>
+
+          <Route path="/admin" element={<Protected.Admin />}>
+            <Route index element={<Admin.Pages.Home />} />
+            <Route path="accounts" element={<Admin.Pages.Accounts />} />
+            <Route path="mails" element={<Admin.Pages.Mails />} />
           </Route>
 
         </Routes>

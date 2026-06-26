@@ -1,4 +1,4 @@
-import { Card } from '../../../../material/Card'
+import { Card } from '../../../../ui'
 import { Code } from '@mui/icons-material';
 import React from 'react'
 

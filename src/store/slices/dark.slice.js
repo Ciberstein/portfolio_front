@@ -30,3 +30,10 @@ export const darkThunk = () => dispatch => {
     handleDark(true);
   }
 };
+
+export const toggleDarkThunk = () => (dispatch, getState) => {
+  const next = !getState().dark;
+  localStorage.setItem('dark', next);
+  dispatch(setDark(next));
+  handleDark(next);
+};

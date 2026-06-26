@@ -1,5 +1,5 @@
 import React from 'react'
-import { Card } from '../../../../material/Card'
+import { Card } from '../../../../ui'
 import { BadgeOutlined } from '@mui/icons-material'
 
 export const AboutMe = () => {

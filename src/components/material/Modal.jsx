@@ -1,5 +1,5 @@
 import { CloseOutlined } from '@mui/icons-material'
-import { Card } from './Card'
+import { Card } from '../ui'
 import { Tooltip } from '@mui/material'
 import MuiModal from '@mui/material/Modal';
 import clsx from 'clsx';

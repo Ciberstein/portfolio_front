@@ -1,18 +1,16 @@
 import React from 'react';
 import clsx from 'clsx';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+
 
 const Landing = ({ className }) => {
 
   const location = useLocation().pathname;
-  
+
   const active = (path, paths = []) => {
     const allPaths = [path, ...paths];
-
-    if (allPaths.includes(location)) {
-      return "border border-b-0";
-    }
-
+    if (allPaths.includes(location)) return "border border-b-0";
     return "border-b";
   };
 
