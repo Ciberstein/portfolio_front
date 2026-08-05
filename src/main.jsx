@@ -1,4 +1,5 @@
 import React from 'react'
+import { GoogleOAuthProvider } from '@react-oauth/google'
 import { Provider as ReduxProvider } from 'react-redux'
 import { Provider as GlobalProvider } from './context/index.jsx'
 import { NotificationsProvider } from '@toolpad/core/useNotifications'
@@ -11,13 +12,15 @@ import './index.css'
 
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <ReduxProvider store={store}>
-      <NotificationsProvider slotProps={slotProps}>
-        <GlobalProvider.Auth>
-          <Loader />
-          <App />
-        </GlobalProvider.Auth>
-      </NotificationsProvider>
-    </ReduxProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+      <ReduxProvider store={store}>
+        <NotificationsProvider slotProps={slotProps}>
+          <GlobalProvider.Auth>
+            <Loader />
+            <App />
+          </GlobalProvider.Auth>
+        </NotificationsProvider>
+      </ReduxProvider>
+    </GoogleOAuthProvider>
   </React.StrictMode>,
 )
