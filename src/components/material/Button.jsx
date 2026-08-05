@@ -3,7 +3,8 @@ import clsx from 'clsx'
 
 // ── Button ────────────────────────────────────────────────────────────────────────
 // Flexible, dynamic button component supporting multiple variants
-// Supports landing (terminal-style) and user (logged-in) variants
+// Supports landing (terminal-style), user (logged-in), primary, and secondary variants
+// Export as object with shortcuts: Button.Landing, Button.User, Button.Primary, Button.Secondary
 
 const variants = {
   landing: {
@@ -45,7 +46,7 @@ const formatLabel = (label, loading, variant) => {
   return loading ? 'Loading...' : label;
 };
 
-export const Button = ({
+const ButtonBase = ({
   variant = 'user',
   label = '',
   loading = false,
@@ -87,10 +88,10 @@ export const Button = ({
   );
 };
 
-// Backward compatibility - also export as object with variants if needed
-export const ButtonVariant = {
-  Landing: (props) => <Button {...props} variant="landing" />,
-  User: (props) => <Button {...props} variant="user" />,
-  Primary: (props) => <Button {...props} variant="primary" />,
-  Secondary: (props) => <Button {...props} variant="secondary" />,
+// Export as object with shortcuts for each variant
+export const Button = {
+  Landing: (props) => <ButtonBase variant="landing" {...props} />,
+  User: (props) => <ButtonBase variant="user" {...props} />,
+  Primary: (props) => <ButtonBase variant="primary" {...props} />,
+  Secondary: (props) => <ButtonBase variant="secondary" {...props} />,
 };

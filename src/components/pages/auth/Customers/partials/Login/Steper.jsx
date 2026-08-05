@@ -196,8 +196,7 @@ export const Steper = ({ embedMode = false }) => {
           </div>
 
           {/* Submit Button */}
-          <Button
-            variant="landing"
+          <Button.Landing
             label="login"
             loading={mainForm.formState.isSubmitting}
             disabled={!captchaToken}
@@ -213,8 +212,7 @@ export const Steper = ({ embedMode = false }) => {
               <span className="text-xs text-gray-500">or continue with</span>
               <hr className="flex-1" />
             </div>
-            <Button
-              variant="landing"
+            <Button.Landing
               label="google"
               type="button"
               onClick={() => handleGoogleLogin()}
@@ -250,8 +248,7 @@ export const Steper = ({ embedMode = false }) => {
           {codeForm.formState.errors.code && (
             <p className="text-red-500 text-sm">[ ✗ ] {codeForm.formState.errors.code.message}</p>
           )}
-          <Button
-            variant="landing"
+          <Button.Landing
             label="verify"
             className="self-start mt-2"
           />
