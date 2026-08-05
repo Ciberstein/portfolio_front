@@ -1,6 +1,7 @@
 // Auth Routes
 import { ContactPage as AuthContact } from "./auth/Contact/ContactPage";
 import { CustomersPage as AuthCustomers } from "./auth/Customers/CustomersPage";
+import { RegisterPage as AuthRegister } from "./auth/Customers/RegisterPage";
 import { HomePage as AuthHome } from "./auth/Home/HomePage";
 
 // User Routes
@@ -15,6 +16,7 @@ import { MailsPage as AdminMails } from "./admin/Mails/MailsPage";
 export const Auth = {
   Pages: {
     Customers: AuthCustomers,
+    Register: AuthRegister,
     Contact: AuthContact,
     Home: AuthHome,
   }
