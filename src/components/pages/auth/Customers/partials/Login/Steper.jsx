@@ -11,26 +11,20 @@ import { API_ROUTES } from '../../../../../../api/routes'
 import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
 
-const STEPS = ['EMAIL', 'PASSWORD']
-
-const fieldName = {
-  EMAIL: 'email',
-  PASSWORD: 'password',
-}
-
 export const Steper = () => {
 
   const { setAuth } = React.useContext(Context.Auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const [step, setStep] = React.useState('EMAIL')
   const [pendingAccount, setPendingAccount] = React.useState(null)
+  const [showCode, setShowCode] = React.useState(false)
   const { lines, addLine, clearLines } = useTerminal()
   const [captchaToken, setCaptchaToken] = React.useState(null)
+  const [hidePassword, setHidePassword] = React.useState(true)
   const turnstileRef = React.useRef(null)
 
-  const mainForm = useForm({ mode: 'onSubmit' })
+  const mainForm = useForm({ mode: 'onChange' })
   const codeForm = useForm({ mode: 'onSubmit' })
 
   const handleClose = () => {
@@ -38,24 +32,9 @@ export const Steper = () => {
     codeForm.reset()
     clearLines()
     setPendingAccount(null)
-    setStep('EMAIL')
-  }
-
-  const handleNext = async () => {
-    const field = fieldName[step]
-    if (!field) return
-
-    const valid = await mainForm.trigger(field)
-    if (!valid) return
-
-    const idx = STEPS.indexOf(step)
-    if (idx < STEPS.length - 1) {
-      const next = STEPS[idx + 1]
-      setStep(next)
-      setTimeout(() => mainForm.setFocus(fieldName[next]), 0)
-    } else {
-      mainForm.handleSubmit(onSubmit)()
-    }
+    setShowCode(false)
+    setCaptchaToken(null)
+    setHidePassword(true)
   }
 
   const handleGoogleLogin = useGoogleLogin({
@@ -99,7 +78,6 @@ export const Steper = () => {
   const onSubmit = async (data) => {
     addLine(`> email: ${data.email}`, 'info')
     addLine('> password: ********', 'info')
-    setStep('SUBMITTING')
 
     try {
       const res = await api.post(`${API_ROUTES.AUTH}/login`, data)
@@ -112,15 +90,15 @@ export const Steper = () => {
       } else if (res.status === 202) {
         setPendingAccount(res.data.account)
         addLine('[ ! ] Verification code sent to your email', 'warning')
-        setStep('CODE')
+        setShowCode(true)
         setTimeout(() => codeForm.setFocus('code'), 0)
       }
     } catch (err) {
       const message = err.response?.data?.message || 'Authentication error'
       addLine(`[ ✗ ] ${message}`, 'error')
       mainForm.resetField('password')
-      setStep('PASSWORD')
-      setTimeout(() => mainForm.setFocus('password'), 0)
+      turnstileRef.current?.reset()
+      setCaptchaToken(null)
     }
   }
 
@@ -148,73 +126,87 @@ export const Steper = () => {
     }
   }
 
-  const currentError = mainForm.formState.errors[fieldName[step]]
-
   return (
     <TerminalCard title="C:/Cyberstein/customers/Login" prompt="Cyberstein@Login ~" onClose={handleClose}>
 
       <TerminalLines lines={lines} />
 
-      {STEPS.includes(step) && (
+      {!showCode && (
         <>
         <form
-          onSubmit={e => e.preventDefault()}
-          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleNext() } }}
-          className="flex flex-col"
+          onSubmit={mainForm.handleSubmit(onSubmit)}
+          className="flex flex-col gap-4"
         >
+          {/* Email Field */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-1">
             <span className="text-green-600">&gt; email:</span>
             <input
-              className="focus-visible:outline-none grow"
-              disabled={step !== 'EMAIL'}
+              className="focus-visible:outline-none grow bg-transparent border-b border-green-600 text-white placeholder-gray-500"
               autoComplete="off"
-              {...mainForm.register('email', { required: 'Email is required' })}
-              autoFocus
+              {...mainForm.register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Invalid email format'
+                }
+              })}
               id="login-email"
               type="email"
+              autoFocus
+            />
+          </div>
+          {mainForm.formState.errors.email && (
+            <p className="text-red-500 text-sm">[ ✗ ] {mainForm.formState.errors.email.message}</p>
+          )}
+
+          {/* Password Field */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+            <span className="text-green-600">&gt; password:</span>
+            <div className="flex-1 flex items-center gap-1 border-b border-green-600">
+              <input
+                className="focus-visible:outline-none grow bg-transparent text-white placeholder-gray-500"
+                {...mainForm.register('password', { required: 'Password is required' })}
+                id="login-password"
+                type={hidePassword ? 'password' : 'text'}
+              />
+              <button
+                type="button"
+                onClick={() => setHidePassword(!hidePassword)}
+                className="px-2 py-1 text-green-600 hover:text-green-500 transition-colors"
+                title={hidePassword ? 'Show password' : 'Hide password'}
+              >
+                {hidePassword ? '👁' : '👁‍🗨'}
+              </button>
+            </div>
+          </div>
+          {mainForm.formState.errors.password && (
+            <p className="text-red-500 text-sm">[ ✗ ] {mainForm.formState.errors.password.message}</p>
+          )}
+
+          {/* Turnstile Captcha */}
+          <div className="flex justify-center my-2">
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+              onSuccess={setCaptchaToken}
+              onExpire={() => setCaptchaToken(null)}
+              onError={() => setCaptchaToken(null)}
+              options={{ theme: 'auto', language: 'es' }}
             />
           </div>
 
-          {step === 'PASSWORD' && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-              <span className="text-green-600">&gt; password:</span>
-              <input
-                className="focus-visible:outline-none grow"
-                disabled={step !== 'PASSWORD'}
-                {...mainForm.register('password', { required: 'Password is required' })}
-                id="login-password"
-                type="password"
-              />
-            </div>
-          )}
-
-          {step === 'PASSWORD' && (
-            <div className="flex justify-center my-2">
-              <Turnstile
-                ref={turnstileRef}
-                siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-                onSuccess={setCaptchaToken}
-                onExpire={() => setCaptchaToken(null)}
-                onError={() => setCaptchaToken(null)}
-                options={{ theme: 'auto', language: 'es' }}
-              />
-            </div>
-          )}
-
-          {currentError && <p className="text-red-500">{currentError.message}</p>}
-
-          {STEPS.includes(step) && (
-            <button
-              onClick={handleNext}
-              disabled={step === 'PASSWORD' && !captchaToken}
-              className="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded transition-colors"
-            >
-              Next / Submit
-            </button>
-          )}
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={!captchaToken || mainForm.formState.isSubmitting}
+            className="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded transition-colors"
+          >
+            {mainForm.formState.isSubmitting ? 'Authenticating...' : 'Login'}
+          </button>
         </form>
 
-        {!mainForm.formState.isSubmitting && STEPS.includes(step) && captchaToken && (
+        {/* Google OAuth Divider */}
+        {captchaToken && (
           <div className="flex flex-col gap-2 mt-4">
             <div className="flex items-center gap-2">
               <hr className="flex-1" />
@@ -239,26 +231,29 @@ export const Steper = () => {
         </>
       )}
 
-      {step === 'SUBMITTING' && (
-        <span className="text-gray-400">[ ~ ] Authenticating...</span>
-      )}
-
-      {step === 'CODE' && (
-        <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="flex flex-col">
+      {/* Verification Code Form */}
+      {showCode && (
+        <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="flex flex-col gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1">
             <span className="text-green-600">&gt; code:</span>
             <input
-              className="focus-visible:outline-none grow"
+              className="focus-visible:outline-none grow bg-transparent border-b border-green-600 text-white placeholder-gray-500"
               {...codeForm.register('code', { required: 'Code is required' })}
               id="login-code"
               type="text"
+              placeholder="Enter verification code"
               autoFocus
             />
           </div>
           {codeForm.formState.errors.code && (
-            <p className="text-red-500">{codeForm.formState.errors.code.message}</p>
+            <p className="text-red-500 text-sm">[ ✗ ] {codeForm.formState.errors.code.message}</p>
           )}
-          <button type="submit" className="hidden" />
+          <button
+            type="submit"
+            className="mt-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded transition-colors"
+          >
+            Verify Code
+          </button>
         </form>
       )}
 
