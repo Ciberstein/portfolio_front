@@ -1,5 +1,8 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
+import { useLocation } from 'react-router-dom'
+import { Turnstile } from '@marsidev/react-turnstile'
+import { useGoogleLogin } from '@react-oauth/google'
 import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { useTerminal } from '../useTerminal'
@@ -16,12 +19,25 @@ const fieldName = {
 
 export const Steper = ({ onSuccess }) => {
 
+  const location = useLocation()
+  const googleData = location.state?.googleData
+
   const [step, setStep] = React.useState('USERNAME')
   const [pendingAccount, setPendingAccount] = React.useState(null)
+  const [preFilledData, setPreFilledData] = React.useState(googleData || null)
+  const [captchaToken, setCaptchaToken] = React.useState(null)
+  const turnstileRef = React.useRef(null)
   const { lines, addLine, clearLines } = useTerminal()
 
   const mainForm = useForm({ mode: 'onSubmit' })
   const codeForm = useForm({ mode: 'onSubmit' })
+
+  React.useEffect(() => {
+    if (googleData) {
+      mainForm.setValue('email', googleData.email, { shouldValidate: true })
+      mainForm.setValue('name', googleData.name, { shouldValidate: true })
+    }
+  }, [googleData, mainForm])
 
   const handleClose = () => {
     mainForm.reset()
@@ -34,6 +50,12 @@ export const Steper = ({ onSuccess }) => {
   const handleNext = async () => {
     const field = fieldName[step]
     if (!field) return
+
+    // If we're in PASSWORD_REPEAT and missing Turnstile, validate first
+    if (step === 'PASSWORD_REPEAT' && !captchaToken) {
+      addLine('[ ✗ ] CAPTCHA is required', 'error')
+      return
+    }
 
     const valid = await mainForm.trigger(field)
     if (!valid) return
@@ -49,13 +71,21 @@ export const Steper = ({ onSuccess }) => {
   }
 
   const onSubmit = async (data) => {
+    if (!captchaToken) {
+      addLine('[ ✗ ] CAPTCHA validation required', 'error')
+      return
+    }
+
     addLine(`> username: ${data.username}`, 'info')
     addLine(`> email: ${data.email}`, 'info')
     addLine('> password: ********', 'info')
     setStep('SUBMITTING')
 
     try {
-      const res = await api.post(`${API_ROUTES.AUTH}/register`, data)
+      const res = await api.post(`${API_ROUTES.AUTH}/register`, {
+        ...data,
+        captchaToken,
+      })
       setPendingAccount(res.data.account)
       addLine('[ ! ] Verification code sent to your email', 'warning')
       setStep('CODE')
@@ -65,6 +95,8 @@ export const Steper = ({ onSuccess }) => {
       addLine(`[ ✗ ] ${message}`, 'error')
       mainForm.reset()
       setStep('USERNAME')
+      turnstileRef.current?.reset()
+      setCaptchaToken(null)
       setTimeout(() => mainForm.setFocus('username'), 0)
     }
   }
@@ -98,6 +130,29 @@ export const Steper = ({ onSuccess }) => {
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleNext() } }}
           className="flex flex-col"
         >
+          {preFilledData && (
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+                <span className="text-green-600">&gt; email:</span>
+                <input
+                  className="focus-visible:outline-none grow opacity-60 cursor-not-allowed"
+                  disabled={true}
+                  value={preFilledData.email}
+                  type="email"
+                />
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+                <span className="text-green-600">&gt; name:</span>
+                <input
+                  className="focus-visible:outline-none grow opacity-60 cursor-not-allowed"
+                  disabled={true}
+                  value={preFilledData.name}
+                  type="text"
+                />
+              </div>
+            </>
+          )}
+
           <div className="flex flex-col sm:flex-row sm:items-center gap-1">
             <span className="text-green-600">&gt; username:</span>
             <input
@@ -153,6 +208,19 @@ export const Steper = ({ onSuccess }) => {
                 })}
                 id="reg-password-repeat"
                 type="password"
+              />
+            </div>
+          )}
+
+          {step === 'PASSWORD_REPEAT' && (
+            <div className="flex justify-center my-2">
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                onSuccess={setCaptchaToken}
+                onExpire={() => setCaptchaToken(null)}
+                onError={() => setCaptchaToken(null)}
+                options={{ theme: 'auto', language: 'es' }}
               />
             </div>
           )}
