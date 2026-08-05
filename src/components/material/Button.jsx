@@ -1,53 +1,89 @@
 import React from 'react'
 import clsx from 'clsx'
 
-// ── Button ────────────────────────────────────────────────────────────────────────
-// Flexible, dynamic button component supporting multiple variants
-// Supports landing (terminal-style), user (logged-in), primary, and secondary variants
-// Export as object with shortcuts: Button.Landing, Button.User, Button.Primary, Button.Secondary
+// ── Button.Landing ────────────────────────────────────────────────────────────────
+// Terminal-style button component
+// Features:
+//   - Terminal formatting: [ label ] and [ ~ ] Loading...
+//   - Cyan borders with hover effects
+//   - Dark mode support
+//   - Icon support
+//   - No variants - single terminal style
 
-const variants = {
-  landing: {
-    base: 'border border-cyan-500 text-cyan-500 uppercase transition-colors',
-    hover: 'hover:bg-cyan-500 hover:text-black',
-    disabled: 'disabled:opacity-50',
-    dark: 'dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500',
-  },
-  user: {
-    base: 'border border-gray-300 text-gray-700 transition-colors',
-    hover: 'hover:bg-gray-50 hover:border-gray-400',
-    disabled: 'disabled:opacity-50 disabled:cursor-not-allowed',
-    dark: 'dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800',
-  },
+const Landing = ({
+  label = '',
+  loading = false,
+  disabled = false,
+  onClick,
+  type = 'button',
+  icon = null,
+  className = '',
+  children,
+  ...props
+}) => {
+  const isDisabled = disabled || loading;
+  const buttonText = children || (loading ? `[ ~ ] ${label}ing...` : `[ ${label} ]`);
+
+  const classes = clsx(
+    'border border-cyan-500 text-cyan-500',
+    'uppercase transition-colors duration-200',
+    'inline-flex items-center gap-2 rounded',
+    'hover:bg-cyan-500 hover:text-black',
+    'disabled:opacity-50 disabled:cursor-not-allowed',
+    'dark:border-dark-primary-500 dark:text-dark-primary-500',
+    'dark:hover:bg-dark-primary-500 dark:hover:text-black',
+    'px-3 py-1.5 text-sm',
+    className
+  );
+
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={isDisabled}
+      className={classes}
+      {...props}
+    >
+      {icon && <span className="shrink-0">{icon}</span>}
+      <span>{buttonText}</span>
+    </button>
+  );
+};
+
+// ── Button.User ───────────────────────────────────────────────────────────────────
+// Standard/clean button component for user-facing interfaces
+// Features:
+//   - Multiple internal variants: primary, secondary, outlined
+//   - Size options: sm, md, lg
+//   - Loading states
+//   - Icon support
+//   - Dark mode support
+
+const userVariants = {
   primary: {
-    base: 'bg-cyan-500 text-black font-medium transition-colors',
+    base: 'bg-cyan-500 text-black font-medium',
     hover: 'hover:bg-cyan-400',
-    disabled: 'disabled:opacity-50 disabled:cursor-not-allowed',
     dark: 'dark:bg-dark-primary-500 dark:hover:bg-dark-primary-400',
   },
   secondary: {
-    base: 'border border-gray-200 text-gray-600 transition-colors',
+    base: 'border border-gray-300 text-gray-700 font-medium',
+    hover: 'hover:bg-gray-50 hover:border-gray-400',
+    dark: 'dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800',
+  },
+  outlined: {
+    base: 'border border-gray-200 text-gray-600',
     hover: 'hover:bg-gray-100 hover:border-gray-300',
-    disabled: 'disabled:opacity-50 disabled:cursor-not-allowed',
     dark: 'dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700',
   },
 };
 
-const sizes = {
+const userSizes = {
   sm: 'px-2 py-0.5 text-xs',
-  md: 'px-4 py-1 text-sm',
+  md: 'px-4 py-1.5 text-sm',
   lg: 'px-6 py-2 text-base',
 };
 
-const formatLabel = (label, loading, variant) => {
-  if (variant === 'landing') {
-    return loading ? `[ ~ ] ${label}ing...` : `[ ${label} ]`;
-  }
-  return loading ? 'Loading...' : label;
-};
-
-const ButtonBase = ({
-  variant = 'user',
+const User = ({
   label = '',
   loading = false,
   disabled = false,
@@ -55,21 +91,23 @@ const ButtonBase = ({
   type = 'button',
   icon = null,
   size = 'md',
+  variant = 'primary',
   className = '',
   children,
   ...props
 }) => {
-  const variantStyle = variants[variant] || variants.user;
-  const sizeStyle = sizes[size];
-  const buttonText = children || formatLabel(label, loading, variant);
   const isDisabled = disabled || loading;
+  const buttonText = children || (loading ? 'Loading...' : label);
+  const variantStyle = userVariants[variant] || userVariants.primary;
+  const sizeStyle = userSizes[size];
 
   const classes = clsx(
-    'rounded transition-all duration-200 inline-flex items-center gap-2',
+    'rounded transition-all duration-200',
+    'inline-flex items-center gap-2',
+    'disabled:opacity-50 disabled:cursor-not-allowed',
     sizeStyle,
     variantStyle.base,
     variantStyle.hover,
-    variantStyle.disabled,
     variantStyle.dark,
     className
   );
@@ -82,16 +120,14 @@ const ButtonBase = ({
       className={classes}
       {...props}
     >
-      {icon && <span className="flex-shrink-0">{icon}</span>}
+      {icon && <span className="shrink-0">{icon}</span>}
       <span>{buttonText}</span>
     </button>
   );
 };
 
-// Export as object with shortcuts for each variant
+// Export as object with Landing and User components
 export const Button = {
-  Landing: (props) => <ButtonBase variant="landing" {...props} />,
-  User: (props) => <ButtonBase variant="user" {...props} />,
-  Primary: (props) => <ButtonBase variant="primary" {...props} />,
-  Secondary: (props) => <ButtonBase variant="secondary" {...props} />,
+  Landing,
+  User,
 };
