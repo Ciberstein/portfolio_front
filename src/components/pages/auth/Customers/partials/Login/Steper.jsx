@@ -156,6 +156,7 @@ export const Steper = () => {
       <TerminalLines lines={lines} />
 
       {STEPS.includes(step) && (
+        <>
         <form
           onSubmit={e => e.preventDefault()}
           onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleNext() } }}
@@ -235,6 +236,7 @@ export const Steper = () => {
             </button>
           </div>
         )}
+        </>
       )}
 
       {step === 'SUBMITTING' && (
