@@ -7,6 +7,7 @@ import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
+import { LandingButton } from '../../../../../../components/ui'
 
 export const Steper = ({ onSuccess }) => {
 
@@ -191,13 +192,12 @@ export const Steper = ({ onSuccess }) => {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={!captchaToken || mainForm.formState.isSubmitting}
-            className="self-start mt-2 px-4 py-1 border border-cyan-500 text-cyan-500 uppercase hover:bg-cyan-500 hover:text-black transition-colors disabled:opacity-50 dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black"
-          >
-            {mainForm.formState.isSubmitting ? '[ ~ ] Registering...' : '[ register ]'}
-          </button>
+          <LandingButton
+            label="register"
+            loading={mainForm.formState.isSubmitting}
+            disabled={!captchaToken}
+            className="self-start mt-2"
+          />
         </form>
       )}
 
@@ -216,12 +216,10 @@ export const Steper = ({ onSuccess }) => {
           {codeForm.formState.errors.code && (
             <p className="text-red-500">{codeForm.formState.errors.code.message}</p>
           )}
-          <button
-            type="submit"
-            className="self-start mt-2 px-4 py-1 border border-cyan-500 text-cyan-500 uppercase hover:bg-cyan-500 hover:text-black transition-colors disabled:opacity-50 dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black"
-          >
-            [ verify ]
-          </button>
+          <LandingButton
+            label="verify"
+            className="self-start mt-2"
+          />
         </form>
       )}
 

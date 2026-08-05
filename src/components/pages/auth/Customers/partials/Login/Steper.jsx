@@ -10,6 +10,7 @@ import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
+import { LandingButton } from '../../../../../../components/ui'
 
 export const Steper = () => {
 
@@ -196,13 +197,12 @@ export const Steper = () => {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={!captchaToken || mainForm.formState.isSubmitting}
-            className="self-start mt-2 px-4 py-1 border border-cyan-500 text-cyan-500 uppercase hover:bg-cyan-500 hover:text-black transition-colors disabled:opacity-50 dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black"
-          >
-            {mainForm.formState.isSubmitting ? '[ ~ ] Logging in...' : '[ login ]'}
-          </button>
+          <LandingButton
+            label="login"
+            loading={mainForm.formState.isSubmitting}
+            disabled={!captchaToken}
+            className="self-start mt-2"
+          />
         </form>
 
         {/* Google OAuth Divider */}
@@ -213,19 +213,20 @@ export const Steper = () => {
               <span className="text-xs text-gray-500">or continue with</span>
               <hr className="flex-1" />
             </div>
-            <button
+            <LandingButton
+              label="google"
               type="button"
               onClick={() => handleGoogleLogin()}
-              className="self-start px-4 py-1 border border-cyan-500 text-cyan-500 uppercase hover:bg-cyan-500 hover:text-black transition-colors dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black flex items-center gap-2"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.3053 6.54998L5.1303 9.9C6.2553 7.5 9.1328 4.75 12.0003 4.75Z" fill="currentColor"/>
-                <path d="M23.49 12.26C23.51 11.85 23.51 11.431 23.49 11.01H12V14.88H18.47C18.18 15.99 17.48 17.08 16.46 17.88V20.33H20.1C22.45 18.25 23.49 15.27 23.49 12.26Z" fill="currentColor"/>
-                <path d="M12 23.5C15.16 23.5 17.92 22.58 20.1 21.04L16.46 18.41C15.55 19.04 14.37 19.52 12 19.52C8.13001 19.52 4.85001 17.08 3.74001 13.65H0.0700073V17.15C2.04001 21.3 6.86001 23.5 12 23.5Z" fill="currentColor"/>
-                <path d="M3.74 13.65C3.44 12.84 3.27 11.97 3.27 11.1C3.27 10.23 3.44 9.36 3.74 8.55V5.05H0.0700073C-0.929993 7.18 -1.5 9.52 -1.5 12C-1.5 14.48 -0.929993 16.82 0.0700073 18.95L3.74 13.65Z" fill="currentColor"/>
-              </svg>
-              [ google ]
-            </button>
+              className="self-start"
+              icon={
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.3053 6.54998L5.1303 9.9C6.2553 7.5 9.1328 4.75 12.0003 4.75Z" fill="currentColor"/>
+                  <path d="M23.49 12.26C23.51 11.85 23.51 11.431 23.49 11.01H12V14.88H18.47C18.18 15.99 17.48 17.08 16.46 17.88V20.33H20.1C22.45 18.25 23.49 15.27 23.49 12.26Z" fill="currentColor"/>
+                  <path d="M12 23.5C15.16 23.5 17.92 22.58 20.1 21.04L16.46 18.41C15.55 19.04 14.37 19.52 12 19.52C8.13001 19.52 4.85001 17.08 3.74001 13.65H0.0700073V17.15C2.04001 21.3 6.86001 23.5 12 23.5Z" fill="currentColor"/>
+                  <path d="M3.74 13.65C3.44 12.84 3.27 11.97 3.27 11.1C3.27 10.23 3.44 9.36 3.74 8.55V5.05H0.0700073C-0.929993 7.18 -1.5 9.52 -1.5 12C-1.5 14.48 -0.929993 16.82 0.0700073 18.95L3.74 13.65Z" fill="currentColor"/>
+                </svg>
+              }
+            />
           </div>
         )}
         </>
@@ -248,12 +249,10 @@ export const Steper = () => {
           {codeForm.formState.errors.code && (
             <p className="text-red-500 text-sm">[ ✗ ] {codeForm.formState.errors.code.message}</p>
           )}
-          <button
-            type="submit"
-            className="self-start mt-2 px-4 py-1 border border-cyan-500 text-cyan-500 uppercase hover:bg-cyan-500 hover:text-black transition-colors disabled:opacity-50 dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black"
-          >
-            [ verify ]
-          </button>
+          <LandingButton
+            label="verify"
+            className="self-start mt-2"
+          />
         </form>
       )}
 
