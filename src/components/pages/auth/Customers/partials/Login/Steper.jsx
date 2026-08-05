@@ -81,7 +81,10 @@ export const Steper = ({ embedMode = false }) => {
     addLine('> password: ********', 'info')
 
     try {
-      const res = await api.post(`${API_ROUTES.AUTH}/login`, data)
+      const res = await api.post(`${API_ROUTES.AUTH}/login`, {
+        ...data,
+        captchaToken,
+      })
 
       if (res.status === 200) {
         addLine('[ ✓ ] Access granted', 'success')
@@ -113,7 +116,10 @@ export const Steper = ({ embedMode = false }) => {
       addLine('[ ✓ ] Account verified', 'success')
       addLine('[ ~ ] Logging in...', 'info')
 
-      const res = await api.post(`${API_ROUTES.AUTH}/login`, mainForm.getValues())
+      const res = await api.post(`${API_ROUTES.AUTH}/login`, {
+        ...mainForm.getValues(),
+        captchaToken,
+      })
       if (res.status === 200) {
         addLine('[ ✓ ] Access granted', 'success')
         dispatch(accountThunk())
