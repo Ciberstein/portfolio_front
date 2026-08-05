@@ -8,21 +8,11 @@ import { API_ROUTES } from '../../../../../../api/routes'
 import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
 
-const STEPS = ['USERNAME', 'EMAIL', 'PASSWORD', 'PASSWORD_REPEAT']
-
-const fieldName = {
-  USERNAME: 'username',
-  EMAIL: 'email',
-  PASSWORD: 'password',
-  PASSWORD_REPEAT: 'password_repeat',
-}
-
 export const Steper = ({ onSuccess }) => {
 
   const location = useLocation()
   const googleData = location.state?.googleData
 
-  const [step, setStep] = React.useState('USERNAME')
   const [pendingAccount, setPendingAccount] = React.useState(null)
   const [preFilledData, setPreFilledData] = React.useState(googleData || null)
   const [captchaToken, setCaptchaToken] = React.useState(null)
@@ -44,30 +34,6 @@ export const Steper = ({ onSuccess }) => {
     codeForm.reset()
     clearLines()
     setPendingAccount(null)
-    setStep('USERNAME')
-  }
-
-  const handleNext = async () => {
-    const field = fieldName[step]
-    if (!field) return
-
-    // If we're in PASSWORD_REPEAT and missing Turnstile, validate first
-    if (step === 'PASSWORD_REPEAT' && !captchaToken) {
-      addLine('[ ✗ ] CAPTCHA is required', 'error')
-      return
-    }
-
-    const valid = await mainForm.trigger(field)
-    if (!valid) return
-
-    const idx = STEPS.indexOf(step)
-    if (idx < STEPS.length - 1) {
-      const next = STEPS[idx + 1]
-      setStep(next)
-      setTimeout(() => mainForm.setFocus(fieldName[next]), 0)
-    } else {
-      mainForm.handleSubmit(onSubmit)()
-    }
   }
 
   const onSubmit = async (data) => {
@@ -79,7 +45,7 @@ export const Steper = ({ onSuccess }) => {
     addLine(`> username: ${data.username}`, 'info')
     addLine(`> email: ${data.email}`, 'info')
     addLine('> password: ********', 'info')
-    setStep('SUBMITTING')
+    addLine('[ ~ ] Creating account...', 'info')
 
     try {
       const res = await api.post(`${API_ROUTES.AUTH}/register`, {
@@ -88,13 +54,11 @@ export const Steper = ({ onSuccess }) => {
       })
       setPendingAccount(res.data.account)
       addLine('[ ! ] Verification code sent to your email', 'warning')
-      setStep('CODE')
       setTimeout(() => codeForm.setFocus('code'), 0)
     } catch (err) {
       const message = err.response?.data?.message || 'Registration error'
       addLine(`[ ✗ ] ${message}`, 'error')
       mainForm.reset()
-      setStep('USERNAME')
       turnstileRef.current?.reset()
       setCaptchaToken(null)
       setTimeout(() => mainForm.setFocus('username'), 0)
@@ -117,17 +81,14 @@ export const Steper = ({ onSuccess }) => {
     }
   }
 
-  const currentError = mainForm.formState.errors[fieldName[step]]
-
   return (
     <TerminalCard title="C:/Cyberstein/customers/Register" prompt="Cyberstein@Register ~" onClose={handleClose}>
 
       <TerminalLines lines={lines} />
 
-      {STEPS.includes(step) && (
+      {!pendingAccount && (
         <form
-          onSubmit={e => e.preventDefault()}
-          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleNext() } }}
+          onSubmit={mainForm.handleSubmit(onSubmit)}
           className="flex flex-col"
         >
           {preFilledData && (
@@ -157,7 +118,6 @@ export const Steper = ({ onSuccess }) => {
             <span className="text-green-600">&gt; username:</span>
             <input
               className="focus-visible:outline-none grow"
-              disabled={step !== 'USERNAME'}
               autoComplete="off"
               {...mainForm.register('username', { required: 'Username is required' })}
               autoFocus
@@ -165,75 +125,83 @@ export const Steper = ({ onSuccess }) => {
               type="text"
             />
           </div>
-
-          {['EMAIL', 'PASSWORD', 'PASSWORD_REPEAT'].includes(step) && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-              <span className="text-green-600">&gt; email:</span>
-              <input
-                className="focus-visible:outline-none grow"
-                disabled={step !== 'EMAIL'}
-                autoComplete="off"
-                {...mainForm.register('email', { required: 'Email is required' })}
-                id="reg-email"
-                type="email"
-              />
-            </div>
+          {mainForm.formState.errors.username && (
+            <p className="text-red-500">{mainForm.formState.errors.username.message}</p>
           )}
 
-          {['PASSWORD', 'PASSWORD_REPEAT'].includes(step) && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-              <span className="text-green-600">&gt; password:</span>
-              <input
-                className="focus-visible:outline-none grow"
-                disabled={step !== 'PASSWORD'}
-                {...mainForm.register('password', {
-                  required: 'Password is required',
-                  minLength: { value: 8, message: 'Minimum 8 characters' },
-                })}
-                id="reg-password"
-                type="password"
-              />
-            </div>
+          {!preFilledData && (
+            <>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+                <span className="text-green-600">&gt; email:</span>
+                <input
+                  className="focus-visible:outline-none grow"
+                  autoComplete="off"
+                  {...mainForm.register('email', { required: 'Email is required' })}
+                  id="reg-email"
+                  type="email"
+                />
+              </div>
+              {mainForm.formState.errors.email && (
+                <p className="text-red-500">{mainForm.formState.errors.email.message}</p>
+              )}
+            </>
           )}
 
-          {step === 'PASSWORD_REPEAT' && (
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-              <span className="text-green-600">&gt; repeat:</span>
-              <input
-                className="focus-visible:outline-none grow"
-                {...mainForm.register('password_repeat', {
-                  required: 'Please repeat your password',
-                  validate: v =>
-                    v === mainForm.getValues('password') || 'Passwords do not match',
-                })}
-                id="reg-password-repeat"
-                type="password"
-              />
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+            <span className="text-green-600">&gt; password:</span>
+            <input
+              className="focus-visible:outline-none grow"
+              {...mainForm.register('password', {
+                required: 'Password is required',
+                minLength: { value: 8, message: 'Minimum 8 characters' },
+              })}
+              id="reg-password"
+              type="password"
+            />
+          </div>
+          {mainForm.formState.errors.password && (
+            <p className="text-red-500">{mainForm.formState.errors.password.message}</p>
           )}
 
-          {step === 'PASSWORD_REPEAT' && (
-            <div className="flex justify-center my-2">
-              <Turnstile
-                ref={turnstileRef}
-                siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-                onSuccess={setCaptchaToken}
-                onExpire={() => setCaptchaToken(null)}
-                onError={() => setCaptchaToken(null)}
-                options={{ theme: 'auto', language: 'es' }}
-              />
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-1">
+            <span className="text-green-600">&gt; repeat:</span>
+            <input
+              className="focus-visible:outline-none grow"
+              {...mainForm.register('password_repeat', {
+                required: 'Please repeat your password',
+                validate: v =>
+                  v === mainForm.getValues('password') || 'Passwords do not match',
+              })}
+              id="reg-password-repeat"
+              type="password"
+            />
+          </div>
+          {mainForm.formState.errors.password_repeat && (
+            <p className="text-red-500">{mainForm.formState.errors.password_repeat.message}</p>
           )}
 
-          {currentError && <p className="text-red-500">{currentError.message}</p>}
+          <div className="flex justify-center my-2">
+            <Turnstile
+              ref={turnstileRef}
+              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+              onSuccess={setCaptchaToken}
+              onExpire={() => setCaptchaToken(null)}
+              onError={() => setCaptchaToken(null)}
+              options={{ theme: 'auto', language: 'es' }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={!captchaToken || mainForm.formState.isSubmitting}
+            className="self-start mt-2 px-4 py-1 border border-cyan-500 text-cyan-500 uppercase hover:bg-cyan-500 hover:text-black transition-colors disabled:opacity-50 dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black"
+          >
+            {mainForm.formState.isSubmitting ? '[ ~ ] Registering...' : '[ register ]'}
+          </button>
         </form>
       )}
 
-      {step === 'SUBMITTING' && (
-        <span className="text-gray-400">[ ~ ] Creating account...</span>
-      )}
-
-      {step === 'CODE' && (
+      {pendingAccount && (
         <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="flex flex-col">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1">
             <span className="text-green-600">&gt; code:</span>
@@ -248,7 +216,12 @@ export const Steper = ({ onSuccess }) => {
           {codeForm.formState.errors.code && (
             <p className="text-red-500">{codeForm.formState.errors.code.message}</p>
           )}
-          <button type="submit" className="hidden" />
+          <button
+            type="submit"
+            className="self-start mt-2 px-4 py-1 border border-cyan-500 text-cyan-500 uppercase hover:bg-cyan-500 hover:text-black transition-colors disabled:opacity-50 dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black"
+          >
+            [ verify ]
+          </button>
         </form>
       )}
 
