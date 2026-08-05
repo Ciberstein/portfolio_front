@@ -12,7 +12,7 @@ import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
 import { Button } from '../../../../../../components/material/Button'
 
-export const Steper = () => {
+export const Steper = ({ embedMode = false }) => {
 
   const { setAuth } = React.useContext(Context.Auth)
   const dispatch = useDispatch()
@@ -127,9 +127,8 @@ export const Steper = () => {
     }
   }
 
-  return (
-    <TerminalCard title="C:/Cyberstein/customers/Login" prompt="Cyberstein@Login ~" onClose={handleClose}>
-
+  const content = (
+    <>
       <TerminalLines lines={lines} />
 
       {!showCode && (
@@ -255,7 +254,16 @@ export const Steper = () => {
           />
         </form>
       )}
+    </>
+  )
 
+  if (embedMode) {
+    return content
+  }
+
+  return (
+    <TerminalCard title="C:/Cyberstein/customers/Login" prompt="Cyberstein@Login ~" onClose={handleClose}>
+      {content}
     </TerminalCard>
   )
 }

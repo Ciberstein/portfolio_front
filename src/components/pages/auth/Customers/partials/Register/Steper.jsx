@@ -9,7 +9,7 @@ import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
 import { Button } from '../../../../../../components/material/Button'
 
-export const Steper = ({ onSuccess }) => {
+export const Steper = ({ onSuccess, embedMode = false }) => {
 
   const location = useLocation()
   const googleData = location.state?.googleData
@@ -82,9 +82,8 @@ export const Steper = ({ onSuccess }) => {
     }
   }
 
-  return (
-    <TerminalCard title="C:/Cyberstein/customers/Register" prompt="Cyberstein@Register ~" onClose={handleClose}>
-
+  const content = (
+    <>
       <TerminalLines lines={lines} />
 
       {!pendingAccount && (
@@ -222,7 +221,16 @@ export const Steper = ({ onSuccess }) => {
           />
         </form>
       )}
+    </>
+  )
 
+  if (embedMode) {
+    return content
+  }
+
+  return (
+    <TerminalCard title="C:/Cyberstein/customers/Register" prompt="Cyberstein@Register ~" onClose={handleClose}>
+      {content}
     </TerminalCard>
   )
 }
