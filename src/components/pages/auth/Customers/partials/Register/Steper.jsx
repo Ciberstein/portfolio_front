@@ -7,7 +7,7 @@ import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
-import { LandingButton } from '../../../../../../components/ui'
+import { Button } from '../../../../../../components/material/Button'
 
 export const Steper = ({ onSuccess }) => {
 
@@ -192,7 +192,7 @@ export const Steper = ({ onSuccess }) => {
             />
           </div>
 
-          <LandingButton
+          <Button
             label="register"
             loading={mainForm.formState.isSubmitting}
             disabled={!captchaToken}
@@ -216,7 +216,7 @@ export const Steper = ({ onSuccess }) => {
           {codeForm.formState.errors.code && (
             <p className="text-red-500">{codeForm.formState.errors.code.message}</p>
           )}
-          <LandingButton
+          <Button
             label="verify"
             className="self-start mt-2"
           />

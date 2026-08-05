@@ -5,8 +5,6 @@ import { CheckOutlined, CloseOutlined, UnfoldMoreOutlined } from '@mui/icons-mat
 import { Tooltip } from '@mui/material'
 import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/react'
 
-import { LandingButton } from './LandingButton'
-
 // ── Card (landing) ────────────────────────────────────────────────────────────
 // Terminal-style card used in the public/auth layouts
 
@@ -256,5 +254,3 @@ export const SuccessMessage = ({ message, className }) => (
   </div>
 )
 
-// ── Export LandingButton ──────────────────────────────────────────────────────
-export { LandingButton }

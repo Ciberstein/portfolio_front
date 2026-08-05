@@ -10,7 +10,7 @@ import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { useTerminal } from '../useTerminal'
 import { TerminalCard, TerminalLines } from '../TerminalCard'
-import { LandingButton } from '../../../../../../components/ui'
+import { Button } from '../../../../../../components/material/Button'
 
 export const Steper = () => {
 
@@ -197,7 +197,7 @@ export const Steper = () => {
           </div>
 
           {/* Submit Button */}
-          <LandingButton
+          <Button
             label="login"
             loading={mainForm.formState.isSubmitting}
             disabled={!captchaToken}
@@ -213,7 +213,7 @@ export const Steper = () => {
               <span className="text-xs text-gray-500">or continue with</span>
               <hr className="flex-1" />
             </div>
-            <LandingButton
+            <Button
               label="google"
               type="button"
               onClick={() => handleGoogleLogin()}
@@ -249,7 +249,7 @@ export const Steper = () => {
           {codeForm.formState.errors.code && (
             <p className="text-red-500 text-sm">[ ✗ ] {codeForm.formState.errors.code.message}</p>
           )}
-          <LandingButton
+          <Button
             label="verify"
             className="self-start mt-2"
           />

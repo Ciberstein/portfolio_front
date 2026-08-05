@@ -1,11 +1,11 @@
 import React from 'react'
 import clsx from 'clsx'
 
-// ── LandingButton ────────────────────────────────────────────────────────────
+// ── Button ────────────────────────────────────────────────────────────────────────
 // Reusable terminal-style button for landing/auth layout
 // Displays text in brackets with loading state and optional icon
 
-export const LandingButton = ({
+export const Button = ({
   label,
   loading = false,
   disabled = false,
