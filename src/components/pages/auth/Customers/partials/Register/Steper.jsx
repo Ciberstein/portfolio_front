@@ -192,6 +192,7 @@ export const Steper = ({ onSuccess, embedMode = false }) => {
           </div>
 
           <Button
+            variant="landing"
             label="register"
             loading={mainForm.formState.isSubmitting}
             disabled={!captchaToken}
@@ -216,6 +217,7 @@ export const Steper = ({ onSuccess, embedMode = false }) => {
             <p className="text-red-500">{codeForm.formState.errors.code.message}</p>
           )}
           <Button
+            variant="landing"
             label="verify"
             className="self-start mt-2"
           />
