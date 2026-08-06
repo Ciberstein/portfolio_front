@@ -22,6 +22,7 @@ export const Login = () => {
   const [captchaToken, setCaptchaToken] = React.useState(null)
   const [hidePassword, setHidePassword] = React.useState(true)
   const turnstileRef = React.useRef(null)
+  const googleButtonRef = React.useRef(null)
 
   const mainForm = useForm({ mode: 'onChange' })
   const codeForm = useForm({ mode: 'onSubmit' })
@@ -182,14 +183,19 @@ export const Login = () => {
                 <span className="text-xs text-gray-500">or continue with</span>
                 <hr className="flex-1" />
               </div>
-              <div className="flex justify-center">
+              <Button.Landing
+                type="button"
+                variant="outline"
+                onClick={() => googleButtonRef.current?.click()}
+              >
+                <Google className="w-4 h-4" /> [ google ]
+              </Button.Landing>
+              <div className="hidden">
                 <GoogleLogin
+                  ref={googleButtonRef}
                   onSuccess={handleGoogleSuccess}
                   onError={handleGoogleError}
                   theme="dark"
-                  size="large"
-                  text="signin"
-                  logo_alignment="left"
                 />
               </div>
             </div>

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { GoogleLogin } from '@react-oauth/google'
+import { Google } from '@mui/icons-material'
 import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { Button } from '../../../../../../components/material/Button'
@@ -16,12 +17,13 @@ export const Register = ({ onSuccess }) => {
   const [preFilledData, setPreFilledData] = React.useState(googleData || null)
   const [captchaToken, setCaptchaToken] = React.useState(null)
   const turnstileRef = React.useRef(null)
+  const googleButtonRef = React.useRef(null)
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       const res = await api.post(`${API_ROUTES.AUTH}/google`, {
         token: credentialResponse.credential,
-        captchaToken: 'register-bypass', // Bypass CAPTCHA for Google signup
+        captchaToken,
       })
 
       if (res.status === 200) {
@@ -187,14 +189,19 @@ export const Register = ({ onSuccess }) => {
                 <span className="text-xs text-gray-500">or continue with</span>
                 <hr className="flex-1" />
               </div>
-              <div className="flex justify-center">
+              <Button.Landing
+                type="button"
+                variant="outline"
+                onClick={() => googleButtonRef.current?.click()}
+              >
+                <Google className="w-4 h-4" /> [ google ]
+              </Button.Landing>
+              <div className="hidden">
                 <GoogleLogin
+                  ref={googleButtonRef}
                   onSuccess={handleGoogleSuccess}
                   onError={handleGoogleError}
                   theme="dark"
-                  size="large"
-                  text="signup"
-                  logo_alignment="left"
                 />
               </div>
             </div>
