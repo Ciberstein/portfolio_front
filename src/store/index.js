@@ -5,6 +5,7 @@ import dark from "./slices/dark.slice";
 import certificates from "./slices/certificates.slice";
 import skills from "./slices/skills.slice";
 import experience from "./slices/experience.slice";
+import projects from "./slices/projects.slice";
 
 
 const store = configureStore({
@@ -15,6 +16,7 @@ const store = configureStore({
     certificates,
     skills,
     experience,
+    projects,
   }
 });
 

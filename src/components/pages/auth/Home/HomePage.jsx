@@ -13,10 +13,12 @@ import { Brush, CurrencyBitcoin, Laptop, Storage, Terminal, Web } from '@mui/ico
 import { DetailsNavbar } from './partials/DetailsNavbar'
 import { Experience } from './partials/Experience'
 import { Certificates } from './partials/Certificates'
+import { Projects } from './partials/Projects'
 import { useDispatch, useSelector } from 'react-redux'
 import { certificatesThunk } from '../../../../store/slices/certificates.slice'
 import { skillsThunk } from '../../../../store/slices/skills.slice'
 import { experienceThunk } from '../../../../store/slices/experience.slice'
+import { projectsThunk } from '../../../../store/slices/projects.slice'
 
 export const HomePage = () => {
 
@@ -25,11 +27,13 @@ export const HomePage = () => {
   const certificates = useSelector(state => state.certificates);
   const habilities = useSelector(state => state.skills);
   const experience = useSelector(state => state.experience);
+  const projects = useSelector(state => state.projects);
 
   React.useEffect(() => {
     dispatch(certificatesThunk());
     dispatch(skillsThunk());
     dispatch(experienceThunk());
+    dispatch(projectsThunk());
   }, []);
 
   const languages = [
@@ -108,6 +112,7 @@ export const HomePage = () => {
             { option === 1 && <Services data={services} /> }
             { option === 2 && <Experience data={experience} /> }
             { option === 3 && <Certificates data={certificates} /> }
+            { option === 4 && <Projects data={projects} /> }
           </div>
         </div>
       </div>

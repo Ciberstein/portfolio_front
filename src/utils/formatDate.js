@@ -9,6 +9,10 @@ const formatDate = (
     hour12: false,
   }
 ) => {
+  // new Date(null) yields the Unix epoch, not an invalid date, so a missing
+  // value would silently render as "Jan 1970". Bail out instead.
+  if (!date) return '';
+
   const OriginalDate = new Date(date);
   return OriginalDate.toLocaleString(
     'en-US',

@@ -29,7 +29,9 @@ export const Experience = ({ data }) => {
                 </Link>
               </div>
               <span className="text-sm">
-                {formatDate(item.startAt, options)} - {formatDate(item.endsAt, options)}
+                {formatDate(item.startAt, options)} - {item.endsAt
+                  ? formatDate(item.endsAt, options)
+                  : <span className="text-cyan-500 dark:text-dark-primary-500">Present</span>}
               </span>
             </div>
           </div>

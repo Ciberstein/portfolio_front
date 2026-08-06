@@ -5,11 +5,12 @@ const options = [
   { id: 1, label: 'Services' },
   { id: 2, label: 'Experience' },
   { id: 3, label: 'Certificates' },
+  { id: 4, label: 'Projects' },
 ];
 
 export const DetailsNavbar = ({ option, setOption }) => {
   return (
-    <nav className="grid grid-cols-1 sm:grid-cols-3 uppercase">
+    <nav className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 uppercase">
       {options.map((item) => (
         <button className={clsx(
           "px-4 py-2 border-b-2 cursor-pointer", option === item.id
