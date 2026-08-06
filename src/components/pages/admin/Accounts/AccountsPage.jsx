@@ -1,12 +1,15 @@
 import React from 'react'
 import clsx from 'clsx'
 import { useForm, Controller } from 'react-hook-form'
-import { CameraAltOutlined, SearchOutlined, EditOutlined, ZoomInOutlined, ZoomOutOutlined } from '@mui/icons-material'
+import { CameraAltOutlined, SearchOutlined, EditOutlined, ZoomInOutlined, ZoomOutOutlined, BadgeOutlined, AccountCircleOutlined, MailOutlined } from '@mui/icons-material'
 import { Dialog, DialogContent, DialogActions, Slider } from '@mui/material'
 import Cropper from 'react-easy-crop'
 import api from '../../../../api/axios'
 import { API_ROUTES } from '../../../../api/routes'
-import { Panel, Field, Input, Select, PrimaryButton, SecondaryButton, SuccessMessage } from '../../../ui'
+import { Panel, SuccessMessage } from '../../../ui'
+import { Button } from '../../../material/Button'
+import { Input } from '../../../material/Input'
+import { Select } from '../../../material/Select'
 
 // ── Crop helpers ──────────────────────────────────────────────────────────────
 
@@ -58,15 +61,16 @@ const CropDialog = ({ src, onConfirm, onCancel }) => {
           <ZoomInOutlined sx={{ fontSize: 18, color: 'text.secondary' }} />
         </div>
         <div className="flex gap-2 w-full justify-end">
-          <button onClick={onCancel} className="px-4 py-1.5 text-sm rounded-md border border-portal-border dark:border-dark-portal-border hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer">
+          <Button.User type="button" color="secondary" onClick={onCancel}>
             Cancel
-          </button>
-          <button
+          </Button.User>
+          <Button.User
+            type="button"
+            variant="normal"
             onClick={async () => onConfirm(await getCroppedBlob(src, croppedAreaPixels))}
-            className="px-4 py-1.5 text-sm rounded-md bg-cyan-500 hover:bg-cyan-400 text-black font-medium transition-colors cursor-pointer"
           >
             Apply
-          </button>
+          </Button.User>
         </div>
       </DialogActions>
     </Dialog>
@@ -206,52 +210,44 @@ const EditModal = ({ account, onClose, onSaved }) => {
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Display name" error={errors.name?.message}>
-              <Input {...register('name')} placeholder="Full name" />
-            </Field>
-            <Field label="Username" error={errors.username?.message}>
-              <Input {...register('username', { required: 'Required', minLength: { value: 3, message: 'Min 3 chars' } })} />
-            </Field>
+            <Input.User label="Display name" icon={<BadgeOutlined sx={{ fontSize: 18 }} />} error={errors.name?.message} {...register('name')} placeholder="Full name" />
+            <Input.User label="Username" icon={<AccountCircleOutlined sx={{ fontSize: 18 }} />} error={errors.username?.message} {...register('username', { required: 'Required', minLength: { value: 3, message: 'Min 3 chars' } })} />
           </div>
 
-          <Field label="Email" error={errors.email?.message}>
-            <Input {...register('email', { required: 'Required' })} type="email" />
-          </Field>
+          <Input.User label="Email" icon={<MailOutlined sx={{ fontSize: 18 }} />} error={errors.email?.message} {...register('email', { required: 'Required' })} type="email" />
 
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Authority">
-              <Controller name="authority" control={control} render={({ field }) => (
-                <Select
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={[
-                    { value: -1,  label: 'Banned' },
-                    { value: 0,   label: 'User' },
-                    { value: 100, label: 'Admin' },
-                  ]}
-                />
-              )} />
-            </Field>
-            <Field label="Language">
-              <Controller name="lang" control={control} render={({ field }) => (
-                <Select
-                  value={field.value}
-                  onChange={field.onChange}
-                  options={[
-                    { value: 'es', label: 'Spanish' },
-                    { value: 'en', label: 'English' },
-                  ]}
-                />
-              )} />
-            </Field>
+            <Controller name="authority" control={control} render={({ field }) => (
+              <Select.User
+                label="Authority"
+                value={field.value}
+                onChange={field.onChange}
+                options={[
+                  { value: -1,  label: 'Banned' },
+                  { value: 0,   label: 'User' },
+                  { value: 100, label: 'Admin' },
+                ]}
+              />
+            )} />
+            <Controller name="lang" control={control} render={({ field }) => (
+              <Select.User
+                label="Language"
+                value={field.value}
+                onChange={field.onChange}
+                options={[
+                  { value: 'es', label: 'Spanish' },
+                  { value: 'en', label: 'English' },
+                ]}
+              />
+            )} />
           </div>
 
           {error && <p className="text-sm text-red-500">{error}</p>}
           {success && <SuccessMessage message="Account updated" />}
 
           <div className="flex gap-2 justify-end pt-1">
-            <SecondaryButton type="button" onClick={onClose}>Cancel</SecondaryButton>
-            <PrimaryButton loading={loading}>Save changes</PrimaryButton>
+            <Button.User type="button" color="secondary" onClick={onClose}>Cancel</Button.User>
+            <Button.User variant="normal" loading={loading}>Save changes</Button.User>
           </div>
         </form>
       </DialogContent>
@@ -298,19 +294,12 @@ export const AccountsPage = () => {
       </div>
 
       {/* Search */}
-      <div className="relative max-w-sm">
-        <SearchOutlined sx={{ fontSize: 18 }} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
-        <input
+      <div className="max-w-sm">
+        <Input.User
+          icon={<SearchOutlined sx={{ fontSize: 18 }} />}
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(1) }}
           placeholder="Search by username, email or name..."
-          className={clsx(
-            "w-full pl-8 pr-3 py-2 text-sm rounded-md border transition-colors",
-            "bg-portal-surface dark:bg-dark-portal-surface",
-            "border-portal-border dark:border-dark-portal-border",
-            "text-neutral-900 dark:text-white placeholder:text-neutral-400",
-            "focus:outline-none focus:border-cyan-400",
-          )}
         />
       </div>
 
@@ -388,23 +377,15 @@ export const AccountsPage = () => {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center gap-2 justify-end text-sm">
-          <button
-            disabled={page === 1}
-            onClick={() => setPage(p => p - 1)}
-            className="px-3 py-1.5 rounded-md border border-portal-border dark:border-dark-portal-border text-neutral-600 dark:text-neutral-300 disabled:opacity-40 hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer disabled:cursor-not-allowed"
-          >
+          <Button.User size="sm" color="secondary" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
             Prev
-          </button>
+          </Button.User>
           <span className="text-neutral-500 dark:text-neutral-400">
             {page} / {totalPages}
           </span>
-          <button
-            disabled={page === totalPages}
-            onClick={() => setPage(p => p + 1)}
-            className="px-3 py-1.5 rounded-md border border-portal-border dark:border-dark-portal-border text-neutral-600 dark:text-neutral-300 disabled:opacity-40 hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer disabled:cursor-not-allowed"
-          >
+          <Button.User size="sm" color="secondary" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
             Next
-          </button>
+          </Button.User>
         </div>
       )}
 

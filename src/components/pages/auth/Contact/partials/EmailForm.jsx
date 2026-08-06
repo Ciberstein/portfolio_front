@@ -1,7 +1,9 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { TerminalOutlined } from '@mui/icons-material'
+import { TerminalOutlined, MailOutlined, SubjectOutlined, MessageOutlined } from '@mui/icons-material'
 import { Card } from '../../../../ui'
+import { Button } from '../../../../material/Button'
+import { Input } from '../../../../material/Input'
 import api from '../../../../../api/axios'
 import { API_ROUTES } from '../../../../../api/routes'
 
@@ -31,49 +33,49 @@ export const EmailForm = () => {
     <div className="flex justify-center items-center h-full">
       <Card icon={<TerminalOutlined />} title="C:/Cyberstein/Contact" onClose={handleReset} className="w-full max-w-xl">
         <div className="flex flex-col gap-2 p-2">
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
 
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-              <span className="text-green-600 shrink-0">&gt; from:</span>
-              <input
-                className="focus-visible:outline-none grow bg-transparent"
-                autoComplete="off"
-                type="email"
-                disabled={sending}
-                {...register('email', { required: 'Sender email is required' })}
-              />
-            </div>
-            {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-              <span className="text-green-600 shrink-0">&gt; subject:</span>
-              <input
-                className="focus-visible:outline-none grow bg-transparent"
-                autoComplete="off"
-                type="text"
-                disabled={sending}
-                {...register('subject', { required: 'Subject is required' })}
-              />
-            </div>
-            {errors.subject && <p className="text-red-500 text-sm">{errors.subject.message}</p>}
-
-            <div className="flex flex-col gap-1">
-              <span className="text-green-600">&gt; message:</span>
-              <textarea
-                className="focus-visible:outline-none bg-transparent resize-none h-28 border-l-2 border-gray-600 pl-2"
-                disabled={sending}
-                {...register('message', { required: 'Message is required' })}
-              />
-            </div>
-            {errors.message && <p className="text-red-500 text-sm">{errors.message.message}</p>}
-
-            <button
-              type="submit"
+            <Input.Landing
+              label="from"
+              icon={<MailOutlined sx={{ fontSize: 18 }} />}
+              id="contact-email"
+              type="email"
+              autoComplete="off"
               disabled={sending}
-              className="self-start mt-2 px-4 py-1 border border-cyan-500 text-cyan-500 uppercase hover:bg-cyan-500 hover:text-black transition-colors disabled:opacity-50 dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black"
+              {...register('email', { required: 'Sender email is required' })}
+              error={errors.email?.message}
+            />
+
+            <Input.Landing
+              label="subject"
+              icon={<SubjectOutlined sx={{ fontSize: 18 }} />}
+              id="contact-subject"
+              type="text"
+              autoComplete="off"
+              disabled={sending}
+              {...register('subject', { required: 'Subject is required' })}
+              error={errors.subject?.message}
+            />
+
+            <Input.Landing
+              as="textarea"
+              label="message"
+              icon={<MessageOutlined sx={{ fontSize: 18 }} />}
+              id="contact-message"
+              rows={5}
+              disabled={sending}
+              {...register('message', { required: 'Message is required' })}
+              error={errors.message?.message}
+            />
+
+            <Button.Landing
+              type="submit"
+              variant="outline"
+              loading={sending}
+              className="self-start mt-2"
             >
-              {sending ? '[ ~ ] Sending...' : '[ send ]'}
-            </button>
+              {sending ? '[ ~ ] sending...' : '[ send ]'}
+            </Button.Landing>
 
           </form>
         </div>

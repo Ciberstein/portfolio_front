@@ -6,7 +6,7 @@ import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/react';
 import {
   HomeOutlined, DashboardOutlined, PeopleOutlined, SettingsOutlined,
   AdminPanelSettingsOutlined, LogoutOutlined, MenuOutlined, CloseOutlined,
-  LightModeOutlined, DarkModeOutlined, MailOutlined,
+  LightModeOutlined, DarkModeOutlined, MailOutlined, FolderOutlined,
 } from '@mui/icons-material';
 import { Drawer, Tooltip } from '@mui/material';
 import { toggleDarkThunk } from '../../store/slices/dark.slice';
@@ -59,9 +59,10 @@ const USER_MENU = [
 ];
 
 const ADMIN_NAV = [
-  { path: '/admin',          label: 'Dashboard', icon: DashboardOutlined, exact: true },
-  { path: '/admin/accounts', label: 'Accounts',  icon: PeopleOutlined },
-  { path: '/admin/mails',    label: 'Mails',     icon: MailOutlined },
+  { path: '/admin',           label: 'Overview',  icon: DashboardOutlined, exact: true },
+  { path: '/admin/portfolio', label: 'Portfolio', icon: FolderOutlined },
+  { path: '/admin/accounts',  label: 'Accounts',  icon: PeopleOutlined },
+  { path: '/admin/mails',     label: 'Mails',     icon: MailOutlined },
 ];
 
 const ADMIN_MENU = [

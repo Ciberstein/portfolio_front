@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { GoogleLogin } from '@react-oauth/google'
-import { Google } from '@mui/icons-material'
+import { Google, MailOutlined, BadgeOutlined, AccountCircleOutlined, LockOutlined, PinOutlined } from '@mui/icons-material'
 import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { Button } from '../../../../../../components/material/Button'
@@ -97,91 +97,98 @@ export const Register = ({ onSuccess }) => {
   return (
     <>
       {!pendingAccount && (
-        <form
-          onSubmit={mainForm.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
-        >
-          {preFilledData && (
-            <>
-              <Input.Landing
-                prompt="> email:"
-                disabled={true}
-                value={preFilledData.email}
-                type="email"
-              />
-              <Input.Landing
-                prompt="> name:"
-                disabled={true}
-                value={preFilledData.name}
-                type="text"
-              />
-            </>
-          )}
-
-          <Input.Landing
-            prompt="> username:"
-            autoComplete="off"
-            {...mainForm.register('username', { required: 'Username is required' })}
-            autoFocus
-            id="reg-username"
-            type="text"
-            error={mainForm.formState.errors.username?.message}
-          />
-
-          {!preFilledData && (
-            <Input.Landing
-              prompt="> email:"
-              autoComplete="off"
-              {...mainForm.register('email', { required: 'Email is required' })}
-              id="reg-email"
-              type="email"
-              error={mainForm.formState.errors.email?.message}
-            />
-          )}
-
-          <Input.Landing
-            prompt="> password:"
-            {...mainForm.register('password', {
-              required: 'Password is required',
-              minLength: { value: 8, message: 'Minimum 8 characters' },
-            })}
-            id="reg-password"
-            type="password"
-            error={mainForm.formState.errors.password?.message}
-          />
-
-          <Input.Landing
-            prompt="> repeat:"
-            {...mainForm.register('password_repeat', {
-              required: 'Please repeat your password',
-              validate: v =>
-                v === mainForm.getValues('password') || 'Passwords do not match',
-            })}
-            id="reg-password-repeat"
-            type="password"
-            error={mainForm.formState.errors.password_repeat?.message}
-          />
-
-          <div className="flex justify-center my-2">
-            <Turnstile
-              ref={turnstileRef}
-              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
-              onSuccess={setCaptchaToken}
-              onExpire={() => setCaptchaToken(null)}
-              onError={() => setCaptchaToken(null)}
-              options={{ theme: 'auto', language: 'es' }}
-            />
-          </div>
-
-          <Button.Landing
-            type="submit"
-            variant="outline"
-            loading={mainForm.formState.isSubmitting}
-            disabled={!captchaToken}
+        <div className="flex flex-col gap-2">
+          <form
+            onSubmit={mainForm.handleSubmit(onSubmit)}
+            className="flex flex-col gap-4"
           >
-            [ register ]
-          </Button.Landing>
+            {preFilledData && (
+              <>
+                <Input.Landing
+                  label="email"
+                  icon={<MailOutlined sx={{ fontSize: 18 }} />}
+                  disabled={true}
+                  value={preFilledData.email}
+                  type="email"
+                />
+                <Input.Landing
+                  label="name"
+                  icon={<BadgeOutlined sx={{ fontSize: 18 }} />}
+                  disabled={true}
+                  value={preFilledData.name}
+                  type="text"
+                />
+              </>
+            )}
 
+            <Input.Landing
+              label="username"
+              icon={<AccountCircleOutlined sx={{ fontSize: 18 }} />}
+              autoComplete="off"
+              {...mainForm.register('username', { required: 'Username is required' })}
+              autoFocus
+              id="reg-username"
+              type="text"
+              error={mainForm.formState.errors.username?.message}
+            />
+
+            {!preFilledData && (
+              <Input.Landing
+                label="email"
+                icon={<MailOutlined sx={{ fontSize: 18 }} />}
+                autoComplete="off"
+                {...mainForm.register('email', { required: 'Email is required' })}
+                id="reg-email"
+                type="email"
+                error={mainForm.formState.errors.email?.message}
+              />
+            )}
+
+            <Input.Landing
+              label="password"
+              icon={<LockOutlined sx={{ fontSize: 18 }} />}
+              {...mainForm.register('password', {
+                required: 'Password is required',
+                minLength: { value: 8, message: 'Minimum 8 characters' },
+              })}
+              id="reg-password"
+              type="password"
+              error={mainForm.formState.errors.password?.message}
+            />
+
+            <Input.Landing
+              label="repeat"
+              icon={<LockOutlined sx={{ fontSize: 18 }} />}
+              {...mainForm.register('password_repeat', {
+                required: 'Please repeat your password',
+                validate: v =>
+                  v === mainForm.getValues('password') || 'Passwords do not match',
+              })}
+              id="reg-password-repeat"
+              type="password"
+              error={mainForm.formState.errors.password_repeat?.message}
+            />
+
+            <div className="flex justify-center">
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
+                onSuccess={setCaptchaToken}
+                onExpire={() => setCaptchaToken(null)}
+                onError={() => setCaptchaToken(null)}
+                options={{ theme: 'auto', language: 'es' }}
+              />
+            </div>
+
+            <Button.Landing
+              type="submit"
+              variant="outline"
+              loading={mainForm.formState.isSubmitting}
+              disabled={!captchaToken}
+            >
+              [ register ]
+            </Button.Landing>
+          </form>
           {captchaToken && (
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
@@ -194,7 +201,7 @@ export const Register = ({ onSuccess }) => {
                 variant="outline"
                 onClick={() => googleButtonRef.current?.click()}
               >
-                <Google className="w-4 h-4" /> [ google ]
+                <Google /> [ google ]
               </Button.Landing>
               <div className="hidden">
                 <GoogleLogin
@@ -206,13 +213,13 @@ export const Register = ({ onSuccess }) => {
               </div>
             </div>
           )}
-        </form>
+        </div>
       )}
-
       {pendingAccount && (
         <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="flex flex-col gap-4">
           <Input.Landing
-            prompt="> code:"
+            label="code"
+            icon={<PinOutlined sx={{ fontSize: 18 }} />}
             {...codeForm.register('code', { required: 'Code is required' })}
             id="reg-code"
             type="text"
@@ -220,9 +227,7 @@ export const Register = ({ onSuccess }) => {
             autoFocus
             error={codeForm.formState.errors.code?.message}
           />
-          <Button.Landing
-            type="submit"
-          >
+          <Button.Landing type="submit">
             [ verify ]
           </Button.Landing>
         </form>

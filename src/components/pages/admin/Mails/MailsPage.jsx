@@ -1,11 +1,13 @@
 import React from 'react'
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
-import { SearchOutlined, DeleteOutlined, MarkEmailReadOutlined, EditOutlined, ReplyOutlined } from '@mui/icons-material'
+import { SearchOutlined, DeleteOutlined, MarkEmailReadOutlined, EditOutlined, ReplyOutlined, MailOutlined, SubjectOutlined, MessageOutlined } from '@mui/icons-material'
 import { Dialog, DialogContent } from '@mui/material'
 import api from '../../../../api/axios'
 import { API_ROUTES } from '../../../../api/routes'
-import { Panel, Field, Input, SecondaryButton, PrimaryButton } from '../../../ui'
+import { Panel } from '../../../ui'
+import { Button } from '../../../material/Button'
+import { Input } from '../../../material/Input'
 
 // ── Compose dialog ────────────────────────────────────────────────────────────
 
@@ -42,49 +44,45 @@ const ComposeDialog = ({ onClose, defaultTo = '' }) => {
           <div className="flex flex-col items-center gap-3 py-8 text-center">
             <span className="text-3xl">✓</span>
             <p className="text-sm text-neutral-600 dark:text-neutral-300">Email sent successfully.</p>
-            <SecondaryButton onClick={onClose}>Close</SecondaryButton>
+            <Button.User color="secondary" onClick={onClose}>Close</Button.User>
           </div>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-            <Field label="To" error={errors.to?.message}>
-              <Input
-                {...register('to', {
-                  required: 'Recipient is required',
-                  pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
-                })}
-                type="email"
-                placeholder="recipient@example.com"
-              />
-            </Field>
+            <Input.User
+              label="To"
+              icon={<MailOutlined sx={{ fontSize: 18 }} />}
+              error={errors.to?.message}
+              {...register('to', {
+                required: 'Recipient is required',
+                pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Invalid email' },
+              })}
+              type="email"
+              placeholder="recipient@example.com"
+            />
 
-            <Field label="Subject" error={errors.subject?.message}>
-              <Input
-                {...register('subject', { required: 'Subject is required' })}
-                placeholder="Subject"
-              />
-            </Field>
+            <Input.User
+              label="Subject"
+              icon={<SubjectOutlined sx={{ fontSize: 18 }} />}
+              error={errors.subject?.message}
+              {...register('subject', { required: 'Subject is required' })}
+              placeholder="Subject"
+            />
 
-            <Field label="Message" error={errors.message?.message}>
-              <textarea
-                {...register('message', { required: 'Message is required' })}
-                rows={7}
-                placeholder="Write your message..."
-                className={clsx(
-                  "w-full px-3 py-2 text-sm rounded-md border transition-colors resize-none",
-                  "bg-portal-surface dark:bg-dark-portal-surface",
-                  "border-portal-border dark:border-dark-portal-border",
-                  "text-neutral-900 dark:text-white placeholder:text-neutral-400",
-                  "focus:outline-none focus:border-cyan-400",
-                  errors.message && "border-red-400 dark:border-red-400",
-                )}
-              />
-            </Field>
+            <Input.User
+              as="textarea"
+              label="Message"
+              icon={<MessageOutlined sx={{ fontSize: 18 }} />}
+              error={errors.message?.message}
+              {...register('message', { required: 'Message is required' })}
+              rows={7}
+              placeholder="Write your message..."
+            />
 
             {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="flex gap-2 justify-end pt-1">
-              <SecondaryButton type="button" onClick={onClose}>Cancel</SecondaryButton>
-              <PrimaryButton loading={loading}>Send</PrimaryButton>
+              <Button.User type="button" color="secondary" onClick={onClose}>Cancel</Button.User>
+              <Button.User variant="normal" loading={loading}>Send</Button.User>
             </div>
           </form>
         )}
@@ -132,7 +130,7 @@ const MailDialog = ({ mail, onClose, onDelete, onReply }) => {
               <ReplyOutlined sx={{ fontSize: 16 }} />
               Reply
             </button>
-            <SecondaryButton onClick={onClose}>Close</SecondaryButton>
+            <Button.User color="secondary" onClick={onClose}>Close</Button.User>
           </div>
         </div>
       </DialogContent>
@@ -172,7 +170,7 @@ const SentDialog = ({ mail, onClose, onDelete }) => {
               <DeleteOutlined sx={{ fontSize: 16 }} />
               Delete
             </button>
-            <SecondaryButton onClick={onClose}>Close</SecondaryButton>
+            <Button.User color="secondary" onClick={onClose}>Close</Button.User>
           </div>
         </div>
       </DialogContent>
@@ -225,33 +223,22 @@ const InboxTab = ({ onCompose }) => {
     <>
       {/* Toolbar */}
       <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <SearchOutlined sx={{ fontSize: 18 }} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
-          <input
+        <div className="flex-1 max-w-sm">
+          <Input.User
+            icon={<SearchOutlined sx={{ fontSize: 18 }} />}
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder="Search by email, subject or message..."
-            className={clsx(
-              "w-full pl-8 pr-3 py-2 text-sm rounded-md border transition-colors",
-              "bg-portal-surface dark:bg-dark-portal-surface",
-              "border-portal-border dark:border-dark-portal-border",
-              "text-neutral-900 dark:text-white placeholder:text-neutral-400",
-              "focus:outline-none focus:border-cyan-400",
-            )}
           />
         </div>
-        <button
+        <Button.User
           onClick={() => { setUnreadOnly(v => !v); setPage(1) }}
-          className={clsx(
-            "flex items-center gap-1.5 px-3 py-2 text-sm rounded-md border transition-colors cursor-pointer",
-            unreadOnly
-              ? "bg-cyan-400/10 border-cyan-400 text-cyan-600 dark:text-cyan-400"
-              : "border-portal-border dark:border-dark-portal-border text-neutral-600 dark:text-neutral-300 hover:bg-portal-panel dark:hover:bg-dark-portal-panel",
-          )}
+          className="flex items-center gap-1.5" 
+          variant={unreadOnly ? 'normal' : 'outline'}
         >
           <MarkEmailReadOutlined sx={{ fontSize: 16 }} />
           Unread
-        </button>
+        </Button.User>
         {unreadCount > 0 && (
           <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-cyan-400/10 text-cyan-600 dark:text-cyan-400">
             {unreadCount} unread
@@ -321,15 +308,13 @@ const InboxTab = ({ onCompose }) => {
 
       {totalPages > 1 && (
         <div className="flex items-center gap-2 justify-end text-sm">
-          <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-            className="px-3 py-1.5 rounded-md border border-portal-border dark:border-dark-portal-border text-neutral-600 dark:text-neutral-300 disabled:opacity-40 hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer disabled:cursor-not-allowed">
+          <Button.User size="sm" color="secondary" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
             Prev
-          </button>
+          </Button.User>
           <span className="text-neutral-500 dark:text-neutral-400">{page} / {totalPages}</span>
-          <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}
-            className="px-3 py-1.5 rounded-md border border-portal-border dark:border-dark-portal-border text-neutral-600 dark:text-neutral-300 disabled:opacity-40 hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer disabled:cursor-not-allowed">
+          <Button.User size="sm" color="secondary" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
             Next
-          </button>
+          </Button.User>
         </div>
       )}
 
@@ -380,19 +365,12 @@ const SentTab = () => {
     <>
       {/* Toolbar */}
       <div className="flex items-center gap-3">
-        <div className="relative flex-1 max-w-sm">
-          <SearchOutlined sx={{ fontSize: 18 }} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400" />
-          <input
+        <div className="flex-1 max-w-sm">
+          <Input.User
+            icon={<SearchOutlined sx={{ fontSize: 18 }} />}
             value={search}
             onChange={e => { setSearch(e.target.value); setPage(1) }}
             placeholder="Search by recipient, subject or message..."
-            className={clsx(
-              "w-full pl-8 pr-3 py-2 text-sm rounded-md border transition-colors",
-              "bg-portal-surface dark:bg-dark-portal-surface",
-              "border-portal-border dark:border-dark-portal-border",
-              "text-neutral-900 dark:text-white placeholder:text-neutral-400",
-              "focus:outline-none focus:border-cyan-400",
-            )}
           />
         </div>
       </div>
@@ -446,15 +424,13 @@ const SentTab = () => {
 
       {totalPages > 1 && (
         <div className="flex items-center gap-2 justify-end text-sm">
-          <button disabled={page === 1} onClick={() => setPage(p => p - 1)}
-            className="px-3 py-1.5 rounded-md border border-portal-border dark:border-dark-portal-border text-neutral-600 dark:text-neutral-300 disabled:opacity-40 hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer disabled:cursor-not-allowed">
+          <Button.User size="sm" color="secondary" disabled={page === 1} onClick={() => setPage(p => p - 1)}>
             Prev
-          </button>
+          </Button.User>
           <span className="text-neutral-500 dark:text-neutral-400">{page} / {totalPages}</span>
-          <button disabled={page === totalPages} onClick={() => setPage(p => p + 1)}
-            className="px-3 py-1.5 rounded-md border border-portal-border dark:border-dark-portal-border text-neutral-600 dark:text-neutral-300 disabled:opacity-40 hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer disabled:cursor-not-allowed">
+          <Button.User size="sm" color="secondary" disabled={page === totalPages} onClick={() => setPage(p => p + 1)}>
             Next
-          </button>
+          </Button.User>
         </div>
       )}
 
@@ -500,13 +476,10 @@ export const MailsPage = () => {
             </button>
           ))}
         </div>
-        <button
-          onClick={() => setComposeTo('')}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-cyan-500 hover:bg-cyan-400 text-black font-medium transition-colors cursor-pointer"
-        >
+        <Button.User variant="normal" className="gap-1.5" onClick={() => setComposeTo('')}>
           <EditOutlined sx={{ fontSize: 16 }} />
           Compose
-        </button>
+        </Button.User>
       </div>
 
       {tab === 'inbox' && <InboxTab onCompose={setComposeTo} />}

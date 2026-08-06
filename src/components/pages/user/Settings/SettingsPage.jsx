@@ -2,13 +2,15 @@ import React from 'react'
 import clsx from 'clsx'
 import { useSelector, useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
-import { CameraAltOutlined, ZoomInOutlined, ZoomOutOutlined } from '@mui/icons-material'
+import { CameraAltOutlined, ZoomInOutlined, ZoomOutOutlined, BadgeOutlined, AccountCircleOutlined, MailOutlined, LockOutlined, PinOutlined } from '@mui/icons-material'
 import { Dialog, DialogContent, DialogActions, Slider } from '@mui/material'
 import Cropper from 'react-easy-crop'
 import api from '../../../../api/axios'
 import { API_ROUTES } from '../../../../api/routes'
 import { accountThunk } from '../../../../store/slices/account.slice'
-import { Panel, Field, Input, PrimaryButton, SecondaryButton, SuccessMessage } from '../../../ui'
+import { Panel, SuccessMessage } from '../../../ui'
+import { Button } from '../../../material/Button'
+import { Input } from '../../../material/Input'
 
 // ── crop helpers ──────────────────────────────────────────────────────────────
 
@@ -22,6 +24,10 @@ const createImage = (url) =>
   })
 
 const getCroppedBlob = async (imageSrc, pixelCrop) => {
+  if (!pixelCrop?.width || !pixelCrop?.height) {
+    throw new Error('Could not read the crop area. Move the image and try again.')
+  }
+
   const image = await createImage(imageSrc)
   const canvas = document.createElement('canvas')
   canvas.width = pixelCrop.width
@@ -32,7 +38,12 @@ const getCroppedBlob = async (imageSrc, pixelCrop) => {
     pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height,
     0, 0, pixelCrop.width, pixelCrop.height,
   )
-  return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92))
+
+  // toBlob hands back null when encoding fails; without this guard we would
+  // ship a File built from null and the upload would silently send garbage.
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.92))
+  if (!blob) throw new Error('Could not process the image. Try a different file.')
+  return blob
 }
 
 // ── crop dialog ───────────────────────────────────────────────────────────────
@@ -41,10 +52,22 @@ const CropDialog = ({ src, onConfirm, onCancel }) => {
   const [crop, setCrop] = React.useState({ x: 0, y: 0 })
   const [zoom, setZoom] = React.useState(1)
   const [croppedAreaPixels, setCroppedAreaPixels] = React.useState(null)
+  const [working, setWorking] = React.useState(false)
+  const [error, setError] = React.useState(null)
 
   const handleConfirm = async () => {
-    const blob = await getCroppedBlob(src, croppedAreaPixels)
-    onConfirm(blob)
+    setWorking(true)
+    setError(null)
+    try {
+      const blob = await getCroppedBlob(src, croppedAreaPixels)
+      onConfirm(blob)
+    } catch (err) {
+      // Without this the rejection was swallowed and the dialog just sat there
+      setError(err.message || 'Could not process the image')
+      console.error('Avatar crop failed:', err)
+    } finally {
+      setWorking(false)
+    }
   }
 
   return (
@@ -73,19 +96,14 @@ const CropDialog = ({ src, onConfirm, onCancel }) => {
           />
           <ZoomInOutlined sx={{ fontSize: 18, color: 'text.secondary' }} />
         </div>
+        {error && <p className="w-full text-sm text-red-500">{error}</p>}
         <div className="flex gap-2 w-full justify-end">
-          <button
-            onClick={onCancel}
-            className="px-4 py-1.5 text-sm rounded-md border border-portal-border dark:border-dark-portal-border hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer"
-          >
+          <Button.User type="button" color="secondary" size="sm" onClick={onCancel}>
             Cancel
-          </button>
-          <button
-            onClick={handleConfirm}
-            className="px-4 py-1.5 text-sm rounded-md bg-cyan-500 hover:bg-cyan-400 text-black font-medium transition-colors cursor-pointer"
-          >
+          </Button.User>
+          <Button.User type="button" variant="normal" size="sm" loading={working} onClick={handleConfirm}>
             Apply
-          </button>
+          </Button.User>
         </div>
       </DialogActions>
     </Dialog>
@@ -217,21 +235,23 @@ const ProfileSection = () => {
           </div>
         </div>
 
-        <Field label="Display name" error={errors.name?.message}>
-          <Input
-            {...register('name')}
-            placeholder="Your full name"
-          />
-        </Field>
+        <Input.User
+          label="Display name"
+          icon={<BadgeOutlined sx={{ fontSize: 18 }} />}
+          error={errors.name?.message}
+          {...register('name')}
+          placeholder="Your full name"
+        />
 
-        <Field label="Username" error={errors.username?.message}>
-          <Input
-            {...register('username', { required: 'Username is required', minLength: { value: 3, message: 'At least 3 characters' } })}
-          />
-        </Field>
+        <Input.User
+          label="Username"
+          icon={<AccountCircleOutlined sx={{ fontSize: 18 }} />}
+          error={errors.username?.message}
+          {...register('username', { required: 'Username is required', minLength: { value: 3, message: 'At least 3 characters' } })}
+        />
 
         <div className="flex items-center gap-3">
-          <PrimaryButton loading={loading}>Save changes</PrimaryButton>
+          <Button.User variant="normal" loading={loading}>Save changes</Button.User>
           {success && <SuccessMessage message="Profile updated" />}
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
@@ -301,36 +321,38 @@ const EmailSection = () => {
   return (
     <Panel title="Email address" description="A verification code will be sent to the new address">
       {step === 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-end justify-between">
           <div>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">Current email</p>
             <p className="font-medium text-neutral-900 dark:text-white">{account?.email}</p>
             {success && <SuccessMessage message="Email updated successfully" />}
           </div>
-          <SecondaryButton onClick={() => { setSuccess(false); setStep(2) }}>Change</SecondaryButton>
+          <Button.User color="secondary" onClick={() => { setSuccess(false); setStep(2) }}>Change</Button.User>
         </div>
       )}
 
       {step === 2 && (
         <form onSubmit={form1.handleSubmit(sendCode)} className="flex flex-col gap-4">
-          <Field label="New email" error={form1.formState.errors.email_new?.message}>
-            <Input
-              {...form1.register('email_new', { required: 'Email is required' })}
-              type="email"
-              placeholder="new@email.com"
-            />
-          </Field>
-          <Field label="Confirm new email" error={form1.formState.errors.email_new_repeat?.message}>
-            <Input
-              {...form1.register('email_new_repeat', { required: 'Confirm your email' })}
-              type="email"
-              placeholder="new@email.com"
-            />
-          </Field>
+          <Input.User
+            label="New email"
+            icon={<MailOutlined sx={{ fontSize: 18 }} />}
+            error={form1.formState.errors.email_new?.message}
+            {...form1.register('email_new', { required: 'Email is required' })}
+            type="email"
+            placeholder="new@email.com"
+          />
+          <Input.User
+            label="Confirm new email"
+            icon={<MailOutlined sx={{ fontSize: 18 }} />}
+            error={form1.formState.errors.email_new_repeat?.message}
+            {...form1.register('email_new_repeat', { required: 'Confirm your email' })}
+            type="email"
+            placeholder="new@email.com"
+          />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2">
-            <PrimaryButton loading={loading}>Send code</PrimaryButton>
-            <SecondaryButton type="button" onClick={cancel}>Cancel</SecondaryButton>
+            <Button.User variant="normal" loading={loading}>Send code</Button.User>
+            <Button.User type="button" color="secondary" onClick={cancel}>Cancel</Button.User>
           </div>
         </form>
       )}
@@ -340,16 +362,17 @@ const EmailSection = () => {
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Enter the code sent to <span className="font-medium text-neutral-900 dark:text-white">{newEmail}</span>
           </p>
-          <Field label="Verification code" error={form2.formState.errors.code?.message}>
-            <Input
-              {...form2.register('code', { required: 'Code is required' })}
-              placeholder="000000"
-            />
-          </Field>
+          <Input.User
+            label="Verification code"
+            icon={<PinOutlined sx={{ fontSize: 18 }} />}
+            error={form2.formState.errors.code?.message}
+            {...form2.register('code', { required: 'Code is required' })}
+            placeholder="000000"
+          />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2">
-            <PrimaryButton loading={loading}>Verify</PrimaryButton>
-            <SecondaryButton type="button" onClick={cancel}>Cancel</SecondaryButton>
+            <Button.User variant="normal" loading={loading}>Verify</Button.User>
+            <Button.User type="button" color="secondary" onClick={cancel}>Cancel</Button.User>
           </div>
         </form>
       )}
@@ -427,34 +450,37 @@ const PasswordSection = () => {
             </p>
             {success && <SuccessMessage message="Password updated successfully" />}
           </div>
-          <SecondaryButton onClick={() => { setSuccess(false); setStep(2) }}>Change password</SecondaryButton>
+          <Button.User color="secondary" onClick={() => { setSuccess(false); setStep(2) }}>Change password</Button.User>
         </div>
       )}
 
       {step === 2 && (
         <form onSubmit={form1.handleSubmit(sendCode)} className="flex flex-col gap-4">
-          <Field label="Current password" error={form1.formState.errors.password?.message}>
-            <Input
-              {...form1.register('password', { required: 'Current password is required' })}
-              type="password"
-            />
-          </Field>
-          <Field label="New password" error={form1.formState.errors.new_password?.message}>
-            <Input
-              {...form1.register('new_password', { required: 'New password is required', minLength: { value: 8, message: 'At least 8 characters' } })}
-              type="password"
-            />
-          </Field>
-          <Field label="Confirm new password" error={form1.formState.errors.new_password_repeat?.message}>
-            <Input
-              {...form1.register('new_password_repeat', { required: 'Please confirm your password' })}
-              type="password"
-            />
-          </Field>
+          <Input.User
+            label="Current password"
+            icon={<LockOutlined sx={{ fontSize: 18 }} />}
+            error={form1.formState.errors.password?.message}
+            {...form1.register('password', { required: 'Current password is required' })}
+            type="password"
+          />
+          <Input.User
+            label="New password"
+            icon={<LockOutlined sx={{ fontSize: 18 }} />}
+            error={form1.formState.errors.new_password?.message}
+            {...form1.register('new_password', { required: 'New password is required', minLength: { value: 8, message: 'At least 8 characters' } })}
+            type="password"
+          />
+          <Input.User
+            label="Confirm new password"
+            icon={<LockOutlined sx={{ fontSize: 18 }} />}
+            error={form1.formState.errors.new_password_repeat?.message}
+            {...form1.register('new_password_repeat', { required: 'Please confirm your password' })}
+            type="password"
+          />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2">
-            <PrimaryButton loading={loading}>Send code</PrimaryButton>
-            <SecondaryButton type="button" onClick={cancel}>Cancel</SecondaryButton>
+            <Button.User variant="normal" loading={loading}>Send code</Button.User>
+            <Button.User type="button" color="secondary" onClick={cancel}>Cancel</Button.User>
           </div>
         </form>
       )}
@@ -464,16 +490,17 @@ const PasswordSection = () => {
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
             Enter the verification code sent to your email
           </p>
-          <Field label="Verification code" error={form2.formState.errors.code?.message}>
-            <Input
-              {...form2.register('code', { required: 'Code is required' })}
-              placeholder="000000"
-            />
-          </Field>
+          <Input.User
+            label="Verification code"
+            icon={<PinOutlined sx={{ fontSize: 18 }} />}
+            error={form2.formState.errors.code?.message}
+            {...form2.register('code', { required: 'Code is required' })}
+            placeholder="000000"
+          />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2">
-            <PrimaryButton loading={loading}>Set new password</PrimaryButton>
-            <SecondaryButton type="button" onClick={cancel}>Cancel</SecondaryButton>
+            <Button.User variant="normal" loading={loading}>Set new password</Button.User>
+            <Button.User type="button" color="secondary" onClick={cancel}>Cancel</Button.User>
           </div>
         </form>
       )}

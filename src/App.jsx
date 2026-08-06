@@ -34,7 +34,6 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
           <Route path="/contact" element={<Auth.Pages.Contact />} />
           <Route path="/customers" element={<Auth.Pages.Customers />} />
-          <Route path="/register" element={<Auth.Pages.Register />} />
 
 
           <Route path="/" element={<Protected.User />}>
@@ -43,7 +42,16 @@ function App() {
           </Route>
 
           <Route path="/admin" element={<Protected.Admin />}>
-            <Route index element={<Admin.Pages.Home />} />
+            <Route index element={<Admin.Pages.Dashboard />} />
+
+            <Route path="portfolio" element={<Admin.Portfolio.Layout />}>
+              <Route index element={<Navigate to="certificates" replace />} />
+              <Route path="certificates" element={<Admin.Portfolio.Certificates />} />
+              <Route path="skills" element={<Admin.Portfolio.Skills />} />
+              <Route path="experience" element={<Admin.Portfolio.Experience />} />
+              <Route path="projects" element={<Admin.Portfolio.Projects />} />
+            </Route>
+
             <Route path="accounts" element={<Admin.Pages.Accounts />} />
             <Route path="mails" element={<Admin.Pages.Mails />} />
           </Route>

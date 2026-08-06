@@ -10,7 +10,7 @@ import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { Button } from '../../../../../../components/material/Button'
 import { Input } from '../../../../../../components/material/Input'
-import { Google } from '@mui/icons-material'
+import { Google, Visibility, VisibilityOff, MailOutlined, LockOutlined, PinOutlined } from '@mui/icons-material'
 
 export const Login = () => {
   const { setAuth } = React.useContext(Context.Auth)
@@ -39,13 +39,8 @@ export const Login = () => {
         setAuth(true)
         navigate('/')
       } else if (res.status === 201) {
-        navigate('/register', {
-          state: {
-            googleData: res.data.googleData,
-            email: res.data.googleData.email,
-            name: res.data.googleData.name,
-            avatar: res.data.googleData.avatar,
-          }
+        navigate('/customers?tab=register', {
+          state: { googleData: res.data.googleData }
         })
       }
     } catch (err) {
@@ -118,7 +113,8 @@ export const Login = () => {
           >
             {/* Email Field */}
             <Input.Landing
-              prompt="> email:"
+              label="email"
+              icon={<MailOutlined sx={{ fontSize: 18 }} />}
               autoComplete="off"
               {...mainForm.register('email', {
                 required: 'Email is required',
@@ -135,7 +131,8 @@ export const Login = () => {
 
             {/* Password Field */}
             <Input.Landing
-              prompt="> password:"
+              label="password"
+              icon={<LockOutlined sx={{ fontSize: 18 }} />}
               {...mainForm.register('password', { required: 'Password is required' })}
               id="login-password"
               type={hidePassword ? 'password' : 'text'}
@@ -144,16 +141,18 @@ export const Login = () => {
                 <button
                   type="button"
                   onClick={() => setHidePassword(!hidePassword)}
-                  className="px-2 py-1 text-green-600 hover:text-green-500 transition-colors shrink-0"
+                  className="shrink-0 flex items-center text-light-primary-500/60 dark:text-dark-primary-500/60 hover:text-light-primary-500 dark:hover:text-dark-primary-500 transition-colors"
                   title={hidePassword ? 'Show password' : 'Hide password'}
                 >
-                  {hidePassword ? '👁' : '👁‍🗨'}
+                  {hidePassword
+                    ? <Visibility />
+                    : <VisibilityOff />}
                 </button>
               }
             />
 
             {/* Turnstile Captcha */}
-            <div className="flex justify-center my-2">
+            <div className="flex justify-center">
               <Turnstile
                 ref={turnstileRef}
                 siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY}
@@ -207,7 +206,8 @@ export const Login = () => {
       {showCode && (
         <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="flex flex-col gap-4">
           <Input.Landing
-            prompt="> code:"
+            label="code"
+            icon={<PinOutlined sx={{ fontSize: 18 }} />}
             {...codeForm.register('code', { required: 'Code is required' })}
             id="login-code"
             type="text"

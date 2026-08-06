@@ -1,20 +1,19 @@
 import React from 'react'
 import clsx from 'clsx'
+import { useSearchParams } from 'react-router-dom'
 import { TerminalOutlined } from '@mui/icons-material'
 import Layouts from '../../../layouts'
 import { Card } from '../../../ui'
 import { Login } from './partials/Login'
 import { Register } from './partials/Register'
+import { Button } from '../../../material/Button'
 
 export const CustomersPage = () => {
 
-  const [active, setActive] = React.useState('login') // 'login' | 'register'
-  const [registerKey, setRegisterKey] = React.useState(0)
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  const handleRegisterSuccess = () => {
-    setRegisterKey(k => k + 1)
-    setActive('login')
-  }
+  const active = searchParams.get('tab') === 'register' ? 'register' : 'login'
+  const setActive = (tab) => setSearchParams({ tab }, { replace: true })
 
   const tabs = [
     { id: 'login', label: 'Login' },
@@ -38,33 +37,24 @@ export const CustomersPage = () => {
         />
 
         {/* Single Card container with tabs */}
-        <div className="relative w-full max-w-md pr-4 pb-4">
-          <Card icon={<TerminalOutlined />} title={title} className="w-full">
-            {/* Tab Navigation */}
-            <div className="flex gap-0 mb-4 border-b border-green-600">
+        <Card icon={<TerminalOutlined />} title={title} className="w-full max-w-md">
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {tabs.map(tab => (
-                <button
+                <Button.Landing
                   key={tab.id}
                   onClick={() => setActive(tab.id)}
-                  className={clsx(
-                    'px-4 py-2 text-sm font-medium transition-all border-b-2',
-                    active === tab.id
-                      ? 'text-green-400 border-green-400'
-                      : 'text-gray-400 border-transparent hover:text-gray-300'
-                  )}
+                  variant={active === tab.id ? 'normal' : 'outline'}
                 >
                   {tab.label}
-                </button>
+                </Button.Landing>
               ))}
             </div>
-
             {/* Tab Content */}
             {active === 'login' && <Login />}
-            {active === 'register' && (
-              <Register key={registerKey} onSuccess={handleRegisterSuccess} />
-            )}
-          </Card>
-        </div>
+            {active === 'register' && <Register onSuccess={() => setActive('login')} />}            
+          </div>
+        </Card>
       </div>
     </Layouts.Landing>
   )
