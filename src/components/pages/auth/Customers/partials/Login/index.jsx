@@ -196,7 +196,7 @@ export const Login = () => {
                 type="button"
                 onClick={() => handleGoogleLogin()}
               >
-                [ google ]
+                <Google className="w-4 h-4" /> [ google ]
               </Button.Landing>
             </div>
           )}
