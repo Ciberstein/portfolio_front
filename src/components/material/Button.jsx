@@ -13,9 +13,9 @@ const BUTTON_CURSORS = {
 }
 
 const LANDING_SIZES = {
-  sm: 'text-xs px-3 py-1',
-  md: 'text-sm px-4 py-1.5',
-  lg: 'text-base px-5 py-2',
+  sm: 'text-sm px-3 py-1',
+  md: 'text-base px-4 py-1.5',
+  lg: 'text-lg px-5 py-2',
 }
 
 const LANDING_VARIANTS = {
@@ -89,7 +89,7 @@ const LANDING_VARIANTS = {
 
 const Landing = ({
   as: As = 'button',
-  children = '',
+  label = '',
   variant = 'normal',
   color = 'primary',
   size = 'md',
@@ -104,6 +104,9 @@ const Landing = ({
     ? BUTTON_CURSORS['loading']
     : BUTTON_CURSORS['normal']
 
+  // Format label: [ label ] or [ ~ ] Loading...
+  const displayText = loading ? '[ ~ ] Loading...' : label ? `[ ${label} ]` : ''
+
   return (
     <As
       disabled={isDisabled}
@@ -114,7 +117,7 @@ const Landing = ({
         className
       )} {...props}
     >
-      {children}
+      {displayText}
     </As>
   )
 }
