@@ -92,18 +92,23 @@ const Landing = ({
   children = '',
   variant = 'normal',
   color = 'primary',
-  size = 'lg',
+  size = 'md',
   loading = false,
   className = '',
   ...props
 }) => {
-
+  const isDisabled = props.disabled || loading
+  const cursor = isDisabled
+    ? BUTTON_CURSORS['disabled']
+    : loading
+    ? BUTTON_CURSORS['loading']
+    : BUTTON_CURSORS['normal']
 
   return (
     <As
-      disabled={props.disabled || loading}
+      disabled={isDisabled}
       className={clsx(
-        BUTTON_CURSORS['normal'],
+        cursor,
         LANDING_VARIANTS[variant][color],
         LANDING_SIZES[size],
         className
