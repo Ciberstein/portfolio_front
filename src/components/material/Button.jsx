@@ -6,45 +6,111 @@ import clsx from 'clsx'
 // Portfolio aesthetics: Cyan with terminal formatting [ label ]
 // Sizes: sm, md, lg | Color: primary (cyan) only
 
+const BUTTON_CURSORS = {
+  normal: 'cursor-pointer',
+  loading: 'cursor-progress',
+  disabled: 'cursor-not-allowed',
+}
+
 const LANDING_SIZES = {
-  sm: 'text-xs px-3 py-1.5 rounded-lg',
-  md: 'text-sm px-4 py-2.5 rounded-xl',
-  lg: 'text-base px-5 py-3 rounded-2xl',
+  sm: 'text-xs px-3 py-1',
+  md: 'text-sm px-4 py-1.5',
+  lg: 'text-base px-5 py-2',
+}
+
+const LANDING_VARIANTS = {
+  normal: {
+    primary: clsx(
+      'bg-light-primary-500 dark:bg-dark-primary-500',
+      'text-dark-primary-500 dark:text-light-primary-500',
+      'hover:brightness-150 hover:dark:brightness-75',
+      'dark:hover:bg-dark-primary-500 dark:hover:text-black',
+      'transition-all',
+    ),
+    secondary: clsx(
+      'bg-slate-200 dark:bg-neutral-700',
+      'text-slate-800 dark:text-slate-200',
+      'hover:bg-slate-300 dark:hover:bg-neutral-600',
+      'transition-all',
+    ),
+    success: clsx(
+      'bg-emerald-500 dark:bg-emerald-600',
+      'text-white dark:text-white',
+      'hover:bg-emerald-600 dark:hover:bg-emerald-700',
+      'transition-all',
+    ),
+    danger: clsx(
+      'bg-red-500 dark:bg-red-600',
+      'text-white dark:text-white',
+      'hover:bg-red-600 dark:hover:bg-red-700',
+      'transition-all',
+    ),
+    warning: clsx(
+      'bg-yellow-400 dark:bg-yellow-500',
+      'text-slate-900 dark:text-slate-900',
+      'hover:bg-yellow-500 dark:hover:bg-yellow-600',
+      'transition-all',
+    ),
+  },
+  outline: {
+    primary: clsx(
+      'border border-light-primary-500 dark:border-dark-primary-500',
+      'text-light-primary-500 dark:text-dark-primary-500',
+      'hover:bg-light-primary-500 hover:text-white',
+      'dark:hover:bg-dark-primary-500 dark:hover:text-black',
+      'transition-colors',
+    ),
+    secondary: clsx(
+      'border border-slate-300 dark:border-neutral-700',
+      'text-slate-700 dark:text-slate-300',
+      'hover:bg-slate-100 dark:hover:bg-neutral-800',
+      'transition-colors',
+    ),
+    success: clsx(
+      'border border-emerald-500 dark:border-emerald-400',
+      'text-emerald-700 dark:text-emerald-400',
+      'hover:bg-emerald-50 dark:hover:bg-emerald-900/20',
+      'transition-colors',
+    ),
+    danger: clsx(
+      'border border-red-400 dark:border-red-500',
+      'text-red-600 dark:text-red-400',
+      'hover:bg-red-50 dark:hover:bg-red-900/20',
+      'transition-colors',
+    ),
+    warning: clsx(
+      'border border-yellow-400 dark:border-yellow-500',
+      'text-yellow-700 dark:text-yellow-400',
+      'hover:bg-yellow-50 dark:hover:bg-yellow-900/20',
+      'transition-colors',
+    ),
+  },
 }
 
 const Landing = ({
-  label = '',
+  as: As = 'button',
+  children = '',
+  variant = 'normal',
+  color = 'primary',
+  size = 'lg',
   loading = false,
-  disabled = false,
-  size = 'md',
-  icon = null,
-  type = 'button',
   className = '',
-  onClick,
   ...props
 }) => {
-  const isDisabled = disabled || loading
-  const text = loading ? `[ ~ ] ${label}ing...` : `[ ${label} ]`
+
 
   return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={isDisabled}
+    <As
+      disabled={props.disabled || loading}
       className={clsx(
-        'inline-flex items-center justify-center font-medium transition-all duration-150 uppercase',
-        'border border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-black',
-        'dark:border-dark-primary-500 dark:text-dark-primary-500 dark:hover:bg-dark-primary-500 dark:hover:text-black',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50',
-        LANDING_SIZES[size] ?? LANDING_SIZES.md,
+        BUTTON_CURSORS['normal'],
+        LANDING_VARIANTS[variant][color],
+        LANDING_SIZES[size],
         className
-      )}
-      {...props}
+      )} {...props}
     >
-      {icon && <span className="shrink-0 mr-2">{icon}</span>}
-      <span>{text}</span>
-    </button>
+      {children}
+    </As>
   )
 }
 
@@ -82,12 +148,10 @@ const USER_VARIANTS = {
 const User = ({
   as: As = 'button',
   children = '',
-  variant = 'normal',
+  variant = 'outline',
   color = 'primary',
   size = 'md',
   loading = false,
-  disabled = false,
-  icon = null,
   className = '',
   ...props
 }) => {
@@ -95,7 +159,7 @@ const User = ({
 
   return (
     <As
-      disabled={disabled || loading}
+      disabled={props.disabled || loading}
       className={clsx(
         'inline-flex items-center justify-center font-medium transition-all duration-150',
         'disabled:opacity-50 disabled:cursor-not-allowed',
@@ -103,11 +167,9 @@ const User = ({
         USER_SIZES[size] ?? USER_SIZES.md,
         variantStyles,
         className
-      )}
-      {...props}
+      )} {...props}
     >
-      {icon && <span className="shrink-0 mr-2">{icon}</span>}
-      <span>{loading ? 'Loading...' : children}</span>
+      {children}
     </As>
   )
 }
