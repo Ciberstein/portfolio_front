@@ -1,9 +1,10 @@
 import React from 'react'
 import clsx from 'clsx'
+import { TerminalOutlined } from '@mui/icons-material'
 import Layouts from '../../../layouts'
+import { Card } from '../../../ui'
 import { Login } from './partials/Login'
 import { Register } from './partials/Register'
-import { TerminalCard } from './partials/TerminalCard'
 
 export const CustomersPage = () => {
 
@@ -20,8 +21,7 @@ export const CustomersPage = () => {
     { id: 'register', label: 'Register' }
   ]
 
-  const title = `C:/Cyberstein/customers/${active === 'login' ? 'Login' : 'Register'}`
-  const prompt = `Cyberstein@${active === 'login' ? 'Login' : 'Register'} ~`
+  const title = `C:/Cyberstein/customers/${active === 'login' ? 'Login' : 'Register'}`;
 
   return (
     <Layouts.Landing>
@@ -39,8 +39,7 @@ export const CustomersPage = () => {
 
         {/* Single Card container with tabs */}
         <div className="relative w-full max-w-md pr-4 pb-4">
-          <TerminalCard title={title} prompt={prompt}>
-
+          <Card icon={<TerminalOutlined />} title={title} className="w-full">
             {/* Tab Navigation */}
             <div className="flex gap-0 mb-4 border-b border-green-600">
               {tabs.map(tab => (
@@ -64,8 +63,7 @@ export const CustomersPage = () => {
             {active === 'register' && (
               <Register key={registerKey} onSuccess={handleRegisterSuccess} />
             )}
-
-          </TerminalCard>
+          </Card>
         </div>
       </div>
     </Layouts.Landing>

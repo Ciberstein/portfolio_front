@@ -2,28 +2,22 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import { TerminalOutlined } from '@mui/icons-material'
 import { Card } from '../../../../ui'
-import { TerminalLines } from '../../Customers/partials/TerminalCard'
-import { useTerminal } from '../../Customers/partials/useTerminal'
 import api from '../../../../../api/axios'
 import { API_ROUTES } from '../../../../../api/routes'
 
 export const EmailForm = () => {
-  const { lines, addLine, clearLines } = useTerminal()
   const [sending, setSending] = React.useState(false)
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm({ mode: 'onSubmit' })
 
   const onSubmit = async (data) => {
     setSending(true)
-    addLine('> Sending message...', 'info')
 
     try {
       await api.post(API_ROUTES.PUBLIC + '/contact', data)
-      addLine('[ ✓ ] Message sent successfully', 'success')
       reset()
     } catch (err) {
-      const message = err.response?.data?.message || 'Failed to send message'
-      addLine('[ ✗ ] ' + message, 'error')
+      console.error('Failed to send message:', err)
     } finally {
       setSending(false)
     }
@@ -31,17 +25,12 @@ export const EmailForm = () => {
 
   const handleReset = () => {
     reset()
-    clearLines()
   }
 
   return (
     <div className="flex justify-center items-center h-full">
       <Card icon={<TerminalOutlined />} title="C:/Cyberstein/Contact" onClose={handleReset} className="w-full max-w-xl">
         <div className="flex flex-col gap-2 p-2">
-          <span className="uppercase">Cyberstein@Contact ~</span>
-
-          <TerminalLines lines={lines} />
-
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-1">
