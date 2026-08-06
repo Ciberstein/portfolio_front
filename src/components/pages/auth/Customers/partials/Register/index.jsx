@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 import { useLocation } from 'react-router-dom'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { GoogleLogin } from '@react-oauth/google'
-import { Google, MailOutlined, BadgeOutlined, AccountCircleOutlined, LockOutlined, PinOutlined } from '@mui/icons-material'
+import { Google, MailOutlined, BadgeOutlined, AccountCircleOutlined, LockOutlined, PinOutlined, MarkEmailReadOutlined } from '@mui/icons-material'
 import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { Button } from '../../../../../../components/material/Button'
@@ -18,6 +18,7 @@ export const Register = ({ onSuccess }) => {
   const [pendingAccount, setPendingAccount] = React.useState(null)
   const [preFilledData, setPreFilledData] = React.useState(googleData || null)
   const [captchaToken, setCaptchaToken] = React.useState(null)
+  const [error, setError] = React.useState(null)
   const turnstileRef = React.useRef(null)
   const googleButtonRef = React.useRef(null)
 
@@ -38,14 +39,14 @@ export const Register = ({ onSuccess }) => {
         mainForm.setValue('name', res.data.googleData.name, { shouldValidate: true })
       }
     } catch (err) {
-      console.error('Google authentication error:', err)
+      setError(err.response?.data?.message || 'Google authentication error')
       turnstileRef.current?.reset()
       setCaptchaToken(null)
     }
   }
 
   const handleGoogleError = () => {
-    console.error('Google registration failed')
+    setError('Google registration failed')
   }
 
   const mainForm = useForm({ mode: 'onSubmit' })
@@ -61,8 +62,10 @@ export const Register = ({ onSuccess }) => {
   }, [googleData, mainForm])
 
   const onSubmit = async (data) => {
+    setError(null)
+
     if (!captchaToken) {
-      console.error('CAPTCHA validation required')
+      setError('Please complete the CAPTCHA')
       return
     }
 
@@ -74,17 +77,19 @@ export const Register = ({ onSuccess }) => {
       setPendingAccount(res.data.account)
       setTimeout(() => codeForm.setFocus('code'), 0)
     } catch (err) {
-      const message = err.response?.data?.message || 'Registration error'
-      console.error(message)
-      mainForm.reset()
+      setError(err.response?.data?.message || 'Registration error')
+      // Only the password fields are cleared: wiping the whole form on a
+      // recoverable error (e.g. email already taken) meant retyping everything
+      mainForm.resetField('password')
+      mainForm.resetField('password_repeat')
       turnstileRef.current?.reset()
       setCaptchaToken(null)
-      setTimeout(() => mainForm.setFocus('username'), 0)
     }
   }
 
   const onCodeSubmit = async (data) => {
     codeForm.resetField('code')
+    setError(null)
     try {
       await api.post(`${API_ROUTES.AUTH}/register/validation`, {
         accountId: pendingAccount.id,
@@ -92,8 +97,7 @@ export const Register = ({ onSuccess }) => {
       })
       setTimeout(() => onSuccess?.(), 1500)
     } catch (err) {
-      const message = err.response?.data?.message || 'Invalid code'
-      console.error(message)
+      setError(err.response?.data?.message || 'Invalid code')
       setTimeout(() => codeForm.setFocus('code'), 0)
     }
   }
@@ -184,6 +188,10 @@ export const Register = ({ onSuccess }) => {
               />
             </div>
 
+            {error && (
+              <p className="text-sm text-red-500">[ ✗ ] {error}</p>
+            )}
+
             <Button.Landing
               type="submit"
               variant="outline"
@@ -221,6 +229,20 @@ export const Register = ({ onSuccess }) => {
       )}
       {pendingAccount && (
         <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="flex flex-col gap-4">
+          <div className="flex gap-2 font-mono text-sm">
+            <MarkEmailReadOutlined
+              sx={{ fontSize: 18 }}
+              className="shrink-0 mt-0.5 text-light-primary-500 dark:text-dark-primary-500"
+            />
+            <p className="text-gray-500 dark:text-gray-400">
+              Your account was created. We sent a security code to{' '}
+              <span className="text-light-primary-500 dark:text-dark-primary-500 break-all">
+                {pendingAccount?.email}
+              </span>
+              {' '}to confirm it.
+            </p>
+          </div>
+
           <Input.Landing
             label="code"
             icon={<PinOutlined sx={{ fontSize: 18 }} />}
@@ -255,6 +277,10 @@ export const Register = ({ onSuccess }) => {
 
           {resend.sent && <p className="text-xs text-green-500">[ ✓ ] New code sent</p>}
           {resend.error && <p className="text-xs text-red-500">[ ✗ ] {resend.error}</p>}
+
+          {error && (
+            <p className="text-sm text-red-500">[ ✗ ] {error}</p>
+          )}
           <Button.Landing type="submit">
             [ verify ]
           </Button.Landing>

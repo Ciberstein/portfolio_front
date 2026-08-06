@@ -12,7 +12,7 @@ import { API_ROUTES } from '../../../../../../api/routes'
 import { Button } from '../../../../../../components/material/Button'
 import { Input } from '../../../../../../components/material/Input'
 import useResendCode from '../../../../../../hooks/useResendCode'
-import { Google, Visibility, VisibilityOff, MailOutlined, LockOutlined, PinOutlined } from '@mui/icons-material'
+import { Google, Visibility, VisibilityOff, MailOutlined, LockOutlined, PinOutlined, MarkEmailReadOutlined } from '@mui/icons-material'
 
 export const Login = () => {
   const { setAuth } = React.useContext(Context.Auth)
@@ -23,6 +23,7 @@ export const Login = () => {
   const [showCode, setShowCode] = React.useState(false)
   const [captchaToken, setCaptchaToken] = React.useState(null)
   const [hidePassword, setHidePassword] = React.useState(true)
+  const [error, setError] = React.useState(null)
   const turnstileRef = React.useRef(null)
   const googleButtonRef = React.useRef(null)
 
@@ -32,6 +33,7 @@ export const Login = () => {
   const resend = useResendCode({ email: pendingAccount?.email })
 
   const handleGoogleSuccess = async (credentialResponse) => {
+    setError(null)
     try {
       const res = await api.post(`${API_ROUTES.AUTH}/google`, {
         token: credentialResponse.credential,
@@ -48,17 +50,18 @@ export const Login = () => {
         })
       }
     } catch (err) {
-      console.error('Google authentication error:', err)
+      setError(err.response?.data?.message || 'Google authentication error')
       turnstileRef.current?.reset()
       setCaptchaToken(null)
     }
   }
 
   const handleGoogleError = () => {
-    console.error('Google authentication failed')
+    setError('Google authentication failed')
   }
 
   const onSubmit = async (data) => {
+    setError(null)
     try {
       const res = await api.post(`${API_ROUTES.AUTH}/login`, {
         ...data,
@@ -75,8 +78,7 @@ export const Login = () => {
         setTimeout(() => codeForm.setFocus('code'), 0)
       }
     } catch (err) {
-      const message = err.response?.data?.message || 'Authentication error'
-      console.error(message)
+      setError(err.response?.data?.message || 'Authentication error')
       mainForm.resetField('password')
       turnstileRef.current?.reset()
       setCaptchaToken(null)
@@ -85,6 +87,7 @@ export const Login = () => {
 
   const onCodeSubmit = async (data) => {
     codeForm.resetField('code')
+    setError(null)
     try {
       await api.post(`${API_ROUTES.AUTH}/register/validation`, {
         accountId: pendingAccount.id,
@@ -101,8 +104,7 @@ export const Login = () => {
         navigate('/')
       }
     } catch (err) {
-      const message = err.response?.data?.message || 'Invalid code'
-      console.error(message)
+      setError(err.response?.data?.message || 'Invalid code')
       setTimeout(() => codeForm.setFocus('code'), 0)
     }
   }
@@ -167,6 +169,10 @@ export const Login = () => {
               />
             </div>
 
+            {error && (
+              <p className="text-sm text-red-500">[ ✗ ] {error}</p>
+            )}
+
             {/* Submit Button */}
             <Button.Landing
               type="submit"
@@ -209,6 +215,19 @@ export const Login = () => {
       {/* Verification Code Form */}
       {showCode && (
         <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="flex flex-col gap-4">
+          <div className="flex flex-col items-center gap-2 font-mono text-sm">
+            <MarkEmailReadOutlined
+              sx={{ fontSize: 30 }}
+              className="shrink-0 mt-0.5 text-light-primary-500 dark:text-dark-primary-500"
+            />
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              We sent a security code to{' '}
+              <span className="text-light-primary-500 dark:text-dark-primary-500 break-all">
+                {pendingAccount?.email}
+              </span>
+              . Check your inbox and enter it below.
+            </p>
+          </div>
           <Input.Landing
             label="code"
             icon={<PinOutlined sx={{ fontSize: 18 }} />}
@@ -243,6 +262,11 @@ export const Login = () => {
 
           {resend.sent && <p className="text-xs text-green-500">[ ✓ ] New code sent</p>}
           {resend.error && <p className="text-xs text-red-500">[ ✗ ] {resend.error}</p>}
+
+          {error && (
+            <p className="text-sm text-red-500">[ ✗ ] {error}</p>
+          )}
+
           <Button.Landing
             type="submit"
             variant="outline"

@@ -2,7 +2,7 @@ import React from 'react'
 import clsx from 'clsx'
 import { useSelector, useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
-import { CameraAltOutlined, ZoomInOutlined, ZoomOutOutlined, BadgeOutlined, AccountCircleOutlined, MailOutlined, LockOutlined, PinOutlined } from '@mui/icons-material'
+import { CameraAltOutlined, ZoomInOutlined, ZoomOutOutlined, BadgeOutlined, AccountCircleOutlined, MailOutlined, LockOutlined, PinOutlined, MarkEmailReadOutlined } from '@mui/icons-material'
 import { Dialog, DialogContent, DialogActions, Slider } from '@mui/material'
 import Cropper from 'react-easy-crop'
 import api from '../../../../api/axios'
@@ -391,9 +391,19 @@ const EmailSection = () => {
 
       {step === 3 && (
         <form onSubmit={form2.handleSubmit(verify)} className="flex flex-col gap-4">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Enter the code sent to <span className="font-medium text-neutral-900 dark:text-white">{newEmail}</span>
-          </p>
+          <div className="flex flex-col items-center gap-2 font-mono text-sm">
+            <MarkEmailReadOutlined
+              sx={{ fontSize: 30 }}
+              className="shrink-0 mt-0.5 text-light-primary-500 dark:text-dark-primary-500"
+            />
+            <p className="text-center text-gray-500 dark:text-gray-400">
+              We sent a security code to{' '}
+              <span className="text-light-primary-500 dark:text-dark-primary-500 break-all">
+                {newEmail}
+              </span>
+              . Enter it below to confirm the change.
+            </p>
+          </div>
           <Input.User
             label="Verification code"
             icon={<PinOutlined sx={{ fontSize: 18 }} />}
@@ -416,6 +426,7 @@ const EmailSection = () => {
 // ── Password section ──────────────────────────────────────────────────────────
 
 const PasswordSection = () => {
+  const account = useSelector(state => state.account)
   const [step, setStep] = React.useState(1)
   const [newPassword, setNewPassword] = React.useState('')
   const [loading, setLoading] = React.useState(false)
@@ -520,9 +531,14 @@ const PasswordSection = () => {
 
       {step === 3 && (
         <form onSubmit={form2.handleSubmit(verify)} className="flex flex-col gap-4">
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Enter the verification code sent to your email
-          </p>
+          <div className="flex gap-2">
+            <MarkEmailReadOutlined sx={{ fontSize: 18 }} className="shrink-0 mt-0.5 text-cyan-500" />
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">
+              We sent a security code to{' '}
+              <span className="font-medium text-neutral-900 dark:text-white break-all">{account?.email}</span>
+              . Enter it below to confirm the change.
+            </p>
+          </div>
           <Input.User
             label="Verification code"
             icon={<PinOutlined sx={{ fontSize: 18 }} />}
