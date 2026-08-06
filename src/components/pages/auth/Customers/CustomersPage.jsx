@@ -1,8 +1,8 @@
 import React from 'react'
 import clsx from 'clsx'
 import Layouts from '../../../layouts'
-import { Steper as LoginSteper } from './partials/Login/Steper'
-import { Steper as RegisterSteper } from './partials/Register/Steper'
+import { Login } from './partials/Login'
+import { Register } from './partials/Register'
 import { TerminalCard } from './partials/TerminalCard'
 
 export const CustomersPage = () => {
@@ -60,9 +60,9 @@ export const CustomersPage = () => {
             </div>
 
             {/* Tab Content */}
-            {active === 'login' && <LoginSteper embedMode />}
+            {active === 'login' && <Login />}
             {active === 'register' && (
-              <RegisterSteper key={registerKey} onSuccess={handleRegisterSuccess} embedMode />
+              <Register key={registerKey} onSuccess={handleRegisterSuccess} />
             )}
 
           </TerminalCard>
