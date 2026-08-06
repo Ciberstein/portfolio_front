@@ -11,6 +11,38 @@ import { accountThunk } from '../../../../store/slices/account.slice'
 import { Panel, SuccessMessage } from '../../../ui'
 import { Button } from '../../../material/Button'
 import { Input } from '../../../material/Input'
+import useResendCode from '../../../../hooks/useResendCode'
+
+// ── Resend control ────────────────────────────────────────────────────────────
+// Shared by the email and password verification steps
+
+const ResendCode = ({ email, emailNew = null }) => {
+  const resend = useResendCode({ email, emailNew })
+
+  return (
+    <div className="flex flex-col gap-1">
+      <button
+        type="button"
+        onClick={resend.resend}
+        disabled={!resend.canResend}
+        className={clsx(
+          'text-xs font-medium transition-colors w-fit',
+          resend.canResend
+            ? 'text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer'
+            : 'text-neutral-400 cursor-not-allowed',
+        )}
+      >
+        {resend.sending
+          ? 'Sending...'
+          : resend.canResend
+            ? 'Resend code'
+            : `Resend code in ${resend.secondsLeft}s`}
+      </button>
+      {resend.sent && <p className="text-xs text-emerald-500">New code sent</p>}
+      {resend.error && <p className="text-xs text-red-500">{resend.error}</p>}
+    </div>
+  )
+}
 
 // ── crop helpers ──────────────────────────────────────────────────────────────
 
@@ -369,6 +401,7 @@ const EmailSection = () => {
             {...form2.register('code', { required: 'Code is required' })}
             placeholder="000000"
           />
+          <ResendCode email={account?.email} emailNew={newEmail} />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2">
             <Button.User variant="normal" loading={loading}>Verify</Button.User>
@@ -497,6 +530,7 @@ const PasswordSection = () => {
             {...form2.register('code', { required: 'Code is required' })}
             placeholder="000000"
           />
+          <ResendCode email={account?.email} />
           {error && <p className="text-sm text-red-500">{error}</p>}
           <div className="flex gap-2">
             <Button.User variant="normal" loading={loading}>Set new password</Button.User>

@@ -42,12 +42,16 @@ const Landing = ({
             </label>
           )}
           {helperLink.text && (
-            <Link
-              to={helperLink.url ?? '#'}
-              className="text-xs text-light-primary-500/70 dark:text-dark-primary-500/70 hover:underline"
-            >
-              {helperLink.text}
-            </Link>
+            helperLink.url
+              ? <Link
+                  to={helperLink.url}
+                  className="text-xs text-light-primary-500/70 dark:text-dark-primary-500/70 hover:underline"
+                >
+                  {helperLink.text}
+                </Link>
+              // Without a url the slot renders as-is, so callers can drop an
+              // action in there (resend code, toggle, ...) instead of a link.
+              : <span className="text-xs">{helperLink.text}</span>
           )}
         </div>
       )}
@@ -134,12 +138,14 @@ const User = ({
             </label>
           )}
           {helperLink.text && (
-            <Link
-              to={helperLink.url ?? '#'}
-              className="text-xs font-medium text-cyan-600 dark:text-dark-primary-500 hover:underline"
-            >
-              {helperLink.text}
-            </Link>
+            helperLink.url
+              ? <Link
+                  to={helperLink.url}
+                  className="text-xs font-medium text-cyan-600 dark:text-dark-primary-500 hover:underline"
+                >
+                  {helperLink.text}
+                </Link>
+              : <span className="text-xs font-medium">{helperLink.text}</span>
           )}
         </div>
       )}

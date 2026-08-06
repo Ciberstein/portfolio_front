@@ -1,4 +1,5 @@
 import React from 'react'
+import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
@@ -10,6 +11,7 @@ import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { Button } from '../../../../../../components/material/Button'
 import { Input } from '../../../../../../components/material/Input'
+import useResendCode from '../../../../../../hooks/useResendCode'
 import { Google, Visibility, VisibilityOff, MailOutlined, LockOutlined, PinOutlined } from '@mui/icons-material'
 
 export const Login = () => {
@@ -26,6 +28,8 @@ export const Login = () => {
 
   const mainForm = useForm({ mode: 'onChange' })
   const codeForm = useForm({ mode: 'onSubmit' })
+
+  const resend = useResendCode({ email: pendingAccount?.email })
 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
@@ -214,7 +218,31 @@ export const Login = () => {
             placeholder="Enter verification code"
             autoFocus
             error={codeForm.formState.errors.code?.message}
+            helperLink={{
+              text: (
+                <button
+                  type="button"
+                  onClick={resend.resend}
+                  disabled={!resend.canResend}
+                  className={clsx(
+                    'font-mono transition-colors',
+                    resend.canResend
+                      ? 'text-light-primary-500 dark:text-dark-primary-500 hover:underline cursor-pointer'
+                      : 'text-gray-500 cursor-not-allowed',
+                  )}
+                >
+                  {resend.sending
+                    ? '[ sending... ]'
+                    : resend.canResend
+                      ? '[ resend ]'
+                      : `[ resend in ${resend.secondsLeft}s ]`}
+                </button>
+              ),
+            }}
           />
+
+          {resend.sent && <p className="text-xs text-green-500">[ ✓ ] New code sent</p>}
+          {resend.error && <p className="text-xs text-red-500">[ ✗ ] {resend.error}</p>}
           <Button.Landing
             type="submit"
             variant="outline"
