@@ -9,6 +9,7 @@ import { accountThunk } from '../../../../../../store/slices/account.slice'
 import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { Button } from '../../../../../../components/material/Button'
+import { Google } from '@mui/icons-material'
 
 export const Login = () => {
   const { setAuth } = React.useContext(Context.Auth)
@@ -28,7 +29,7 @@ export const Login = () => {
     onSuccess: async (codeResponse) => {
       try {
         const res = await api.post(`${API_ROUTES.AUTH}/google`, {
-          token: codeResponse.access_token,
+          token: codeResponse.credential,
           captchaToken,
         })
 
@@ -194,15 +195,6 @@ export const Login = () => {
                 label="google"
                 type="button"
                 onClick={() => handleGoogleLogin()}
-                className="self-start"
-                icon={
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12.0003 4.75C13.7703 4.75 15.3553 5.36002 16.6053 6.54998L20.0303 3.125C17.9502 1.19 15.2353 0 12.0003 0C7.31028 0 3.25527 2.69 1.3053 6.54998L5.1303 9.9C6.2553 7.5 9.1328 4.75 12.0003 4.75Z" fill="currentColor"/>
-                    <path d="M23.49 12.26C23.51 11.85 23.51 11.431 23.49 11.01H12V14.88H18.47C18.18 15.99 17.48 17.08 16.46 17.88V20.33H20.1C22.45 18.25 23.49 15.27 23.49 12.26Z" fill="currentColor"/>
-                    <path d="M12 23.5C15.16 23.5 17.92 22.58 20.1 21.04L16.46 18.41C15.55 19.04 14.37 19.52 12 19.52C8.13001 19.52 4.85001 17.08 3.74001 13.65H0.0700073V17.15C2.04001 21.3 6.86001 23.5 12 23.5Z" fill="currentColor"/>
-                    <path d="M3.74 13.65C3.44 12.84 3.27 11.97 3.27 11.1C3.27 10.23 3.44 9.36 3.74 8.55V5.05H0.0700073C-0.929993 7.18 -1.5 9.52 -1.5 12C-1.5 14.48 -0.929993 16.82 0.0700073 18.95L3.74 13.65Z" fill="currentColor"/>
-                  </svg>
-                }
               />
             </div>
           )}
