@@ -172,10 +172,11 @@ export const Register = ({ onSuccess }) => {
 
           <Button.Landing
             type="submit"
-            label="register"
             loading={mainForm.formState.isSubmitting}
             disabled={!captchaToken}
-          />
+          >
+            [ register ]
+          </Button.Landing>
         </form>
       )}
 
@@ -197,8 +198,9 @@ export const Register = ({ onSuccess }) => {
           )}
           <Button.Landing
             type="submit"
-            label="verify"
-          />
+          >
+            [ verify ]
+          </Button.Landing>
         </form>
       )}
     </>

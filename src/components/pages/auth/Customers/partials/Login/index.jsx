@@ -177,10 +177,11 @@ export const Login = () => {
             {/* Submit Button */}
             <Button.Landing
               type="submit"
-              label="login"
               loading={mainForm.formState.isSubmitting}
               disabled={!captchaToken}
-            />
+            >
+              [ login ]
+            </Button.Landing>
           </form>
 
           {/* Google OAuth Divider */}
@@ -192,10 +193,11 @@ export const Login = () => {
                 <hr className="flex-1" />
               </div>
               <Button.Landing
-                label="google"
                 type="button"
                 onClick={() => handleGoogleLogin()}
-              />
+              >
+                [ google ]
+              </Button.Landing>
             </div>
           )}
         </>
@@ -220,8 +222,9 @@ export const Login = () => {
           )}
           <Button.Landing
             type="submit"
-            label="verify"
-          />
+          >
+            [ verify ]
+          </Button.Landing>
         </form>
       )}
     </>

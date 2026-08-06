@@ -89,7 +89,7 @@ const LANDING_VARIANTS = {
 
 const Landing = ({
   as: As = 'button',
-  label = '',
+  children = '',
   variant = 'normal',
   color = 'primary',
   size = 'md',
@@ -104,9 +104,6 @@ const Landing = ({
     ? BUTTON_CURSORS['loading']
     : BUTTON_CURSORS['normal']
 
-  // Format label: [ label ] or [ ~ ] Loading...
-  const displayText = loading ? '[ ~ ] Loading...' : label ? `[ ${label} ]` : ''
-
   return (
     <As
       disabled={isDisabled}
@@ -117,7 +114,7 @@ const Landing = ({
         className
       )} {...props}
     >
-      {displayText}
+      {children}
     </As>
   )
 }
