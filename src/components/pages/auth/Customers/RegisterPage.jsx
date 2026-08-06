@@ -1,6 +1,6 @@
 import React from 'react'
 import Layouts from '../../../layouts'
-import { Steper as RegisterSteper } from './partials/Register/Steper'
+import { Register } from './partials/Register'
 
 export const RegisterPage = () => {
   const handleRegisterSuccess = () => {
@@ -22,7 +22,7 @@ export const RegisterPage = () => {
         />
 
         <div className="relative w-full max-w-md pr-4 pb-4">
-          <RegisterSteper onSuccess={handleRegisterSuccess} />
+          <Register onSuccess={handleRegisterSuccess} />
         </div>
       </div>
     </Layouts.Landing>
