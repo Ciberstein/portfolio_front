@@ -3,12 +3,13 @@ import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { Turnstile } from '@marsidev/react-turnstile'
-import { useGoogleLogin } from '@react-oauth/google'
+import { GoogleLogin } from '@react-oauth/google'
 import { Context } from '../../../../../../context'
 import { accountThunk } from '../../../../../../store/slices/account.slice'
 import api from '../../../../../../api/axios'
 import { API_ROUTES } from '../../../../../../api/routes'
 import { Button } from '../../../../../../components/material/Button'
+import { Input } from '../../../../../../components/material/Input'
 import { Google } from '@mui/icons-material'
 
 export const Login = () => {
@@ -25,39 +26,37 @@ export const Login = () => {
   const mainForm = useForm({ mode: 'onChange' })
   const codeForm = useForm({ mode: 'onSubmit' })
 
-  const handleGoogleLogin = useGoogleLogin({
-    onSuccess: async (codeResponse) => {
-      try {
-        const res = await api.post(`${API_ROUTES.AUTH}/google`, {
-          token: codeResponse.credential,
-          captchaToken,
-        })
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await api.post(`${API_ROUTES.AUTH}/google`, {
+        token: credentialResponse.credential,
+        captchaToken,
+      })
 
-        if (res.status === 200) {
-          dispatch(accountThunk())
-          setAuth(true)
-          navigate('/')
-        } else if (res.status === 201) {
-          navigate('/register', {
-            state: {
-              googleData: res.data.googleData,
-              email: res.data.googleData.email,
-              name: res.data.googleData.name,
-              avatar: res.data.googleData.avatar,
-            }
-          })
-        }
-      } catch (err) {
-        console.error('Google authentication error:', err)
-        turnstileRef.current?.reset()
-        setCaptchaToken(null)
+      if (res.status === 200) {
+        dispatch(accountThunk())
+        setAuth(true)
+        navigate('/')
+      } else if (res.status === 201) {
+        navigate('/register', {
+          state: {
+            googleData: res.data.googleData,
+            email: res.data.googleData.email,
+            name: res.data.googleData.name,
+            avatar: res.data.googleData.avatar,
+          }
+        })
       }
-    },
-    onError: () => {
-      console.error('Google authentication failed')
-    },
-    flow: 'implicit',
-  })
+    } catch (err) {
+      console.error('Google authentication error:', err)
+      turnstileRef.current?.reset()
+      setCaptchaToken(null)
+    }
+  }
+
+  const handleGoogleError = () => {
+    console.error('Google authentication failed')
+  }
 
   const onSubmit = async (data) => {
     try {
@@ -111,56 +110,46 @@ export const Login = () => {
   return (
     <>
       {!showCode && (
-        <>
+        <div className="flex flex-col gap-2">
           <form
             onSubmit={mainForm.handleSubmit(onSubmit)}
             className="flex flex-col gap-4"
           >
             {/* Email Field */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-              <span className="text-green-600">&gt; email:</span>
-              <input
-                className="focus-visible:outline-none grow bg-transparent border-b border-green-600 text-white placeholder-gray-500"
-                autoComplete="off"
-                {...mainForm.register('email', {
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                    message: 'Invalid email format'
-                  }
-                })}
-                id="login-email"
-                type="email"
-                autoFocus
-              />
-            </div>
-            {mainForm.formState.errors.email && (
-              <p className="text-red-500 text-sm">[ ✗ ] {mainForm.formState.errors.email.message}</p>
-            )}
+            <Input.Landing
+              prompt="> email:"
+              autoComplete="off"
+              {...mainForm.register('email', {
+                required: 'Email is required',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'Invalid email format'
+                }
+              })}
+              id="login-email"
+              type="email"
+              autoFocus
+              error={mainForm.formState.errors.email?.message}
+            />
 
             {/* Password Field */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-              <span className="text-green-600">&gt; password:</span>
-              <div className="flex-1 flex items-center gap-1 border-b border-green-600">
-                <input
-                  className="focus-visible:outline-none grow bg-transparent text-white placeholder-gray-500"
-                  {...mainForm.register('password', { required: 'Password is required' })}
-                  id="login-password"
-                  type={hidePassword ? 'password' : 'text'}
-                />
+            <Input.Landing
+              prompt="> password:"
+              {...mainForm.register('password', { required: 'Password is required' })}
+              id="login-password"
+              type={hidePassword ? 'password' : 'text'}
+              error={mainForm.formState.errors.password?.message}
+              element={
                 <button
                   type="button"
                   onClick={() => setHidePassword(!hidePassword)}
-                  className="px-2 py-1 text-green-600 hover:text-green-500 transition-colors"
+                  className="px-2 py-1 text-green-600 hover:text-green-500 transition-colors shrink-0"
                   title={hidePassword ? 'Show password' : 'Hide password'}
                 >
                   {hidePassword ? '👁' : '👁‍🗨'}
                 </button>
-              </div>
-            </div>
-            {mainForm.formState.errors.password && (
-              <p className="text-red-500 text-sm">[ ✗ ] {mainForm.formState.errors.password.message}</p>
-            )}
+              }
+            />
 
             {/* Turnstile Captcha */}
             <div className="flex justify-center my-2">
@@ -177,6 +166,7 @@ export const Login = () => {
             {/* Submit Button */}
             <Button.Landing
               type="submit"
+              variant="outline"
               loading={mainForm.formState.isSubmitting}
               disabled={!captchaToken}
             >
@@ -186,42 +176,42 @@ export const Login = () => {
 
           {/* Google OAuth Divider */}
           {captchaToken && (
-            <div className="flex flex-col gap-2 mt-4">
+            <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <hr className="flex-1" />
                 <span className="text-xs text-gray-500">or continue with</span>
                 <hr className="flex-1" />
               </div>
-              <Button.Landing
-                type="button"
-                onClick={() => handleGoogleLogin()}
-              >
-                <Google className="w-4 h-4" /> [ google ]
-              </Button.Landing>
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={handleGoogleError}
+                  theme="dark"
+                  size="large"
+                  text="signin"
+                  logo_alignment="left"
+                />
+              </div>
             </div>
           )}
-        </>
+        </div>
       )}
 
       {/* Verification Code Form */}
       {showCode && (
         <form onSubmit={codeForm.handleSubmit(onCodeSubmit)} className="flex flex-col gap-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-1">
-            <span className="text-green-600">&gt; code:</span>
-            <input
-              className="focus-visible:outline-none grow bg-transparent border-b border-green-600 text-white placeholder-gray-500"
-              {...codeForm.register('code', { required: 'Code is required' })}
-              id="login-code"
-              type="text"
-              placeholder="Enter verification code"
-              autoFocus
-            />
-          </div>
-          {codeForm.formState.errors.code && (
-            <p className="text-red-500 text-sm">[ ✗ ] {codeForm.formState.errors.code.message}</p>
-          )}
+          <Input.Landing
+            prompt="> code:"
+            {...codeForm.register('code', { required: 'Code is required' })}
+            id="login-code"
+            type="text"
+            placeholder="Enter verification code"
+            autoFocus
+            error={codeForm.formState.errors.code?.message}
+          />
           <Button.Landing
             type="submit"
+            variant="outline"
           >
             [ verify ]
           </Button.Landing>

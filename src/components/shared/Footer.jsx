@@ -17,7 +17,7 @@ const Landing = () => {
 	  dispatch(setDark(status));
 	};
 
-  return null
+ // return null
 
   return (
     <footer className="flex justify-center items-center pt-2">
