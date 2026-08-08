@@ -287,7 +287,7 @@ const TypesPanel = ({ types, onAdded, onDeleted }) => {
     <Panel className="flex flex-col gap-3">
       <div>
         <p className="text-sm font-semibold text-neutral-900 dark:text-white">Types</p>
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
           Categories available when creating a project — web app, software, mobile...
         </p>
       </div>
@@ -405,18 +405,12 @@ export const ProjectsPage = () => {
               </div>
 
               <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
-                  onClick={() => setDialog(project)}
-                  className="size-8 rounded-lg bg-black/60 text-white hover:bg-black/80 cursor-pointer transition-colors flex justify-center items-center"
-                >
+                <Button.Icon variant="overlay" color="neutral" onClick={() => setDialog(project)}>
                   <EditOutlined sx={{ fontSize: 16 }} />
-                </button>
-                <button
-                  onClick={() => handleDelete(project.id)}
-                  className="size-8 rounded-lg bg-red-500/80 text-white hover:bg-red-500 cursor-pointer transition-colors flex justify-center items-center"
-                >
+                </Button.Icon>
+                <Button.Icon variant="overlay" color="danger" onClick={() => handleDelete(project.id)}>
                   <DeleteOutlined sx={{ fontSize: 16 }} />
-                </button>
+                </Button.Icon>
               </div>
             </div>
           ))}

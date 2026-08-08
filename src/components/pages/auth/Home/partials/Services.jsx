@@ -1,20 +1,26 @@
 import React from 'react'
 import { GlitchCard } from '../../../../material/GlitchCard'
+import { getServiceIcon } from '../../../../../utils/serviceIcons'
 import clsx from 'clsx'
 
-export const Services = ({ data }) => {
+export const Services = ({ data = [] }) => {
+  if (!data.length) return <div className="text-center py-8">No Data</div>
+
   return (
     <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 h-full">
-      {data.map(service => (
+      {data.map(service => {
+        // The database stores the icon name; this resolves it to a component
+        const Icon = getServiceIcon(service.icon)
+        return (
         <GlitchCard
-          key={service.title}
+          key={service.id ?? service.title}
           className={clsx(
             "flex flex-col gap-2 items-center justify-center",
             "bg-light-primary-500 dark:text-dark-primary-500"
           )}
         >
           <span className="text-light-primary-500/70 dark:text-dark-primary-500">
-            {service.icon}
+            <Icon sx={{ fontSize: 45 }} />
           </span>
           <h3 className="text-xl font-medium">
             {service.title}
@@ -23,7 +29,8 @@ export const Services = ({ data }) => {
             {service.description}
           </p>
         </GlitchCard>
-      ))}
+        )
+      })}
     </div>
   )
 }

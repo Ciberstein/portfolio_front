@@ -207,7 +207,7 @@ const USER_VARIANTS = {
 const User = ({
   as: As = 'button',
   children = '',
-  variant = 'outline',
+  variant = 'normal',
   color = 'primary',
   size = 'md',
   loading = false,
@@ -239,8 +239,98 @@ const User = ({
   )
 }
 
-// Export as object with Landing and User components
+// ── Icon Button ───────────────────────────────────────────────────────────────
+// For icon-only actions (edit, delete, ...). Always a perfect circle: the size
+// classes set width and height to the same value and the shape is rounded-full,
+// so every action button in the app is identical regardless of its icon.
+//
+// Variants: ghost (on panels and table rows) | overlay (on top of images)
+// Colors:   neutral | danger | primary
+
+const ICON_SIZES = {
+  sm: 'size-7',
+  md: 'size-9',
+  lg: 'size-11',
+}
+
+const ICON_VARIANTS = {
+  ghost: {
+    neutral: clsx(
+      'text-neutral-400',
+      'hover:text-neutral-700 dark:hover:text-neutral-200',
+      'hover:bg-portal-border dark:hover:bg-dark-portal-border',
+      'transition-colors',
+    ),
+    danger: clsx(
+      'text-neutral-400',
+      'hover:text-red-500 hover:bg-red-400/10',
+      'transition-colors',
+    ),
+    primary: clsx(
+      'text-neutral-400',
+      'hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-400/10',
+      'transition-colors',
+    ),
+  },
+  overlay: {
+    neutral: clsx(
+      'bg-black/60 text-white',
+      'hover:bg-black/80',
+      'transition-colors',
+    ),
+    danger: clsx(
+      'bg-red-500/80 text-white',
+      'hover:bg-red-500',
+      'transition-colors',
+    ),
+    primary: clsx(
+      'bg-cyan-500/80 text-white',
+      'hover:bg-cyan-500',
+      'transition-colors',
+    ),
+  },
+}
+
+const Icon = ({
+  as: As = 'button',
+  children = '',
+  variant = 'ghost',
+  color = 'neutral',
+  size = 'md',
+  loading = false,
+  className = '',
+  ...props
+}) => {
+  const isDisabled = props.disabled || loading
+  const cursor = isDisabled
+    ? BUTTON_CURSORS['disabled']
+    : loading
+    ? BUTTON_CURSORS['loading']
+    : BUTTON_CURSORS['normal']
+
+  return (
+    <As
+      type={As === 'button' ? (props.type ?? 'button') : undefined}
+      disabled={isDisabled}
+      className={clsx(
+        // shrink-0 keeps it circular inside flex rows that would squeeze it
+        'inline-flex items-center justify-center rounded-full shrink-0',
+        'disabled:opacity-40',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-500/50',
+        cursor,
+        ICON_VARIANTS[variant][color],
+        ICON_SIZES[size],
+        className
+      )} {...props}
+    >
+      {children}
+    </As>
+  )
+}
+
+// Export as object with Landing, User and Icon components
 export const Button = {
   Landing,
   User,
+  Icon,
 }

@@ -287,7 +287,7 @@ export const AccountsPage = () => {
   const totalPages = Math.ceil(total / LIMIT)
 
   return (
-    <div className="flex flex-col gap-5 overflow-auto h-full">
+    <div className="flex flex-col gap-5">
       <div className="flex items-center justify-between gap-4">
         <h1 className="text-lg font-semibold text-neutral-900 dark:text-white">Accounts</h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400">{total} registered</p>
@@ -360,12 +360,9 @@ export const AccountsPage = () => {
                     {new Date(account.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => setSelected(account)}
-                      className="p-1.5 rounded text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-portal-border dark:hover:bg-dark-portal-border transition-colors cursor-pointer"
-                    >
+                    <Button.Icon onClick={() => setSelected(account)}>
                       <EditOutlined sx={{ fontSize: 16 }} />
-                    </button>
+                    </Button.Icon>
                   </td>
                 </tr>
               ))}

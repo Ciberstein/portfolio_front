@@ -106,7 +106,7 @@ const MailDialog = ({ mail, onClose, onDelete, onReply }) => {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="font-semibold text-neutral-900 dark:text-white text-base">{mail.subject}</h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">{mail.email}</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">{mail.email}</p>
             </div>
             <p className="text-xs text-neutral-400 shrink-0">{new Date(mail.createdAt).toLocaleString()}</p>
           </div>
@@ -116,13 +116,10 @@ const MailDialog = ({ mail, onClose, onDelete, onReply }) => {
           </div>
 
           <div className="flex gap-2 justify-end border-t border-portal-border dark:border-dark-portal-border pt-3">
-            <button
-              onClick={handleDelete}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md text-red-500 dark:text-red-400 border border-red-300 dark:border-red-500/40 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors cursor-pointer"
-            >
+            <Button.User color="danger" className="gap-1.5" onClick={handleDelete}>
               <DeleteOutlined sx={{ fontSize: 16 }} />
               Delete
-            </button>
+            </Button.User>
             <button
               onClick={onReply}
               className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md border border-portal-border dark:border-dark-portal-border text-neutral-600 dark:text-neutral-300 hover:bg-portal-panel dark:hover:bg-dark-portal-panel transition-colors cursor-pointer"
@@ -153,7 +150,7 @@ const SentDialog = ({ mail, onClose, onDelete }) => {
           <div className="flex items-start justify-between gap-4">
             <div>
               <h2 className="font-semibold text-neutral-900 dark:text-white text-base">{mail.subject}</h2>
-              <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">To: {mail.recipient}</p>
+              <p className="text-sm text-neutral-500 dark:text-neutral-400">To: {mail.recipient}</p>
             </div>
             <p className="text-xs text-neutral-400 shrink-0">{new Date(mail.createdAt).toLocaleString()}</p>
           </div>
@@ -292,12 +289,12 @@ const InboxTab = ({ onCompose }) => {
                     {new Date(mail.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
-                    <button
+                    <Button.Icon
+                      color="danger"
                       onClick={async () => { await api.delete(`${API_ROUTES.ADMIN}/mails/${mail.id}`); load() }}
-                      className="p-1.5 rounded text-neutral-400 hover:text-red-500 hover:bg-red-400/10 transition-colors cursor-pointer"
                     >
                       <DeleteOutlined sx={{ fontSize: 16 }} />
-                    </button>
+                    </Button.Icon>
                   </td>
                 </tr>
               ))}
@@ -408,12 +405,11 @@ const SentTab = () => {
                     {new Date(mail.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
-                    <button
+                    <Button.Icon color="danger" size="md"
                       onClick={async () => { await api.delete(`${API_ROUTES.ADMIN}/mails/sent/${mail.id}`); load() }}
-                      className="p-1.5 rounded text-neutral-400 hover:text-red-500 hover:bg-red-400/10 transition-colors cursor-pointer"
-                    >
+                      >
                       <DeleteOutlined sx={{ fontSize: 16 }} />
-                    </button>
+                    </Button.Icon>
                   </td>
                 </tr>
               ))}
@@ -457,7 +453,7 @@ export const MailsPage = () => {
   ]
 
   return (
-    <div className="flex flex-col gap-5 overflow-auto h-full">
+    <div className="flex flex-col gap-5">
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center border border-portal-border dark:border-dark-portal-border rounded-md overflow-hidden">

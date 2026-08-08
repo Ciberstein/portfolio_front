@@ -3,8 +3,7 @@ import { useForm, Controller } from 'react-hook-form'
 import {
   AddOutlined, EditOutlined, DeleteOutlined, ImageOutlined,
   WorkOutlined, BusinessOutlined, LocationOnOutlined, LanguageOutlined,
-  CategoryOutlined, CalendarTodayOutlined,
-} from '@mui/icons-material'
+  CategoryOutlined, CalendarTodayOutlined, FormatListBulletedOutlined } from '@mui/icons-material'
 import { Chip, Dialog, DialogContent } from '@mui/material'
 import api from '../../../../api/axios'
 import { API_ROUTES } from '../../../../api/routes'
@@ -40,6 +39,7 @@ const ExperienceDialog = ({ item, types, onClose, onSaved }) => {
       typeId:   item?.typeId   ?? types[0]?.id ?? '',
       startAt:  item?.startAt  || '',
       endsAt:   item?.endsAt   || '',
+      description: item?.description || '',
     },
   })
 
@@ -134,6 +134,17 @@ const ExperienceDialog = ({ item, types, onClose, onSaved }) => {
             />
           </div>
 
+          {/* One line per bullet: this is what the downloadable CV prints
+              under the role. The landing does not show it. */}
+          <Input.User
+            as="textarea"
+            label={<>Responsibilities <span className="font-normal text-neutral-400">(one per line, CV only)</span></>}
+            icon={<FormatListBulletedOutlined sx={{ fontSize: 18 }} />}
+            {...register('description')}
+            rows={4}
+            placeholder={"Desarrollo y mantenimiento de sistemas internos.\nAutomatización de procesos..."}
+          />
+
           {error && <p className="text-sm text-red-500">{error}</p>}
 
           <div className="flex gap-2 justify-end pt-1">
@@ -182,7 +193,7 @@ const TypesPanel = ({ types, onAdded, onDeleted }) => {
     <Panel className="flex flex-col gap-3">
       <div>
         <p className="text-sm font-semibold text-neutral-900 dark:text-white">Types</p>
-        <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
           Categories available when creating an experience entry
         </p>
       </div>
@@ -297,18 +308,14 @@ export const ExperiencePage = () => {
                   <td className="px-4 py-3 text-xs text-neutral-500 dark:text-neutral-400">{exp.location}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1 justify-end">
-                      <button
-                        onClick={() => setDialog(exp)}
-                        className="p-1.5 rounded text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-portal-border dark:hover:bg-dark-portal-border transition-colors cursor-pointer"
-                      >
+                      <Button.Icon onClick={() => setDialog(exp)}>
                         <EditOutlined sx={{ fontSize: 15 }} />
-                      </button>
-                      <button
+                      </Button.Icon>
+                      <Button.Icon color="danger" size="md"
                         onClick={async () => { await api.delete(`${BASE}/experience/${exp.id}`); loadAll() }}
-                        className="p-1.5 rounded text-neutral-400 hover:text-red-500 hover:bg-red-400/10 transition-colors cursor-pointer"
-                      >
+                        >
                         <DeleteOutlined sx={{ fontSize: 15 }} />
-                      </button>
+                      </Button.Icon>
                     </div>
                   </td>
                 </tr>

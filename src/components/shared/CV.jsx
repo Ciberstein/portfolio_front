@@ -2,243 +2,189 @@ import { CloudDownload } from '@mui/icons-material'
 import { Tooltip } from '@mui/material'
 import React from 'react'
 import clsx from 'clsx';
+import { useDispatch, useSelector } from 'react-redux';
 import { useReactToPrint } from 'react-to-print';
+import { skillsThunk } from '../../store/slices/skills.slice';
+import { experienceThunk } from '../../store/slices/experience.slice';
+import { educationThunk } from '../../store/slices/education.slice';
+import { landingThunk } from '../../store/slices/landing.slice';
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
-const Document = ({ contentRef, data }) => {
+// DATEONLY values arrive as "YYYY-MM-DD". Parsing them with new Date() would
+// read them as UTC midnight and shift the month backwards in western
+// timezones, so the parts are taken from the string itself.
+const parts = (value) => {
+  if (!value) return null
+  const [year, month] = String(value).split('-')
+  return { year, month: MONTHS[parseInt(month, 10) - 1] }
+}
 
+const stamp = (value) => {
+  const p = parts(value)
+  return p ? `${p.month} ${p.year}` : ''
+}
 
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }
+// Reproduces how the periods read on the printed CV: a single month when start
+// and end fall together, just the year when only an end date is known, and
+// "Present" for anything still ongoing.
+const period = (startAt, endsAt) => {
+  if (!startAt && !endsAt) return ''
+  if (!startAt) return parts(endsAt).year
+  if (!endsAt) return `${stamp(startAt)} - Present`
+  const from = stamp(startAt)
+  const to = stamp(endsAt)
+  return from === to ? from : `${from} - ${to}`
+}
+
+// Links are stored as full URLs so the footer can open them. The CV prints
+// them as plain text, where the protocol is noise.
+const readable = (url) =>
+  (url || '').replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '')
+
+// Bullets are stored one per line
+const bullets = (description) =>
+  (description || '')
+    .split('\n')
+    .map(l => l.trim())
+    .filter(Boolean)
+
+const Document = ({ contentRef, settings, languages, skills, education, experience }) => {
+
+  const technologies = skills.filter(s => s.category === 'technology')
+  const programming = skills.filter(s => s.category !== 'technology')
+
+  const contact = [
+    settings.contact_email,
+    languages.map(l => l.name).join(' / '),
+  ].filter(Boolean)
+
+  const phones = [settings.contact_phone, settings.contact_phone_alt].filter(Boolean)
+
+  const links = [settings.contact_website, settings.contact_linkedin]
+    .filter(Boolean)
+    .map(readable)
 
   return (
     <div className="hidden">
       <div ref={contentRef} className="px-6 py-4 flex flex-col gap-4">
-        <h1 className="text-2xl text-center font-medium">Luis Daniel Rojas Urdaneta</h1>
+        <h1 className="text-2xl text-center font-medium">{settings.profile_name}</h1>
         <div className="grid grid-cols-3 gap-2 w-full text-sm">
 
           <div className="flex flex-col items-start">
-            <span className="text-zinc-600">dev.luis.rojas@gmail.com</span>
-            <span className="text-zinc-600">Español / Inglés</span>
+            {contact.map(line => (
+              <span key={line} className="text-zinc-600">{line}</span>
+            ))}
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-zinc-600">+57 300 335 5560</span>
-            <span className="text-zinc-600">+57 302 264 4591</span>
+            {phones.map(phone => (
+              <span key={phone} className="text-zinc-600">{phone}</span>
+            ))}
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-zinc-600">cyberstein.net</span>
-            <span className="text-zinc-600">linkedin.com/in/cyberstein</span>
+            {links.map(link => (
+              <span key={link} className="text-zinc-600">{link}</span>
+            ))}
           </div>
 
         </div>
 
-        <section className="flex flex-col gap-2">
+        {skills.length > 0 && (
+          <section className="flex flex-col gap-2">
 
-          <div className="border-b">
-            <h3 className="text-xl font-medium">Habilidades</h3>
-          </div>
-
-
-          <div className="grid grid-cols-2 gap-4">
-
-
-            <div className="flex flex-col">
-              <span className="font-medium">Tecnologías:</span>
-              <ul className="grid! grid-cols-3! w-full! text-sm! raw-html">
-                <li>CSS</li>
-                <li>React</li>
-                <li>Next.js</li>
-                <li>Docker</li>
-                <li>TypeScript</li>
-                <li>Tailwind</li>
-                <li>Remix</li>
-                <li>Bootstrap</li>
-                <li>Vite</li>
-                <li>jQuery</li>
-                <li>Node.js</li>
-                <li>Git</li>
-                <li>Express</li>
-                <li>Postgres</li>
-                <li>MySQL</li>
-                <li>MongoDB</li>
-                <li>Virtualbox</li>
-              </ul>
+            <div className="border-b">
+              <h3 className="text-xl font-medium">Habilidades</h3>
             </div>
 
 
-            <div className="flex flex-col">
-              <span className="font-medium">Lenguajes de programación:</span>
-              <ul className="grid! grid-cols-3! w-full! text-sm! raw-html">
-                <li>Javascript</li>
-                <li>PHP</li>
-                <li>Python</li>
-                <li>C++</li>
-                <li>C#</li>
-                <li>Solidity</li>
-              </ul>
-            </div>
-
-          </div>
+            <div className="grid grid-cols-2 gap-4">
 
 
-        </section>
+              {technologies.length > 0 && (
+                <div className="flex flex-col">
+                  <span className="font-medium">Tecnologías:</span>
+                  <ul className="grid! grid-cols-3! w-full! text-sm! raw-html">
+                    {technologies.map(s => <li key={s.id}>{s.name}</li>)}
+                  </ul>
+                </div>
+              )}
 
 
-        <section className="flex flex-col gap-2">
+              {programming.length > 0 && (
+                <div className="flex flex-col">
+                  <span className="font-medium">Lenguajes de programación:</span>
+                  <ul className="grid! grid-cols-3! w-full! text-sm! raw-html">
+                    {programming.map(s => <li key={s.id}>{s.name}</li>)}
+                  </ul>
+                </div>
+              )}
 
-          <div className="border-b">
-            <h3 className="text-xl font-medium">Educación</h3>
-          </div>
-
-          <div className="flex flex-col gap-2">
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Universidad Alejandro Humboldt</span>
-                <span className="italic text-zinc-600 text-sm">Ingeniería Informática</span>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">2017</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Academlo</span>
-                <span className="italic text-zinc-600 text-sm">Developer Full-stack</span>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">Dec 2022 - May 2023</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Seguridad Cero</span>
-                <span className="italic text-zinc-600 text-sm">Ethical Hacker Professional</span>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">Feb 2023 - May 2023</span>
-              </div>
-            </div>
-
-          </div>
-
-        </section>
-
-        <section className="flex flex-col gap-2">
-
-          <div className="border-b">
-            <h3 className="text-xl font-medium">Experiencia Laboral</h3>
-          </div>
-
-          <div className="flex flex-col gap-2">
-
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Mercado Libre Colombia</span>
-                <span className="italic text-zinc-600 text-sm">Systems Developer</span>
-                <ul className="text-sm! raw-html">
-                  <li>Desarrollo y mantenimiento de sistemas internos.</li>
-                  <li>Automatización de procesos referentes a soporte de usuario.</li>
-                  <li>Diseño y maquetado de aplicaciones.</li>
-                  <li>Liderar y proponer iniciativas de desarrollo.</li>
-                </ul>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">Bogotá D.C, Colombia</span>
-                <span className="text-sm">Mar 2024 - Mar 2025</span>
-              </div>
             </div>
 
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Membo Inventos</span>
-                <span className="italic text-zinc-600 text-sm">Programador Full-Stack</span>
-                <ul className="text-sm! raw-html">
-                  <li>Desarrollo de aplicaciones web (backend & frontend) en diversas tecnologías como Laravel, React, Node.js, entre otras.</li>
-                  <li>Trabajo en equipo, cumplimiento de proyectos en tiempo récord, desarrollo de sistemas multiplataforma desde cero y continuación de proyectos existentes.</li>
-                  <li>Desarrollo de nuevas tecnologías (hardware) únicas en su tipo.</li>
-                </ul>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">Bogotá D.C, Colombia</span>
-                <span className="text-sm">May 2023 - Mar 2024</span>
-              </div>
+          </section>
+        )}
+
+
+        {education.length > 0 && (
+          <section className="flex flex-col gap-2">
+
+            <div className="border-b">
+              <h3 className="text-xl font-medium">Educación</h3>
             </div>
 
+            <div className="flex flex-col gap-2">
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Academlo</span>
-                <span className="italic text-zinc-600 text-sm">Programador Full-Stack</span>
-                <ul className="text-sm! raw-html">
-                  <li>Trabajé en un grupo de programadores web realizando proyectos de desarrollo backend y frontend.</li>
-                  <li>Asistí a evaluaciones de desempeño por parte de profesionales en el tema.</li>
-                  <li>Desarrolle individualmente y en equipo varias aplicaciones web requeridas por los líderes</li>
-                </ul>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">Bogotá D.C, Colombia</span>
-                <span className="text-sm">Dec 2022</span>
-              </div>
+              {education.map(item => (
+                <div key={item.id} className="grid grid-cols-3 gap-4">
+                  <div className="flex flex-col items-start col-span-2">
+                    <span className="font-medium">{item.institution}</span>
+                    <span className="italic text-zinc-600 text-sm">{item.title}</span>
+                  </div>
+                  <div className="flex flex-col items-end justify-center">
+                    <span className="text-sm">{period(item.startAt, item.endsAt)}</span>
+                  </div>
+                </div>
+              ))}
+
             </div>
 
+          </section>
+        )}
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Cybertay</span>
-                <span className="italic text-zinc-600 text-sm">Supervisor de sistemas</span>
-                <ul className="text-sm! raw-html">
-                  <li>Encargado del y mantenimiento y actualización del sistema interno de la empresa.</li>
-                  <li>Supervisor del personal de desarrollo y soporte técnico del sistema.</li>
-                  <li>Manejo y control de infraestructura (servidores, equipos).</li>
-                </ul>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">Atlántico, Colombia</span>
-                <span className="text-sm">Jan 2020 - Oct 2022</span>
-              </div>
+        {experience.length > 0 && (
+          <section className="flex flex-col gap-2">
+
+            <div className="border-b">
+              <h3 className="text-xl font-medium">Experiencia Laboral</h3>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Fluid Attacks</span>
-                <span className="italic text-zinc-600 text-sm">Supervisor de sistemas</span>
-                <ul className="text-sm! raw-html">
-                  <li>Detección y reporte de vulnerabilidades de sistemas controlados.</li>
-                </ul>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">Medellín, Colombia</span>
-                <span className="text-sm">Nov 2018 - Jan 2019</span>
-              </div>
+            <div className="flex flex-col gap-2">
+
+              {experience.map(item => (
+                <div key={item.id} className="grid grid-cols-3 gap-4">
+                  <div className="flex flex-col items-start col-span-2">
+                    <span className="font-medium">{item.company}</span>
+                    <span className="italic text-zinc-600 text-sm">{item.role}</span>
+                    {bullets(item.description).length > 0 && (
+                      <ul className="text-sm! raw-html">
+                        {bullets(item.description).map((line, i) => (
+                          <li key={i}>{line}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-end justify-center">
+                    <span className="text-sm">{item.location}</span>
+                    <span className="text-sm">{period(item.startAt, item.endsAt)}</span>
+                  </div>
+                </div>
+              ))}
+
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="flex flex-col items-start col-span-2">
-                <span className="font-medium">Calzados Junior</span>
-                <span className="italic text-zinc-600 text-sm">Administrador de sistemas</span>
-                <ul className="text-sm! raw-html">
-                  <li>Me desempeñé como soporte técnico en áreas de sistemas.</li>
-                  <li>Supervisé el funcionamiento de los servidores, bases de datos y plataforma.</li>
-                  <li>Desarrollé soluciones informáticas para el manejo interno de empleados.</li>
-                </ul>
-              </div>
-              <div className="flex flex-col items-end justify-center">
-                <span className="text-sm">Distrito Capital, Venezuela</span>
-                <span className="text-sm">Nov 2018 - Jan 2019</span>
-              </div>
-            </div>
-
-
-          </div>
-
-        </section>
+          </section>
+        )}
 
 
       </div>
@@ -247,11 +193,29 @@ const Document = ({ contentRef, data }) => {
 };
 
 
-export const CV = ({ data }) => {
+export const CV = () => {
 
   const contentRef  = React.useRef();
+  const dispatch = useDispatch();
 
-  const documentTitle = `Daniel Rojas - CV`
+  const landing    = useSelector(state => state.landing);
+  const skills     = useSelector(state => state.skills);
+  const experience = useSelector(state => state.experience);
+  const education  = useSelector(state => state.education);
+
+  // The download button sits in the footer of every landing page, but only the
+  // home page loads this data. Whatever is still missing is fetched here so the
+  // CV is never printed half empty.
+  React.useEffect(() => {
+    if (!skills.length)     dispatch(skillsThunk());
+    if (!experience.length) dispatch(experienceThunk());
+    if (!education.length)  dispatch(educationThunk());
+    if (!landing.languages.length) dispatch(landingThunk());
+  }, []);
+
+  const settings = landing.settings || {};
+
+  const documentTitle = `${settings.profile_name || 'CV'} - CV`
 
   const handlePrint = useReactToPrint({
     contentRef,
@@ -262,12 +226,19 @@ export const CV = ({ data }) => {
   return (
     <Tooltip title={"Download CV"} placement="top">
       <button className={clsx(
-        "hover:text-light-primary-500/50 hover:dark:text-dark-primary-500 p-1", 
+        "hover:text-light-primary-500/50 hover:dark:text-dark-primary-500 p-1",
         "flex items-center justify-center aspect-square cursor-pointer",
       )} onClick={handlePrint} >
         <CloudDownload />
       </button>
-      <Document contentRef={contentRef} data={data} />
+      <Document
+        contentRef={contentRef}
+        settings={settings}
+        languages={landing.languages}
+        skills={skills}
+        education={education}
+        experience={experience}
+      />
     </Tooltip>
   )
 }

@@ -232,7 +232,7 @@ export const Register = ({ onSuccess }) => {
           <div className="flex gap-2 font-mono text-sm">
             <MarkEmailReadOutlined
               sx={{ fontSize: 18 }}
-              className="shrink-0 mt-0.5 text-light-primary-500 dark:text-dark-primary-500"
+              className="shrink-0 text-light-primary-500 dark:text-dark-primary-500"
             />
             <p className="text-gray-500 dark:text-gray-400">
               Your account was created. We sent a security code to{' '}

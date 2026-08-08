@@ -4,21 +4,25 @@ import { Link } from 'react-router-dom'
 import { FileDownloadOutlined, FingerprintOutlined, GitHub, LinkedIn, LockOutlined, SignalCellularAltOutlined } from '@mui/icons-material'
 import { GlitchCard } from '../../../../material/GlitchCard'
 
-export const Profile = () => {
+export const Profile = ({ data = {} }) => {
+  const { profile_name, profile_avatar, profile_roles = [] } = data
+
   return (
     <GlitchCard className={clsx(
       "flex flex-col gap-4 items-center w-full",
     )}>
-      <div className={clsx(
-        "aspect-square h-40 w-min rounded-full",
-        "border border-light-primary-500 dark:border-dark-primary-500",
-        "bg-center bg-cover bg-[url(/images/avatar.jpg)] dark:bg-[url(/images/avatar.png)]"
-      )}>
-      </div>
-      <h1 className="text-2xl font-medium text-center">Luis Daniel Rojas</h1>
+      <div
+        className={clsx(
+          "aspect-square h-40 w-min rounded-full bg-center bg-cover",
+          "border border-light-primary-500 dark:border-dark-primary-500",
+        )}
+        style={profile_avatar ? { backgroundImage: `url(${profile_avatar})` } : undefined}
+      />
+      <h1 className="text-2xl font-medium text-center">{profile_name}</h1>
       <div className="flex flex-col items-center text-zinc-400">
-        <span className="text-base">Fullstack Developer</span>
-        <span className="text-base">UI/UX Designer</span>
+        {profile_roles.map(role => (
+          <span key={role} className="text-base">{role}</span>
+        ))}
       </div>
     </GlitchCard>
   )

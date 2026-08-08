@@ -87,14 +87,15 @@ const User = ({ children }) => {
       )}>
         <Sidebar.User.Desktop />
         <div className={clsx(
-          "flex flex-col grow overflow-hidden",
+          "flex flex-col grow overflow-hidden gap-2",
           "text-neutral-800 dark:text-neutral-100",
         )}>
-          <div className="flex flex-col gap-2">
-            <Sidebar.User.Mobile />
-            <div className="p-2 lg:p-4 h-full overflow-auto">
-              {children}
-            </div>
+          <Sidebar.User.Mobile />
+          {/* grow + min-h-0 is what makes this scroll: a flex item defaults to
+              min-height:auto, so without min-h-0 it never shrinks below its
+              content and overflow-auto never engages. */}
+          <div className="grow min-h-0 overflow-auto p-2 lg:p-4">
+            {children}
           </div>
         </div>
       </div>
@@ -115,14 +116,15 @@ const Admin = ({ children }) => {
       )}>
         <Sidebar.Admin.Desktop />
         <div className={clsx(
-          "flex flex-col grow overflow-hidden",
+          "flex flex-col grow overflow-hidden gap-2",
           "text-neutral-800 dark:text-neutral-100",
         )}>
-          <div className="flex flex-col gap-2">
-            <Sidebar.Admin.Mobile />
-            <div className="p-2 lg:p-4 h-full overflow-auto">
-              {children}
-            </div>
+          <Sidebar.Admin.Mobile />
+          {/* grow + min-h-0 is what makes this scroll: a flex item defaults to
+              min-height:auto, so without min-h-0 it never shrinks below its
+              content and overflow-auto never engages. */}
+          <div className="grow min-h-0 overflow-auto p-2 lg:p-4">
+            {children}
           </div>
         </div>
       </div>

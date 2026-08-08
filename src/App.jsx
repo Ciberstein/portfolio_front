@@ -37,15 +37,21 @@ function App() {
 
 
           <Route path="/" element={<Protected.User />}>
-            <Route index element={<></>} />
+            <Route index element={<User.Pages.Home />} />
             <Route path="settings" element={<User.Pages.Settings />} />
+            <Route path="quotes" element={<User.Pages.Quotes />} />
+            <Route path="projects" element={<User.Pages.Projects />} />
           </Route>
 
           <Route path="/admin" element={<Protected.Admin />}>
             <Route index element={<Admin.Pages.Dashboard />} />
 
             <Route path="portfolio" element={<Admin.Portfolio.Layout />}>
-              <Route index element={<Navigate to="certificates" replace />} />
+              <Route index element={<Navigate to="profile" replace />} />
+              <Route path="profile" element={<Admin.Portfolio.Profile />} />
+              <Route path="services" element={<Admin.Portfolio.Services />} />
+              <Route path="languages" element={<Admin.Portfolio.Languages />} />
+              <Route path="education" element={<Admin.Portfolio.Education />} />
               <Route path="certificates" element={<Admin.Portfolio.Certificates />} />
               <Route path="skills" element={<Admin.Portfolio.Skills />} />
               <Route path="experience" element={<Admin.Portfolio.Experience />} />
@@ -54,6 +60,8 @@ function App() {
 
             <Route path="accounts" element={<Admin.Pages.Accounts />} />
             <Route path="mails" element={<Admin.Pages.Mails />} />
+            <Route path="quotes" element={<Admin.Pages.Quotes />} />
+            <Route path="client-projects" element={<Admin.Pages.ClientProjects />} />
           </Route>
 
         </Routes>

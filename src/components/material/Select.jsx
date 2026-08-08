@@ -152,7 +152,7 @@ const User = ({
         {label && (
           <label
             htmlFor={props.id}
-            className="text-sm font-medium text-slate-600 dark:text-slate-400"
+            className="text-sm text-gray-400"
           >
             {label}
           </label>

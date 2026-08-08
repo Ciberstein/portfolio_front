@@ -1,31 +1,39 @@
 import React from 'react'
-import { useForm } from 'react-hook-form'
-import { AddOutlined, EditOutlined, DeleteOutlined, AutoAwesomeOutlined } from '@mui/icons-material'
-import { Dialog, DialogContent, Slider } from '@mui/material'
+import clsx from 'clsx'
+import { useForm, Controller } from 'react-hook-form'
+import { AddOutlined, EditOutlined, DeleteOutlined, AutoAwesomeOutlined, CategoryOutlined } from '@mui/icons-material'
+import { Dialog, DialogContent } from '@mui/material'
 import api from '../../../../api/axios'
 import { API_ROUTES } from '../../../../api/routes'
 import { Panel } from '../../../ui'
 import { Button } from '../../../material/Button'
 import { Input } from '../../../material/Input'
+import { Select } from '../../../material/Select'
 
 const BASE = `${API_ROUTES.ADMIN}/portfolio`
+
+// Languages fill the landing's "Programming Skills" card and the CV's
+// languages column; technologies only ever appear on the CV.
+const CATEGORIES = [
+  { value: 'language',   label: 'Programming language' },
+  { value: 'technology', label: 'Technology' },
+]
 
 // ── Dialog ────────────────────────────────────────────────────────────────────
 
 const SkillDialog = ({ item, onClose, onSaved }) => {
-  const [level, setLevel] = React.useState(item?.level ?? 50)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState(null)
 
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: { name: item?.name || '' },
+  const { register, handleSubmit, control, formState: { errors } } = useForm({
+    defaultValues: { name: item?.name || '', category: item?.category || 'language' },
   })
 
   const onSubmit = async (data) => {
     setLoading(true)
     setError(null)
     try {
-      const payload = { name: data.name, level }
+      const payload = { name: data.name, category: data.category }
       if (item) await api.patch(`${BASE}/skills/${item.id}`, payload)
       else      await api.post(`${BASE}/skills`, payload)
       onSaved()
@@ -45,13 +53,15 @@ const SkillDialog = ({ item, onClose, onSaved }) => {
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <Input.User label="Name" icon={<AutoAwesomeOutlined sx={{ fontSize: 18 }} />} error={errors.name?.message} {...register('name', { required: 'Name is required' })} placeholder="Skill name" />
 
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-neutral-500 dark:text-neutral-400">Level</span>
-              <span className="text-xs font-mono text-cyan-500">{level}%</span>
-            </div>
-            <Slider min={1} max={100} step={1} value={level} onChange={(_, v) => setLevel(v)} size="small" />
-          </div>
+          <Controller name="category" control={control} render={({ field }) => (
+            <Select.User
+              label="Category"
+              icon={<CategoryOutlined sx={{ fontSize: 18 }} />}
+              options={CATEGORIES}
+              value={field.value}
+              onChange={field.onChange}
+            />
+          )} />
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
@@ -95,7 +105,7 @@ export const SkillsPage = () => {
           <thead>
             <tr className="border-b border-portal-border dark:border-dark-portal-border text-left">
               <th className="px-4 py-3 font-medium text-neutral-500 dark:text-neutral-400">Skill</th>
-              <th className="px-4 py-3 font-medium text-neutral-500 dark:text-neutral-400">Level</th>
+              <th className="px-4 py-3 font-medium text-neutral-500 dark:text-neutral-400">Category</th>
               <th className="px-4 py-3 w-20"></th>
             </tr>
           </thead>
@@ -110,27 +120,27 @@ export const SkillsPage = () => {
               <tr key={skill.id} className="border-b border-portal-border dark:border-dark-portal-border last:border-0">
                 <td className="px-4 py-3 font-medium text-neutral-900 dark:text-white">{skill.name}</td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1 h-1.5 rounded-full bg-portal-border dark:bg-dark-portal-border overflow-hidden">
-                      <div className="h-full rounded-full bg-cyan-400 transition-all" style={{ width: `${skill.level}%` }} />
-                    </div>
-                    <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400 w-8 text-right">{skill.level}%</span>
-                  </div>
+                  <span className={clsx(
+                    'px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap',
+                    skill.category === 'technology'
+                      ? 'bg-violet-400/10 text-violet-600 dark:text-violet-400'
+                      : 'bg-cyan-400/10 text-cyan-600 dark:text-cyan-400',
+                  )}>
+                    {skill.category === 'technology' ? 'Technology' : 'Language'}
+                  </span>
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-1 justify-end">
-                    <button
+                    <Button.Icon color="neutral" size="md"
                       onClick={() => setDialog(skill)}
-                      className="p-1.5 rounded text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-portal-border dark:hover:bg-dark-portal-border transition-colors cursor-pointer"
-                    >
+                      >
                       <EditOutlined sx={{ fontSize: 15 }} />
-                    </button>
-                    <button
+                    </Button.Icon>
+                    <Button.Icon color="danger" size="md"
                       onClick={async () => { await api.delete(`${BASE}/skills/${skill.id}`); load() }}
-                      className="p-1.5 rounded text-neutral-400 hover:text-red-500 hover:bg-red-400/10 transition-colors cursor-pointer"
-                    >
+                      >
                       <DeleteOutlined sx={{ fontSize: 15 }} />
-                    </button>
+                    </Button.Icon>
                   </div>
                 </td>
               </tr>

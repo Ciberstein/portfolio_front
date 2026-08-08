@@ -394,7 +394,7 @@ const EmailSection = () => {
           <div className="flex flex-col items-center gap-2 font-mono text-sm">
             <MarkEmailReadOutlined
               sx={{ fontSize: 30 }}
-              className="shrink-0 mt-0.5 text-light-primary-500 dark:text-dark-primary-500"
+              className="shrink-0 text-light-primary-500 dark:text-dark-primary-500"
             />
             <p className="text-center text-gray-500 dark:text-gray-400">
               We sent a security code to{' '}
@@ -532,7 +532,7 @@ const PasswordSection = () => {
       {step === 3 && (
         <form onSubmit={form2.handleSubmit(verify)} className="flex flex-col gap-4">
           <div className="flex gap-2">
-            <MarkEmailReadOutlined sx={{ fontSize: 18 }} className="shrink-0 mt-0.5 text-cyan-500" />
+            <MarkEmailReadOutlined sx={{ fontSize: 18 }} className="shrink-0 text-cyan-500" />
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
               We sent a security code to{' '}
               <span className="font-medium text-neutral-900 dark:text-white break-all">{account?.email}</span>

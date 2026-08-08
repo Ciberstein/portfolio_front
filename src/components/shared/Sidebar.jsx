@@ -7,6 +7,7 @@ import {
   HomeOutlined, DashboardOutlined, PeopleOutlined, SettingsOutlined,
   AdminPanelSettingsOutlined, LogoutOutlined, MenuOutlined, CloseOutlined,
   LightModeOutlined, DarkModeOutlined, MailOutlined, FolderOutlined,
+  RequestQuoteOutlined, FolderSpecialOutlined,
 } from '@mui/icons-material';
 import { Drawer, Tooltip } from '@mui/material';
 import { toggleDarkThunk } from '../../store/slices/dark.slice';
@@ -51,6 +52,8 @@ const useSidebar = () => {
 
 const USER_NAV = [
   { path: '/', label: 'Home', icon: HomeOutlined, exact: true },
+  { path: '/quotes', label: 'Quotes', icon: RequestQuoteOutlined },
+  { path: '/projects', label: 'Projects', icon: FolderSpecialOutlined },
 ];
 
 const USER_MENU = [
@@ -60,6 +63,8 @@ const USER_MENU = [
 
 const ADMIN_NAV = [
   { path: '/admin',           label: 'Overview',  icon: DashboardOutlined, exact: true },
+  { path: '/admin/quotes',          label: 'Quotes',   icon: RequestQuoteOutlined },
+  { path: '/admin/client-projects', label: 'Projects', icon: FolderSpecialOutlined },
   { path: '/admin/portfolio', label: 'Portfolio', icon: FolderOutlined },
   { path: '/admin/accounts',  label: 'Accounts',  icon: PeopleOutlined },
   { path: '/admin/mails',     label: 'Mails',     icon: MailOutlined },
@@ -138,7 +143,7 @@ export const SidebarDesktop = ({ items, homePath, menuItems }) => {
           >
             <div className="px-4 py-3 border-b border-black/5 dark:border-white/10">
               <p className="font-semibold truncate text-neutral-900 dark:text-white">{account?.username}</p>
-              <p className="text-xs truncate text-neutral-500 dark:text-neutral-400 mt-0.5">{account?.email}</p>
+              <p className="text-xs truncate text-neutral-500 dark:text-neutral-400">{account?.email}</p>
             </div>
 
             <div className="p-1">

@@ -218,7 +218,7 @@ export const Login = () => {
           <div className="flex flex-col items-center gap-2 font-mono text-sm">
             <MarkEmailReadOutlined
               sx={{ fontSize: 30 }}
-              className="shrink-0 mt-0.5 text-light-primary-500 dark:text-dark-primary-500"
+              className="shrink-0 text-light-primary-500 dark:text-dark-primary-500"
             />
             <p className="text-center text-gray-500 dark:text-gray-400">
               We sent a security code to{' '}

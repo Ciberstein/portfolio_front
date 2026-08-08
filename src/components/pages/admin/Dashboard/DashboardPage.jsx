@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import {
   PeopleOutlined, MarkEmailUnreadOutlined, WorkspacePremiumOutlined,
   AutoAwesomeOutlined, WorkOutlined, ArrowForwardOutlined, LayersOutlined,
+  RequestQuoteOutlined, FolderSpecialOutlined, PaymentsOutlined,
 } from '@mui/icons-material'
 import api from '../../../../api/axios'
 import { API_ROUTES } from '../../../../api/routes'
@@ -70,9 +71,11 @@ export const DashboardPage = () => {
   const [loading, setLoading] = React.useState(true)
   const [stats, setStats] = React.useState({
     accounts: 0, unread: 0, certificates: 0, skills: 0, experience: 0, projects: 0,
+    openRequests: 0, activeProjects: 0, collected: {}, pendingPayments: 0,
   })
   const [recentMails, setRecentMails] = React.useState([])
   const [recentAccounts, setRecentAccounts] = React.useState([])
+  const [activeProjects, setActiveProjects] = React.useState([])
 
   React.useEffect(() => {
     let cancelled = false
@@ -80,7 +83,9 @@ export const DashboardPage = () => {
     const load = async () => {
       setLoading(true)
       try {
-        const [accounts, unread, mails, certs, skills, experience, projects] = await Promise.all([
+        // allSettled, not all: the client-work endpoints are newer, and one of
+        // them failing should not blank out the whole dashboard.
+        const results = await Promise.allSettled([
           api.get(`${API_ROUTES.ADMIN}/accounts`, { params: { limit: 5 } }),
           api.get(`${API_ROUTES.ADMIN}/mails`,    { params: { limit: 1, unread: true } }),
           api.get(`${API_ROUTES.ADMIN}/mails`,    { params: { limit: 5 } }),
@@ -88,20 +93,40 @@ export const DashboardPage = () => {
           api.get(`${BASE}/skills`),
           api.get(`${BASE}/experience`),
           api.get(`${BASE}/projects`),
+          api.get(`${API_ROUTES.ADMIN}/quotes/requests`),
+          api.get(`${API_ROUTES.ADMIN}/projects`),
+          api.get(`${API_ROUTES.ADMIN}/payments/summary`),
         ])
 
         if (cancelled) return
 
+        const data = results.map(r => (r.status === 'fulfilled' ? r.value.data : null))
+        const [accounts, unread, mails, certs, skills, experience, projects,
+               requests, clientProjects, payments] = data
+
+        const openRequests = (requests || []).filter(
+          r => ['pending', 'reviewing'].includes(r.status)
+        ).length
+
+        const running = (clientProjects || []).filter(
+          p => ['planning', 'in_progress', 'review'].includes(p.status)
+        )
+
         setStats({
-          accounts:     accounts.data.total ?? 0,
-          unread:       unread.data.total ?? 0,
-          certificates: certs.data.length,
-          skills:       skills.data.length,
-          experience:   experience.data.length,
-          projects:     projects.data.length,
+          accounts:        accounts?.total ?? 0,
+          unread:          unread?.total ?? 0,
+          certificates:    certs?.length ?? 0,
+          skills:          skills?.length ?? 0,
+          experience:      experience?.length ?? 0,
+          projects:        projects?.length ?? 0,
+          openRequests,
+          activeProjects:  running.length,
+          collected:       payments?.collected ?? {},
+          pendingPayments: payments?.pendingCount ?? 0,
         })
-        setRecentAccounts(accounts.data.accounts ?? [])
-        setRecentMails(mails.data.mails ?? [])
+        setRecentAccounts(accounts?.accounts ?? [])
+        setRecentMails(mails?.mails ?? [])
+        setActiveProjects(running.slice(0, 5))
       } catch {
         // stats stay at their defaults
       } finally {
@@ -113,11 +138,18 @@ export const DashboardPage = () => {
     return () => { cancelled = true }
   }, [])
 
+  // Collected revenue is grouped by currency; adding them together would be a
+  // meaningless figure, so each is shown on its own.
+  const collectedLabel = Object.entries(stats.collected)
+    .map(([currency, amount]) =>
+      `${Number(amount).toLocaleString('en-US', { maximumFractionDigits: 0 })} ${currency}`)
+    .join(' · ') || '0'
+
   return (
-    <div className="flex flex-col gap-5 overflow-auto h-full">
+    <div className="flex flex-col gap-5">
       <div>
         <h1 className="text-lg font-semibold text-neutral-900 dark:text-white">Overview</h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
           Everything at a glance
         </p>
       </div>
@@ -143,6 +175,88 @@ export const DashboardPage = () => {
             : "bg-neutral-400/10 text-neutral-500 dark:text-neutral-400"}
         />
       </div>
+
+      {/* Client work */}
+      <div className="flex flex-col gap-2">
+        <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+          Client work
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Stat
+            to="/admin/quotes"
+            icon={RequestQuoteOutlined}
+            label="Requests awaiting a quote"
+            value={stats.openRequests}
+            loading={loading}
+            accent={stats.openRequests > 0
+              ? "bg-amber-400/10 text-amber-600 dark:text-amber-400"
+              : "bg-neutral-400/10 text-neutral-500 dark:text-neutral-400"}
+          />
+          <Stat
+            to="/admin/client-projects"
+            icon={FolderSpecialOutlined}
+            label="Active projects"
+            value={stats.activeProjects}
+            loading={loading}
+            accent="bg-cyan-400/10 text-cyan-600 dark:text-cyan-400"
+          />
+          <Stat
+            to="/admin/client-projects"
+            icon={PaymentsOutlined}
+            label={stats.pendingPayments > 0
+              ? `Collected · ${stats.pendingPayments} pending`
+              : 'Collected'}
+            value={collectedLabel}
+            loading={loading}
+            accent="bg-emerald-400/10 text-emerald-600 dark:text-emerald-400"
+          />
+        </div>
+      </div>
+
+      {/* Active projects */}
+      {!loading && activeProjects.length > 0 && (
+        <RecentPanel
+          title="Projects in progress"
+          to="/admin/client-projects"
+          loading={false}
+          isEmpty={false}
+          emptyText=""
+        >
+          {activeProjects.map(project => {
+            const total = project.milestones?.length || 0
+            const done = project.milestones?.filter(m => m.status === 'done').length || 0
+            const percent = total ? Math.round((done / total) * 100) : 0
+            const overdue = project.dueAt && new Date(project.dueAt) < new Date()
+
+            return (
+              <div key={project.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-neutral-900 dark:text-white truncate">
+                    {project.title}
+                  </p>
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+                    {project.account?.username}
+                    {project.dueAt && (
+                      <span className={overdue ? 'text-red-500' : undefined}>
+                        {' · '}{overdue ? 'overdue ' : 'due '}
+                        {new Date(project.dueAt).toLocaleDateString()}
+                      </span>
+                    )}
+                  </p>
+                </div>
+                <div className="w-28 shrink-0 flex items-center gap-2">
+                  <div className="flex-1 h-1.5 rounded-full bg-portal-border dark:bg-dark-portal-border overflow-hidden">
+                    <div className="h-full rounded-full bg-cyan-400 transition-all" style={{ width: `${percent}%` }} />
+                  </div>
+                  <span className="text-xs font-mono text-neutral-500 dark:text-neutral-400 w-8 text-right">
+                    {percent}%
+                  </span>
+                </div>
+              </div>
+            )
+          })}
+        </RecentPanel>
+      )}
 
       {/* Portfolio content */}
       <div className="flex flex-col gap-2">

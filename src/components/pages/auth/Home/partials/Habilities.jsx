@@ -14,6 +14,9 @@ const Bar = ({ data }) => {
 }
 
 export const Habilities = ({ data = [] }) => {
+  // Technologies live in the same table but belong to the CV, not to this card
+  const languages = data.filter(s => s.category !== 'technology')
+
   return (
     <Card
       title="Programming Skills"
@@ -21,7 +24,7 @@ export const Habilities = ({ data = [] }) => {
       icon={<Code sx={{ fontSize: 20 }} />}
     >
       <div className="grid grid-cols-2 gap-2 text-sm">
-        {data.map((hability) => (
+        {languages.map((hability) => (
           <Bar key={hability.name} data={hability} />
         ))}
       </div>

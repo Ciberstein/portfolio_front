@@ -52,7 +52,7 @@ export const LandingHeader = () => {
         </div>
         <div className="flex gap-2 font-medium text-xl">
           <span className="text-cyan-500 dark:text-dark-primary-500">10+</span>
-          <span className="uppercase text-nowrap">Completed proyects</span>
+          <span className="uppercase text-nowrap">Completed projects</span>
         </div>
         <div className="flex gap-2 font-medium text-xl">
           <span className="text-cyan-500 dark:text-dark-primary-500">20+</span>

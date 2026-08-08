@@ -142,22 +142,16 @@ export const CertificatesPage = () => {
               </div>
               <p className="text-sm font-medium text-neutral-700 dark:text-neutral-300 truncate">{cert.title}</p>
               <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button
+                <Button.Icon variant="overlay" color="neutral"
                   onClick={() => setDialog(cert)}
-                  className={clsx("size-8 rounded-lg bg-black/60 text-white hover:bg-black/80 cursor-pointer transition-colors",
-                    "flex justify-center items-center"
-                  )}
-                >
+                  >
                   <EditOutlined sx={{ fontSize: 16 }} />
-                </button>
-                <button
+                  </Button.Icon>
+                <Button.Icon variant="overlay" color="danger"
                   onClick={() => handleDelete(cert.id)}
-                  className={clsx("size-8 rounded-lg bg-red-500/80 text-white hover:bg-red-500 cursor-pointer transition-colors",
-                    "flex justify-center items-center"
-                  )}
-                >
+                  >
                   <DeleteOutlined sx={{ fontSize: 16 }} />
-                </button>
+                  </Button.Icon>
               </div>
             </div>
           ))}

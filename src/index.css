@@ -32,6 +32,15 @@
 }
 
 
+/* For strips that scroll sideways (tab bars): keeps them scrollable while
+   hiding the 8px bar defined below, which looks broken under a pill row. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
