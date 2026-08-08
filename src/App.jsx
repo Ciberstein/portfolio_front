@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { darkThunk } from './store/slices/dark.slice'
 import { Auth, User, Admin } from './components/pages'
 import Protected from './routes'
+import { Toasts } from './components/shared/Toasts'
 import React from 'react'
 import './App.css'
 
@@ -27,6 +28,9 @@ function App() {
 
   return (
     <ThemeProvider theme={dark ? darkTheme : lightTheme}>
+      {/* Outside the Router: an API call can fail on any route, including
+          while one is being replaced. */}
+      <Toasts />
       <Router>
         <Routes>
 

@@ -1,5 +1,22 @@
 import axios from "axios";
 import auth from "../services/auth.services";
+import { notify } from "../utils/notify";
+
+// Surfacing failures here rather than at each call site is deliberate: this runs
+// before any caller's catch, so an empty `catch {}` or a missing one cannot
+// swallow the message. Pass { quiet: true } on requests whose failure is
+// already shown in place, or is expected.
+const report = (err) => {
+  if (err.config?.quiet) return;
+
+  const message =
+    err.response?.data?.message ||
+    (err.response
+      ? `Request failed (${err.response.status})`
+      : "Could not reach the server");
+
+  notify(message, "error");
+};
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -44,6 +61,10 @@ api.interceptors.response.use(
         isRefreshing = false;
       }
     }
+
+    // A 401 that reached this point already survived the refresh attempt, so
+    // it is a real authorisation failure and worth reporting like any other.
+    report(err);
 
     return Promise.reject(err);
   }

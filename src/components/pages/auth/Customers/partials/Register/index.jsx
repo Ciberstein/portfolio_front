@@ -27,7 +27,7 @@ export const Register = ({ onSuccess }) => {
       const res = await api.post(`${API_ROUTES.AUTH}/google`, {
         token: credentialResponse.credential,
         captchaToken,
-      })
+      }, { quiet: true })
 
       if (res.status === 200) {
         // Already has account, redirect to login
@@ -73,7 +73,7 @@ export const Register = ({ onSuccess }) => {
       const res = await api.post(`${API_ROUTES.AUTH}/register`, {
         ...data,
         captchaToken,
-      })
+      }, { quiet: true })
       setPendingAccount(res.data.account)
       setTimeout(() => codeForm.setFocus('code'), 0)
     } catch (err) {
@@ -94,7 +94,7 @@ export const Register = ({ onSuccess }) => {
       await api.post(`${API_ROUTES.AUTH}/register/validation`, {
         accountId: pendingAccount.id,
         code: data.code,
-      })
+      }, { quiet: true })
       setTimeout(() => onSuccess?.(), 1500)
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid code')

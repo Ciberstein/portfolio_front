@@ -165,7 +165,7 @@ const RequestDialog = ({ onClose, onCreated }) => {
 
 // ── Quote card ────────────────────────────────────────────────────────────────
 
-const QuoteCard = ({ quote, onResponded }) => {
+const QuoteCard = ({ quote, onResponded, settled = false }) => {
   const [working, setWorking] = React.useState(null)
   const [error, setError] = React.useState(null)
 
@@ -230,7 +230,10 @@ const QuoteCard = ({ quote, onResponded }) => {
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      {quote.status === 'sent' && !expired && (
+      {/* settled: another quote on this request was already accepted, so this
+          one leads nowhere. The server rejects it too — this only avoids
+          offering a button that is guaranteed to fail. */}
+      {quote.status === 'sent' && !expired && !settled && (
         <div className="flex gap-2">
           <Button.User
             variant="normal" color="success" className="gap-1.5"
@@ -358,6 +361,7 @@ export const QuotesPage = () => {
                           <QuoteCard
                             key={quote.id}
                             quote={quote}
+                            settled={detail.quotes.some(q => q.status === 'accepted')}
                             onResponded={() => { load(); openDetail(request.id) }}
                           />
                         ))

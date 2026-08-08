@@ -38,11 +38,85 @@ const money = (amount, currency) =>
 
 const label = (status) => status.replace('_', ' ')
 
+const isPaid = (milestone) => milestone.payments?.some(p => p.status === 'paid')
+
 const Badge = ({ status }) => (
   <span className={clsx('px-2 py-0.5 rounded text-xs font-medium capitalize shrink-0', PROJECT_BADGE[status])}>
     {label(status)}
   </span>
 )
+
+// ── Settle everything at once ─────────────────────────────────────────────────
+
+const PayAll = ({ project }) => {
+  const [paying, setPaying] = React.useState(false)
+  const [error, setError] = React.useState(null)
+
+  const outstanding = (project.milestones || []).filter(
+    m => Number(m.amount) > 0 && !isPaid(m)
+  )
+
+  // With a single one left the row's own button already does the job, and two
+  // buttons for one charge only invite a double payment.
+  if (outstanding.length < 2) return null
+
+  const currencies = [...new Set(outstanding.map(m => String(m.currency).toUpperCase()))]
+  const total = outstanding.reduce((sum, m) => sum + Number(m.amount), 0)
+
+  // Stripe bills one currency per session; the server refuses too, this just
+  // explains it before the click instead of after.
+  const mixed = currencies.length > 1
+
+  const pay = async () => {
+    setPaying(true)
+    setError(null)
+    try {
+      const { data } = await api.post(`${PAYMENTS}/projects/${project.id}/checkout`, null, { quiet: true })
+      window.location.href = data.url
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not start the payment')
+      setPaying(false)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-2 rounded-xl p-3 bg-portal-surface dark:bg-dark-portal-surface">
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-neutral-900 dark:text-white">
+            Outstanding balance
+          </p>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            {outstanding.length} milestones left to pay
+          </p>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          {!mixed && (
+            <span className="text-base font-semibold text-neutral-900 dark:text-white whitespace-nowrap">
+              {money(total, currencies[0])}
+            </span>
+          )}
+          <Button.User
+            size="sm" variant="normal" className="gap-1.5"
+            loading={paying} disabled={mixed} onClick={pay}
+          >
+            <CreditCardOutlined sx={{ fontSize: 14 }} />
+            Pay all
+          </Button.User>
+        </div>
+      </div>
+
+      {mixed && (
+        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+          These milestones are billed in {currencies.join(' and ')}, so they have
+          to be paid one at a time.
+        </p>
+      )}
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
+    </div>
+  )
+}
 
 // ── Milestone row ─────────────────────────────────────────────────────────────
 
@@ -55,7 +129,7 @@ const MilestoneRow = ({ milestone }) => {
     && milestone.dueAt
     && new Date(milestone.dueAt) < new Date()
 
-  const paid = milestone.payments?.some(p => p.status === 'paid')
+  const paid = isPaid(milestone)
   const payable = !paid && Number(milestone.amount) > 0
 
   const pay = async () => {
@@ -72,7 +146,7 @@ const MilestoneRow = ({ milestone }) => {
   }
 
   return (
-    <div className="flex items-start gap-3 py-2.5">
+    <div className="flex items-center justify-between gap-3 p-2">
       <Icon sx={{ fontSize: 20 }} className={clsx('shrink-0', MILESTONE_COLOR[milestone.status])} />
       <div className="min-w-0 flex-1">
         <p className={clsx(
@@ -94,7 +168,7 @@ const MilestoneRow = ({ milestone }) => {
         {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
       </div>
 
-      <div className="flex flex-col items-end gap-1 shrink-0">
+      <div className="flex items-center gap-4">
         <span className="text-sm font-medium text-neutral-900 dark:text-white whitespace-nowrap">
           {money(milestone.amount, milestone.currency)}
         </span>
@@ -216,30 +290,32 @@ export const ProjectsPage = () => {
                         )}
 
                         {detail.milestones?.length > 0 && (
-                          <div>
-                            <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">
+                          <div className="flex flex-col gap-4">
+                            <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
                               Milestones
                             </p>
-                            <div className="flex flex-col divide-y divide-portal-border dark:divide-dark-portal-border">
+                            <div className={clsx("flex flex-col rounded-xl divide-y divide-portal-border dark:divide-dark-portal-border", 
+                              "border border-portal-border dark:border-dark-portal-border")}>
                               {detail.milestones.map(m => <MilestoneRow key={m.id} milestone={m} />)}
                             </div>
+                            <PayAll project={detail} />
                           </div>
                         )}
 
-                        <div>
-                          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <div className="flex flex-col gap-2">
+                          <p className="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider flex items-center gap-1.5">
                             <TimelineOutlined sx={{ fontSize: 14 }} />
                             Updates
                           </p>
                           {detail.updates?.length > 0 ? (
-                            <div className="flex flex-col gap-3">
+                            <div className="flex flex-col gap-2">
                               {detail.updates.map(update => (
                                 <div key={update.id} className="flex gap-3">
-                                  <div className="flex flex-col items-center shrink-0">
-                                    <span className="size-2 rounded-full bg-cyan-400 mt-1.5" />
+                                  <div className="flex flex-col items-center shrink-0 pt-1.5">
+                                    <span className="size-2 rounded-full bg-cyan-400" />
                                     <span className="w-px flex-1 bg-portal-border dark:bg-dark-portal-border" />
                                   </div>
-                                  <div className="pb-1">
+                                  <div className="flex flex-col">
                                     <p className="text-sm text-neutral-700 dark:text-neutral-300 whitespace-pre-wrap">
                                       {update.body}
                                     </p>

@@ -38,7 +38,7 @@ export const Login = () => {
       const res = await api.post(`${API_ROUTES.AUTH}/google`, {
         token: credentialResponse.credential,
         captchaToken,
-      })
+      }, { quiet: true })
 
       if (res.status === 200) {
         dispatch(accountThunk())
@@ -66,7 +66,7 @@ export const Login = () => {
       const res = await api.post(`${API_ROUTES.AUTH}/login`, {
         ...data,
         captchaToken,
-      })
+      }, { quiet: true })
 
       if (res.status === 200) {
         dispatch(accountThunk())
@@ -92,12 +92,12 @@ export const Login = () => {
       await api.post(`${API_ROUTES.AUTH}/register/validation`, {
         accountId: pendingAccount.id,
         code: data.code,
-      })
+      }, { quiet: true })
 
       const res = await api.post(`${API_ROUTES.AUTH}/login`, {
         ...mainForm.getValues(),
         captchaToken,
-      })
+      }, { quiet: true })
       if (res.status === 200) {
         dispatch(accountThunk())
         setAuth(true)

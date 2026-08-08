@@ -45,10 +45,15 @@ const money = (amount, currency) =>
 const Milestones = ({ projectId, milestones, onChanged }) => {
   const [draft, setDraft] = React.useState({ title: '', amount: '', dueAt: '' })
   const [busy, setBusy] = React.useState(false)
+  const [error, setError] = React.useState(null)
 
   const add = async () => {
-    if (!draft.title.trim()) return
+    if (!draft.title.trim()) {
+      setError('Give the milestone a title')
+      return
+    }
     setBusy(true)
+    setError(null)
     try {
       await api.post(`${BASE}/${projectId}/milestones`, {
         title: draft.title.trim(),
@@ -58,17 +63,35 @@ const Milestones = ({ projectId, milestones, onChanged }) => {
       })
       setDraft({ title: '', amount: '', dueAt: '' })
       onChanged()
-    } catch { } finally { setBusy(false) }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not add the milestone')
+    } finally {
+      setBusy(false)
+    }
   }
 
   const setStatus = async (id, status) => {
-    await api.patch(`${BASE}/${projectId}/milestones/${id}`, { status })
-    onChanged()
+    try {
+      await api.patch(`${BASE}/${projectId}/milestones/${id}`, { status })
+      onChanged()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not update the milestone')
+    }
   }
 
   const remove = async (id) => {
-    await api.delete(`${BASE}/${projectId}/milestones/${id}`)
-    onChanged()
+    try {
+      await api.delete(`${BASE}/${projectId}/milestones/${id}`)
+      onChanged()
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not delete the milestone')
+    }
+  }
+
+  const submitOnEnter = (e) => {
+    if (e.key !== 'Enter') return
+    e.preventDefault()
+    add()
   }
 
   const total = milestones.reduce((sum, m) => sum + Number(m.amount || 0), 0)
@@ -122,7 +145,7 @@ const Milestones = ({ projectId, milestones, onChanged }) => {
               size="sm"
               value={draft.title}
               onChange={e => setDraft({ ...draft, title: e.target.value })}
-              onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), add())}
+              onKeyDown={submitOnEnter}
               placeholder="New milestone"
             />
           </div>
@@ -131,6 +154,7 @@ const Milestones = ({ projectId, milestones, onChanged }) => {
               size="sm" type="number" step="0.01"
               value={draft.amount}
               onChange={e => setDraft({ ...draft, amount: e.target.value })}
+              onKeyDown={submitOnEnter}
               placeholder="Amount"
             />
           </div>
@@ -146,6 +170,8 @@ const Milestones = ({ projectId, milestones, onChanged }) => {
           <AddOutlined sx={{ fontSize: 14 }} />
         </Button.User>
       </div>
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
     </div>
   )
 }
