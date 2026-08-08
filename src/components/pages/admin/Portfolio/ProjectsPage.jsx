@@ -4,7 +4,7 @@ import { useForm, Controller } from 'react-hook-form'
 import {
   AddOutlined, EditOutlined, DeleteOutlined, ImageOutlined,
   TitleOutlined, DescriptionOutlined, CategoryOutlined, LayersOutlined,
-  GitHub, LaunchOutlined, CalendarTodayOutlined, SortOutlined,
+  GitHub, LaunchOutlined, CalendarTodayOutlined,
   StarOutlined, StarBorderOutlined,
 } from '@mui/icons-material'
 import { Chip, Dialog, DialogContent } from '@mui/material'
@@ -88,7 +88,6 @@ const ProjectDialog = ({ item, types, onClose, onSaved }) => {
       liveUrl:     item?.liveUrl     || '',
       stack:       item?.stack       || [],
       featured:    item?.featured    ?? false,
-      order:       item?.order       ?? 0,
       finishedAt:  item?.finishedAt  || '',
       typeId:      item?.typeId      ?? types[0]?.id ?? '',
     },
@@ -216,13 +215,7 @@ const ProjectDialog = ({ item, types, onClose, onSaved }) => {
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3 items-end">
-            <Input.User
-              label="Order"
-              icon={<SortOutlined sx={{ fontSize: 18 }} />}
-              {...register('order')}
-              type="number"
-            />
+          <div className="grid grid-cols-1 gap-3 items-end">
             <Controller name="featured" control={control} render={({ field }) => (
               <Button.User
                 type="button"
