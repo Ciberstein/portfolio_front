@@ -52,7 +52,7 @@ export const CustomersPage = () => {
             </div>
             {/* Tab Content */}
             {active === 'login' && <Login />}
-            {active === 'register' && <Register onSuccess={() => setActive('login')} />}            
+            {active === 'register' && <Register />}            
           </div>
         </Card>
       </div>

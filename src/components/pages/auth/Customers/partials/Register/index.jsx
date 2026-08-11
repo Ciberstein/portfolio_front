@@ -1,7 +1,10 @@
 import React from 'react'
 import clsx from 'clsx'
 import { useForm } from 'react-hook-form'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { Context } from '../../../../../../context'
+import { accountThunk } from '../../../../../../store/slices/account.slice'
 import { Turnstile } from '@marsidev/react-turnstile'
 import { GoogleLogin } from '@react-oauth/google'
 import { Google, MailOutlined, BadgeOutlined, AccountCircleOutlined, LockOutlined, PinOutlined, MarkEmailReadOutlined } from '@mui/icons-material'
@@ -11,7 +14,10 @@ import { Button } from '../../../../../../components/material/Button'
 import { Input } from '../../../../../../components/material/Input'
 import useResendCode from '../../../../../../hooks/useResendCode'
 
-export const Register = ({ onSuccess }) => {
+export const Register = () => {
+  const { setAuth } = React.useContext(Context.Auth)
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const location = useLocation()
   const googleData = location.state?.googleData
 
@@ -91,11 +97,17 @@ export const Register = ({ onSuccess }) => {
     codeForm.resetField('code')
     setError(null)
     try {
+      // Validating the code sets the session cookie, so the account is already
+      // signed in. Sending them back to the login form to retype credentials
+      // they entered a minute ago would just be a dead end.
       await api.post(`${API_ROUTES.AUTH}/register/validation`, {
         accountId: pendingAccount.id,
         code: data.code,
       }, { quiet: true })
-      setTimeout(() => onSuccess?.(), 1500)
+
+      dispatch(accountThunk())
+      setAuth(true)
+      navigate('/')
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid code')
       setTimeout(() => codeForm.setFocus('code'), 0)

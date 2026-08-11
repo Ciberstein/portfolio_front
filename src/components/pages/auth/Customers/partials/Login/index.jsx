@@ -73,6 +73,9 @@ export const Login = () => {
         setAuth(true)
         navigate('/')
       } else if (res.status === 202) {
+        // The token was consumed by the request above. Turnstile tokens are
+        // single use, so the code step has to earn its own.
+        setCaptchaToken(null)
         setPendingAccount(res.data.account)
         setShowCode(true)
         setTimeout(() => codeForm.setFocus('code'), 0)
@@ -89,20 +92,16 @@ export const Login = () => {
     codeForm.resetField('code')
     setError(null)
     try {
+      // Validating the code completes the login: the endpoint sets the session
+      // cookie, so there is no second /login and no second captcha.
       await api.post(`${API_ROUTES.AUTH}/register/validation`, {
         accountId: pendingAccount.id,
         code: data.code,
       }, { quiet: true })
 
-      const res = await api.post(`${API_ROUTES.AUTH}/login`, {
-        ...mainForm.getValues(),
-        captchaToken,
-      }, { quiet: true })
-      if (res.status === 200) {
-        dispatch(accountThunk())
-        setAuth(true)
-        navigate('/')
-      }
+      dispatch(accountThunk())
+      setAuth(true)
+      navigate('/')
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid code')
       setTimeout(() => codeForm.setFocus('code'), 0)
