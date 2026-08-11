@@ -2,7 +2,7 @@ import React from 'react'
 import {
   BadgeOutlined, WorkOutlined, PlaceOutlined, PublicOutlined,
   DescriptionOutlined, CameraAltOutlined, MailOutlined, PhoneOutlined,
-  LanguageOutlined, LinkedIn, GitHub, WhatsApp,
+  LanguageOutlined, LinkedIn, GitHub, WhatsApp, DriveFileRenameOutlineOutlined,
 } from '@mui/icons-material'
 import api from '../../../../api/axios'
 import { API_ROUTES } from '../../../../api/routes'
@@ -46,13 +46,15 @@ export const ProfilePage = () => {
   const load = React.useCallback(async () => {
     setLoading(true)
     try {
-      // The CV contact keys are filed under "social", the rest under "landing"
-      const [landing, social] = await Promise.all([
+      // Three categories: "landing" holds the profile copy, "social" the CV
+      // contact keys, "project" the brand name every outgoing email signs with.
+      const [landing, social, project] = await Promise.all([
         api.get(`${BASE}/config`, { params: { category: 'landing' } }),
         api.get(`${BASE}/config`, { params: { category: 'social' } }),
+        api.get(`${BASE}/config`, { params: { category: 'project' } }),
       ])
       const map = Object.fromEntries(
-        [...landing.data, ...social.data].map(row => [row.key, row.value])
+        [...landing.data, ...social.data, ...project.data].map(row => [row.key, row.value])
       )
       setValues(map)
       setAvatar(map.profile_avatar || null)
@@ -74,6 +76,7 @@ export const ProfilePage = () => {
           location_city:      values.location_city || '',
           about_me:           values.about_me || '',
           ...Object.fromEntries(CONTACT_FIELDS.map(f => [f.key, values[f.key] || ''])),
+          project_name:       values.project_name || '',
         },
       })
       setSuccess(true)
@@ -160,6 +163,16 @@ export const ProfilePage = () => {
           onChange={e => setValues({ ...values, about_me: e.target.value })}
         />
 
+      </Panel>
+
+      <Panel title="Brand" description="Signs every email the system sends and titles the site">
+        <Input.User
+          label="Project name"
+          icon={<DriveFileRenameOutlineOutlined sx={{ fontSize: 18 }} />}
+          value={values.project_name ?? ''}
+          onChange={e => setValues({ ...values, project_name: e.target.value })}
+          placeholder="Cyberstein"
+        />
       </Panel>
 
       <Panel title="Contact" description="Shown in the landing footer and on your downloadable CV">
