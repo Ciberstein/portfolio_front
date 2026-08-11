@@ -1,6 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
 import { NavLink, Outlet } from 'react-router-dom'
+import { CV } from '../../../shared/CV'
 
 const TABS = [
   { to: 'profile',      label: 'Profile' },
@@ -18,11 +19,16 @@ export const PortfolioLayout = () => (
     {/* Stacks below the title on narrow screens: side by side there is no room
         left for seven tabs and the bar ends up unusable. */}
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-      <div className="shrink-0">
-        <h1 className="text-lg font-semibold text-neutral-900 dark:text-white">Portfolio</h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400">
-          Content shown on your public landing page
-        </p>
+      {/* Sits with the title: it acts on the whole section, not on whichever
+          tab happens to be open. */}
+      <div className="flex items-center justify-between gap-3 lg:justify-start shrink-0">
+        <div>
+          <h1 className="text-lg font-semibold text-neutral-900 dark:text-white">Portfolio</h1>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            Content shown on your public landing page
+          </p>
+        </div>
+        <CV.User />
       </div>
 
       {/* overflow-x-auto, not overflow-hidden: what does not fit must stay

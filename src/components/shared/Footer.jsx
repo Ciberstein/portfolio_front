@@ -50,7 +50,7 @@ const Landing = () => {
   return (
     <footer className="flex justify-center items-center pt-2">
       <div className="flex justify-center items-center gap-2">
-        <CV />
+        <CV.Landing />
         <SocialLink url={settings.contact_whatsapp} title="WhatsApp">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" width={24} height={24} fill="currentColor">
             <path d={WHATSAPP_PATH} />

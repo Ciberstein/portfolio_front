@@ -14,10 +14,19 @@ const BASE = `${API_ROUTES.ADMIN}/portfolio`
 
 // Languages fill the landing's "Programming Skills" card and the CV's
 // languages column; technologies only ever appear on the CV.
+// Same keys and order as SKILL_CATEGORIES in the backend; the CV prints one
+// block per group, so the category decides where a skill lands on the document.
 const CATEGORIES = [
-  { value: 'language',   label: 'Programming language' },
-  { value: 'technology', label: 'Technology' },
+  { value: 'language',       label: 'Language' },
+  { value: 'frontend',       label: 'Frontend' },
+  { value: 'backend',        label: 'Backend' },
+  { value: 'database',       label: 'Database' },
+  { value: 'infrastructure', label: 'Infrastructure & Tools' },
+  { value: 'integration',    label: 'Integration' },
+  { value: 'practice',       label: 'Practice' },
 ]
+
+const CATEGORY_LABEL = Object.fromEntries(CATEGORIES.map(c => [c.value, c.label]))
 
 // ── Dialog ────────────────────────────────────────────────────────────────────
 
@@ -122,11 +131,11 @@ export const SkillsPage = () => {
                 <td className="px-4 py-3">
                   <span className={clsx(
                     'px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap',
-                    skill.category === 'technology'
-                      ? 'bg-violet-400/10 text-violet-600 dark:text-violet-400'
-                      : 'bg-cyan-400/10 text-cyan-600 dark:text-cyan-400',
+                    skill.category === 'language'
+                      ? 'bg-cyan-400/10 text-cyan-600 dark:text-cyan-400'
+                      : 'bg-violet-400/10 text-violet-600 dark:text-violet-400',
                   )}>
-                    {skill.category === 'technology' ? 'Technology' : 'Language'}
+                    {CATEGORY_LABEL[skill.category] || skill.category}
                   </span>
                 </td>
                 <td className="px-4 py-3">

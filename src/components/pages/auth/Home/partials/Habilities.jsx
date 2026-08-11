@@ -14,8 +14,9 @@ const Bar = ({ data }) => {
 }
 
 export const Habilities = ({ data = [] }) => {
-  // Technologies live in the same table but belong to the CV, not to this card
-  const languages = data.filter(s => s.category !== 'technology')
+  // The card is titled "Programming Skills": only the language group belongs
+  // here. Every other category exists for the CV.
+  const languages = data.filter(s => s.category === 'language')
 
   return (
     <Card
