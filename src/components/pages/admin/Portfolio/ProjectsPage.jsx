@@ -369,7 +369,16 @@ export const ProjectsPage = () => {
               className="relative group rounded-xl overflow-hidden bg-portal-panel dark:bg-dark-portal-panel p-1.5 flex flex-col gap-2"
             >
               <div className="aspect-video overflow-hidden rounded-lg">
-                <img src={project.image} className="w-full h-full object-cover" alt={project.title} />
+                {/* Dashed here, unlike the landing: in the panel a missing
+                    image is something to act on. */}
+                {project.image ? (
+                  <img src={project.image} className="w-full h-full object-cover" alt={project.title} />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center gap-1 border-2 border-dashed border-portal-border dark:border-dark-portal-border text-neutral-400 dark:text-neutral-600">
+                    <ImageOutlined sx={{ fontSize: 28 }} />
+                    <span className="text-xs">No image</span>
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col gap-1.5 px-1 pb-1">

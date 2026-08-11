@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { GitHub, LaunchOutlined } from '@mui/icons-material'
+import { GitHub, LaunchOutlined, TerminalOutlined } from '@mui/icons-material'
 
 export const Projects = ({ data = [] }) => {
   if (!data?.length) return <div className="text-center py-8">No Data</div>
@@ -16,10 +16,24 @@ export const Projects = ({ data = [] }) => {
             "hover:border-light-primary-500 dark:hover:border-dark-primary-500",
           )}
         >
-          <div
-            className="h-40 bg-center bg-cover"
-            style={{ backgroundImage: `url(${project.image})` }}
-          />
+          {/* Solid panel rather than a dashed outline: on the public site a
+              missing image should read as a deliberate placeholder, not as a
+              gap waiting to be filled. An empty src also makes some browsers
+              re-request the current page. */}
+          {project.image ? (
+            <div
+              className="h-40 bg-center bg-cover"
+              style={{ backgroundImage: `url(${project.image})` }}
+            />
+          ) : (
+            <div className={clsx(
+              "h-40 flex items-center justify-center",
+              "bg-light-primary-500/5 dark:bg-dark-primary-500/5",
+              "text-light-primary-500/40 dark:text-dark-primary-500/40",
+            )}>
+              <TerminalOutlined sx={{ fontSize: 52 }} />
+            </div>
+          )}
 
           <div className="flex items-start justify-between gap-2">
             <h3 className="text-lg font-bold">{project.title}</h3>
