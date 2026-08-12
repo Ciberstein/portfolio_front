@@ -2,7 +2,7 @@ import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { Card } from '../../../../ui';
 import { Translate } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import React, { use } from 'react'
+import React from 'react'
 
 
 export const Languages = ({ data = [] }) => {

@@ -1,5 +1,4 @@
 import React from 'react'
-import clsx from 'clsx'
 import { useSearchParams } from 'react-router-dom'
 import { TerminalOutlined } from '@mui/icons-material'
 import Layouts from '../../../layouts'
