@@ -1,7 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
 import { CheckOutlined, CloseOutlined } from '@mui/icons-material'
-import { Tooltip } from '@mui/material'
 
 // ── Card (landing) ────────────────────────────────────────────────────────────
 // Terminal-style card used in the public/auth layouts
@@ -29,11 +28,9 @@ export const Card = ({
         {icon && icon}
         <h2 className="font-medium uppercase">{title}</h2>
       </div>
-      <Tooltip title="Clear form" placement="left">
-        <button className="cursor-pointer" onClick={onClose}>
-          <CloseOutlined />
-        </button>
-      </Tooltip>
+      <button className="cursor-pointer" onClick={onClose}>
+        <CloseOutlined />
+      </button>
     </div>
     <div className="p-3">{children}</div>
   </As>
