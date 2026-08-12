@@ -64,6 +64,7 @@ function App() {
 
             <Route path="accounts" element={<Admin.Pages.Accounts />} />
             <Route path="mails" element={<Admin.Pages.Mails />} />
+            <Route path="jobs" element={<Admin.Pages.Jobs />} />
             <Route path="quotes" element={<Admin.Pages.Quotes />} />
             <Route path="client-projects" element={<Admin.Pages.ClientProjects />} />
           </Route>

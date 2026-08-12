@@ -7,6 +7,7 @@ import {
   HomeOutlined, DashboardOutlined, PeopleOutlined, SettingsOutlined,
   AdminPanelSettingsOutlined, LogoutOutlined, MenuOutlined, CloseOutlined,
   LightModeOutlined, DarkModeOutlined, MailOutlined, FolderOutlined,
+  TravelExploreOutlined,
   RequestQuoteOutlined, FolderSpecialOutlined,
 } from '@mui/icons-material';
 import { Drawer, Tooltip } from '@mui/material';
@@ -68,6 +69,7 @@ const ADMIN_NAV = [
   { path: '/admin/portfolio', label: 'Portfolio', icon: FolderOutlined },
   { path: '/admin/accounts',  label: 'Accounts',  icon: PeopleOutlined },
   { path: '/admin/mails',     label: 'Mails',     icon: MailOutlined },
+  { path: '/admin/jobs',      label: 'Job scout', icon: TravelExploreOutlined },
 ];
 
 const ADMIN_MENU = [

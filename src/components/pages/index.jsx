@@ -15,6 +15,7 @@ import { AccountsPage as AdminAccounts } from "./admin/Accounts/AccountsPage";
 import { MailsPage as AdminMails } from "./admin/Mails/MailsPage";
 import { QuotesPage as AdminQuotes } from "./admin/Quotes/QuotesPage";
 import { ProjectsPage as AdminClientProjects } from "./admin/Projects/ProjectsPage";
+import { JobsPage as AdminJobs } from "./admin/Jobs/JobsPage";
 import { PortfolioLayout } from "./admin/Portfolio/PortfolioLayout";
 import { CertificatesPage } from "./admin/Portfolio/CertificatesPage";
 import { SkillsPage } from "./admin/Portfolio/SkillsPage";
@@ -50,6 +51,7 @@ export const Admin = {
     Mails: AdminMails,
     Quotes: AdminQuotes,
     ClientProjects: AdminClientProjects,
+    Jobs: AdminJobs,
   },
   Portfolio: {
     Layout: PortfolioLayout,
