@@ -3,12 +3,15 @@ import clsx from 'clsx'
 import {
   TravelExploreOutlined, AutoAwesomeOutlined, LaunchOutlined,
   BusinessOutlined, PlaceOutlined, TrendingUpOutlined, DeleteOutlined,
+  TuneOutlined, SearchOutlined,
 } from '@mui/icons-material'
 import api from '../../../../api/axios'
 import { API_ROUTES } from '../../../../api/routes'
 import { Panel } from '../../../ui'
 import { Button } from '../../../material/Button'
 import { Select } from '../../../material/Select'
+import { Input } from '../../../material/Input'
+import { Link } from 'react-router-dom'
 
 const BASE = `${API_ROUTES.ADMIN}/jobs`
 
@@ -148,7 +151,6 @@ const OfferCard = ({ offer, onChanged }) => {
         <div className="ml-auto flex items-center gap-2">
           <div className="w-40">
             <Select.User
-              size="sm"
               options={STATUSES}
               value={offer.status}
               onChange={setStatus}
@@ -160,28 +162,110 @@ const OfferCard = ({ offer, onChanged }) => {
               forwards `disabled` to the element, and React warns on a
               non-boolean attribute for an <a>. */}
           {offer.url && (
-            <a
-              href={offer.url}
+            <Button.User
+              as={Link}
+              to={offer.url}
               target="_blank"
               rel="noopener noreferrer"
-              className={clsx(
-                'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm',
-                'border-2 border-portal-border dark:border-dark-portal-border',
-                'text-neutral-600 dark:text-neutral-300',
-                'hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors',
-              )}
+              variant="outline"
+              className="flex items-center gap-1"
             >
-              <LaunchOutlined sx={{ fontSize: 14 }} />
+              <LaunchOutlined sx={{ fontSize: 18 }} />
               Open
-            </a>
+            </Button.User>
           )}
 
-          <Button.Icon color="danger" size="sm" onClick={remove} disabled={busy}>
+          <Button.Icon color="danger" onClick={remove} disabled={busy}>
             <DeleteOutlined sx={{ fontSize: 15 }} />
           </Button.Icon>
         </div>
       </div>
     </div>
+  )
+}
+
+// ── Search preferences ────────────────────────────────────────────────────────
+// These decide what is stored, not just what is shown, so they are edited here
+// rather than set in the environment where changing them would need a deploy.
+
+const Preferences = ({ onSaved }) => {
+  const [values, setValues] = React.useState(null)
+  const [saving, setSaving] = React.useState(false)
+  const [saved, setSaved] = React.useState(false)
+  const [open, setOpen] = React.useState(false)
+
+  React.useEffect(() => {
+    api.get(`${BASE}/preferences`).then(r => setValues(r.data)).catch(() => {})
+  }, [])
+
+  const save = async () => {
+    setSaving(true)
+    setSaved(false)
+    try {
+      const { data } = await api.patch(`${BASE}/preferences`, values)
+      setValues(data)
+      setSaved(true)
+      onSaved?.()
+    } finally { setSaving(false) }
+  }
+
+  if (!values) return null
+
+  return (
+    <Panel className="gap-3">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center justify-between gap-2 cursor-pointer text-left"
+      >
+        <span className="flex items-center gap-2">
+          <TuneOutlined sx={{ fontSize: 18 }} className="text-cyan-500" />
+          <span className="font-semibold text-neutral-900 dark:text-white">Search preferences</span>
+        </span>
+        <span className="text-xs text-cyan-600 dark:text-cyan-400">{open ? 'Hide' : 'Edit'}</span>
+      </button>
+
+      {!open && (
+        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+          Applied when fetching, so anything outside them never reaches the list.
+        </p>
+      )}
+
+      {open && (
+        <div className="flex flex-col gap-3">
+          <Input.User
+            as="textarea"
+            label={<>Job titles <span className="font-normal text-neutral-400">— comma separated, empty keeps everything</span></>}
+            icon={<SearchOutlined sx={{ fontSize: 18 }} />}
+            rows={2}
+            value={values.job_query}
+            onChange={e => setValues({ ...values, job_query: e.target.value })}
+            placeholder="developer, engineer, react, node"
+          />
+
+          <Input.User
+            as="textarea"
+            label={<>Locations <span className="font-normal text-neutral-400">— remote always passes; empty keeps everything</span></>}
+            icon={<PlaceOutlined sx={{ fontSize: 18 }} />}
+            rows={2}
+            value={values.job_locations}
+            onChange={e => setValues({ ...values, job_locations: e.target.value })}
+            placeholder="colombia, bogot, latam"
+          />
+
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            Matched against the posting title and location, so partial words work:
+            "bogot" catches both Bogota and Bogotá.
+          </p>
+
+          <div className="flex items-center gap-3">
+            <Button.User size="sm" variant="normal" loading={saving} onClick={save}>
+              Save
+            </Button.User>
+            {saved && <span className="text-sm text-emerald-600 dark:text-emerald-400">Saved</span>}
+          </div>
+        </div>
+      )}
+    </Panel>
   )
 }
 
@@ -219,10 +303,11 @@ export const JobsPage = () => {
     setWorking(action)
     setMessage(null)
     try {
-      const { data } = await api.post(`${BASE}/${action}`, body)
+      // An explicit object, not undefined: axios omits Content-Type without one
+      const { data } = await api.post(`${BASE}/${action}`, body || {})
       setMessage(
         action === 'ingest'
-          ? `Fetched ${data.fetched}, added ${data.added}.`
+          ? `Fetched ${data.fetched}, kept ${data.fetched - (data.filteredOut || 0)}, added ${data.added} new.`
           : `Scored ${data.scored}${data.skipped ? `, skipped ${data.skipped} off-profile` : ''}${data.failed ? `, ${data.failed} failed` : ''}.`
       )
       await load()
@@ -260,6 +345,8 @@ export const JobsPage = () => {
       {message && (
         <p className="text-sm text-cyan-600 dark:text-cyan-400">{message}</p>
       )}
+
+      <Preferences />
 
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
