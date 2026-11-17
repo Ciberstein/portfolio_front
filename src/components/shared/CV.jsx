@@ -9,6 +9,8 @@ import { experienceThunk } from '../../store/slices/experience.slice';
 import { educationThunk } from '../../store/slices/education.slice';
 import { projectsThunk } from '../../store/slices/projects.slice';
 import { landingThunk } from '../../store/slices/landing.slice';
+import api from '../../api/axios';
+import { API_ROUTES } from '../../api/routes';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -80,7 +82,11 @@ const bullets = (description) =>
     .map(l => l.trim())
     .filter(Boolean)
 
-const Document = ({ contentRef, settings, languages, skills, education, experience, projects }) => {
+const Document = ({ contentRef, settings, languages, skills, education, experience, projects: allProjects }) => {
+
+  // Only starred projects make the CV: it is a page or two, and the rest of the
+  // work stays on the site.
+  const projects = allProjects.filter(p => p.featured)
 
   const grouped = SKILL_GROUPS
     .map(g => ({ ...g, items: skills.filter(s => s.category === g.key) }))
@@ -249,7 +255,7 @@ const Document = ({ contentRef, settings, languages, skills, education, experien
 
 // Everything both triggers need: the data, the hidden document and the print
 // handler. Only the button around it differs.
-const useCV = () => {
+const useCV = ({ notify = false } = {}) => {
   const contentRef = React.useRef();
   const dispatch = useDispatch();
 
@@ -275,6 +281,14 @@ const useCV = () => {
   const print = useReactToPrint({
     contentRef,
     documentTitle: `${settings.profile_name || 'CV'} - CV`,
+    // Tells the backend so it can email the owner. Only the public landing
+    // asks for it: the owner downloading their own CV from the admin is not
+    // news. Fire and forget, a failed ping must never get in the way of the
+    // download. The browser fires this when the print dialog closes, so a
+    // cancelled dialog counts too; the backend's cooldown keeps that cheap.
+    onAfterPrint: () => {
+      if (notify) api.post(`${API_ROUTES.PUBLIC}/cv/downloaded`).catch(() => {})
+    },
   });
 
   const document = (
@@ -294,7 +308,7 @@ const useCV = () => {
 
 // Terminal aesthetic, icon only, for the landing footer.
 const Landing = () => {
-  const { print, document } = useCV();
+  const { print, document } = useCV({ notify: true });
 
   return (
     <Tooltip title={"Download CV"} placement="top">
